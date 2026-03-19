@@ -8,7 +8,7 @@
 
 .shayari-layout {
     display: grid;
-    grid-template-columns: 280px 1fr;
+    grid-template-columns: 280px minmax(0, 1fr);
     gap: 3rem;
 }
 
@@ -124,7 +124,7 @@
 /* Content Area */
 .shayari-grid {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 1.5rem;
 }
 
@@ -177,7 +177,7 @@
 
 @media (max-width: 900px) {
     .shayari-layout {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
         gap: 1.5rem; /* Reduce gap on mobile */
     }
     .main-title { font-size: 2.2rem; }

@@ -370,7 +370,7 @@ body {
 }
 
 @media (max-width: 600px) {
-    .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr !important; gap: 1.5rem; }
+    .grid-4, .grid-3, .grid-2 { grid-template-columns: minmax(0, 1fr) !important; gap: 1.5rem; }
     .container { width: 92%; }
     h1 { font-size: 2.2rem; }
     h2 { font-size: 1.8rem; }
