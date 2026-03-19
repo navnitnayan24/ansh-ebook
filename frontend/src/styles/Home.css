@@ -31,7 +31,7 @@
 }
 
 .hero-main-branding {
-    font-size: clamp(2rem, 8vw, 6rem); /* Reduced minimum from 3.5rem to 2rem to fit mobile screens */
+    font-size: clamp(1.8rem, 8vw, 6rem); /* Reduced minimum even further for small phones */
     font-family: var(--font-heading);
     font-weight: 800;
     margin-bottom: 1.5rem;

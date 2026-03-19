@@ -180,7 +180,12 @@
         grid-template-columns: minmax(0, 1fr);
         gap: 1.5rem; /* Reduce gap on mobile */
     }
-    .main-title { font-size: 2.2rem; }
+    .main-title { 
+        font-size: 1.8rem; 
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        white-space: normal;
+    }
 }
 
 @media (max-width: 600px) {
