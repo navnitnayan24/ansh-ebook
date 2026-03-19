@@ -23,7 +23,7 @@ async function connectDB() {
 
         console.log('🔗 Connecting mongoose to:', uri);
         await mongoose.connect(uri, {
-            serverSelectionTimeoutMS: 5000 // 5 second timeout instead of infinite
+            serverSelectionTimeoutMS: 30000 // 30 second timeout for cloud stability
         });
         console.log('💎 MongoDB Connected Successfully');
         await autoSeed();
@@ -71,7 +71,7 @@ async function autoSeed() {
         // 1. Settings
         await Settings.insertMany([
             { key: 'google_adsense', value: '<!-- AdSense -->', description: 'AdSense script' },
-            { key: 'meta_tags', value: '<meta name="description" content="ANSH SHARMA - Premium MERN">', description: 'SEO Meta Tags' }
+            { key: 'meta_tags', value: '<meta name="description" content="THE ALFAZ-E-DIARIES - Premium Shayari & E-books">', description: 'SEO Meta Tags' }
         ]);
 
         // 2. Admin

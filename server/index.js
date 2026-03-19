@@ -18,10 +18,17 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+let lastDbError = null;
+
 // Health Check
 app.get('/health', (req, res) => {
     const dbStatus = mongoose.connection.readyState === 1 ? 'CONNECTED' : 'DISCONNECTED';
-    res.json({ status: 'OK', database: dbStatus, timestamp: new Date() });
+    res.json({ 
+        status: 'OK', 
+        database: dbStatus, 
+        lastError: lastDbError ? lastDbError.message : null,
+        timestamp: new Date() 
+    });
 });
 
 // Request Logger
@@ -85,8 +92,12 @@ async function startServer() {
             }
         });
     } catch (err) {
+        lastDbError = err;
         console.error('💥 Failed to start server:', err);
-        process.exit(1);
+        // Don't exit(1) on Render so we can at least see the health check error
+        if (process.env.NODE_ENV !== 'production') {
+            process.exit(1);
+        }
     }
 }
 
