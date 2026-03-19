@@ -142,6 +142,8 @@
     font-size: 1.15rem;
     line-height: 1.7;
     white-space: pre-line;
+    word-break: break-word; /* Ensure long links or words wrap instead of breaking layout */
+    overflow-wrap: break-word;
     margin-bottom: 1.5rem;
     color: var(--text-primary);
 }
@@ -176,6 +178,19 @@
 @media (max-width: 900px) {
     .shayari-layout {
         grid-template-columns: 1fr;
+        gap: 1.5rem; /* Reduce gap on mobile */
     }
-    .main-title { font-size: 2.5rem; }
+    .main-title { font-size: 2.2rem; }
+}
+
+@media (max-width: 600px) {
+    .shayari-card {
+        padding: 1.2rem !important; /* Reduce inner padding on small phones */
+    }
+    .shayari-content {
+        font-size: 1rem;
+    }
+    .shayari-layout {
+        gap: 1rem;
+    }
 }
