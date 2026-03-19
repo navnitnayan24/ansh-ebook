@@ -136,7 +136,7 @@ body {
 
 /* 404 Not Found Custom Styles */
 .not-found-page h1 {
-    font-size: 8rem;
+    font-size: clamp(4rem, 15vw, 8rem);
     line-height: 1;
     margin: 0;
 }

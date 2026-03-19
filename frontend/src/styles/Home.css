@@ -31,11 +31,12 @@
 }
 
 .hero-main-branding {
-    font-size: clamp(3.5rem, 10vw, 6rem);
+    font-size: clamp(2rem, 8vw, 6rem); /* Reduced minimum from 3.5rem to 2rem to fit mobile screens */
     font-family: var(--font-heading);
     font-weight: 800;
     margin-bottom: 1.5rem;
     line-height: 1.1;
+    word-break: break-word;
 }
 
 .hero-welcome-v2 {
@@ -120,7 +121,7 @@
 }
 
 .section-header h2 {
-    font-size: 3rem;
+    font-size: clamp(2rem, 6vw, 3rem); /* Replaced fixed 3rem with responsive clamp */
     font-family: var(--font-heading);
 }
 
