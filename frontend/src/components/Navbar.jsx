@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { Menu, X, LogOut, Settings, Sun, Moon, Home, Book, Music, Mic, BookOpen, Quote, User } from 'lucide-react';
+import { Menu, X, LogOut, Settings, Sun, Moon, Home, Book, Music, Mic, BookOpen, Quote, User, MessageCircle, Youtube, Instagram, Facebook, Linkedin } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
 
@@ -136,6 +136,13 @@ const Navbar = ({ isOpen, setIsOpen }) => {
                                             <Link to="/register" className="drawer-auth-btn signup" onClick={closeMenu}>SIGN UP NOW</Link>
                                         </div>
                                     )}
+                                </div>
+                                <div className="drawer-socials" style={{ marginTop: '2rem', padding: '1rem', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', gap: '15px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                                    <a href="https://whatsapp.com/channel/0029VaFlezo3QxSA5zNTQF0b" target="_blank" rel="noopener noreferrer" style={{color: 'var(--text-secondary)'}}><MessageCircle size={20} /></a>
+                                    <a href="https://youtube.com/@vibexmusicx" target="_blank" rel="noopener noreferrer" style={{color: 'var(--text-secondary)'}}><Youtube size={20} /></a>
+                                    <a href="https://www.instagram.com/_.unknown_shadow" target="_blank" rel="noopener noreferrer" style={{color: 'var(--text-secondary)'}}><Instagram size={20} /></a>
+                                    <a href="https://www.facebook.com/share/1PNsduGWcq/" target="_blank" rel="noopener noreferrer" style={{color: 'var(--text-secondary)'}}><Facebook size={20} /></a>
+                                    <a href="https://www.linkedin.com/in/navnit-nayan-14b4b9278" target="_blank" rel="noopener noreferrer" style={{color: 'var(--text-secondary)'}}><Linkedin size={20} /></a>
                                 </div>
                             </div>
                         </motion.div>

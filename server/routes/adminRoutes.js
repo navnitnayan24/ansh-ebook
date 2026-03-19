@@ -20,8 +20,12 @@ router.post('/settings', adminController.updateSettings);
 router.get('/subscribers', adminController.getSubscribers);
 router.delete('/subscribers/:id', adminController.deleteSubscriber);
 
-router.post('/:type', upload.single('thumbnail'), adminController.addContent);
-router.put('/:type/:id', upload.single('thumbnail'), adminController.updateContent);
+// Users
+router.get('/users', adminController.getUsers);
+router.delete('/users/:id', adminController.deleteUser);
+
+router.post('/:type', upload.any(), adminController.addContent);
+router.put('/:type/:id', upload.any(), adminController.updateContent);
 router.delete('/:type/:id', adminController.deleteContent);
 
 module.exports = router;

@@ -32,6 +32,7 @@ const AdminDashboard = () => {
     });
 
     const [thumbnailFile, setThumbnailFile] = useState(null);
+    const [audioFile, setAudioFile] = useState(null);
 
     const user = JSON.parse(localStorage.getItem('user'));
     const navigate = useNavigate();
@@ -51,6 +52,10 @@ const AdminDashboard = () => {
             } else if (activeTab === 'subscribers') {
                 const { fetchSubscribers } = await import('../api');
                 const { data } = await fetchSubscribers();
+                setItems(data);
+            } else if (activeTab === 'users') {
+                const { fetchUsers } = await import('../api');
+                const { data } = await fetchUsers();
                 setItems(data);
             } else {
                 const { data } = await fetchContentByType(activeTab);
@@ -100,6 +105,7 @@ const AdminDashboard = () => {
                 category: '', link: '', price: ''
             });
             setThumbnailFile(null);
+            setAudioFile(null);
         }
         setShowModal(true);
     };
@@ -139,7 +145,7 @@ const AdminDashboard = () => {
             if (!dataToSend.category_id) delete dataToSend.category_id;
             
             let payload = dataToSend;
-            if (thumbnailFile) {
+            if (thumbnailFile || audioFile) {
                 const formDataObj = new FormData();
                 Object.keys(dataToSend).forEach(key => {
                     const val = dataToSend[key];
@@ -147,7 +153,8 @@ const AdminDashboard = () => {
                         formDataObj.append(key, val);
                     }
                 });
-                formDataObj.append('thumbnail', thumbnailFile);
+                if (thumbnailFile) formDataObj.append('thumbnail', thumbnailFile);
+                if (audioFile) formDataObj.append('audio_file', audioFile);
                 payload = formDataObj;
             }
 
@@ -165,6 +172,7 @@ const AdminDashboard = () => {
             setShowModal(false);
             await loadItems();
             setThumbnailFile(null);
+            setAudioFile(null);
         } catch (err) {
             console.error('Submit Error:', err);
             const errorData = err.response?.data;
@@ -188,7 +196,7 @@ const AdminDashboard = () => {
     };
 
     const filteredItems = Array.isArray(items) ? items.filter(item => 
-        (item.title || item.content || '').toLowerCase().includes(searchTerm.toLowerCase())
+        (item.title || item.content || item.email || item.username || '').toLowerCase().includes(searchTerm.toLowerCase())
     ) : [];
 
     return (
@@ -214,7 +222,7 @@ const AdminDashboard = () => {
             <div className={`dashboard-content framed-body glass-card content-section-${activeTab}`}>
                 <div className="dashboard-controls">
                     <div className="tabs">
-                        {['shayari', 'music', 'podcasts', 'ebooks', 'subscribers', 'advertisements', 'settings', 'security'].map(tab => (
+                        {['shayari', 'music', 'podcasts', 'ebooks', 'users', 'subscribers', 'advertisements', 'settings', 'security'].map(tab => (
                             <button 
                                 key={tab} 
                                 className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
@@ -367,6 +375,37 @@ const AdminDashboard = () => {
                                     ))}
                                 </tbody>
                             </table>
+                        ) : activeTab === 'users' ? (
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Username</th>
+                                        <th>Email</th>
+                                        <th>Role</th>
+                                        <th>Date</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {filteredItems.map(item => (
+                                        <tr key={item._id} className="table-row">
+                                            <td>{item.username}</td>
+                                            <td>{item.email}</td>
+                                            <td><span className="badge">{item.role || 'user'}</span></td>
+                                            <td>{new Date(item.createdAt).toLocaleDateString()}</td>
+                                            <td>
+                                                <button className="icon-btn delete" onClick={async () => {
+                                                    if (window.confirm('Delete User?')) {
+                                                        const { deleteUser } = await import('../api');
+                                                        await deleteUser(item._id);
+                                                        setItems(items.filter(i => i._id !== item._id));
+                                                    }
+                                                }}><Trash2 size={18} /></button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         ) : (
                             <table>
                                 <thead>
@@ -431,6 +470,11 @@ const AdminDashboard = () => {
                                             <label>Author</label>
                                             <input type="text" value={formData.author} onChange={(e) => setFormData({...formData, author: e.target.value})} />
                                         </div>
+                                        <div className="form-group full">
+                                            <label>Thumbnail / Image Upload (Optional)</label>
+                                            <input type="text" value={formData.thumbnail} onChange={(e) => setFormData({...formData, thumbnail: e.target.value})} placeholder="Image URL" />
+                                            <input type="file" onChange={(e) => setThumbnailFile(e.target.files[0])} accept="image/*" style={{marginTop: '5px'}}/>
+                                        </div>
                                     </>
                                 ) : activeTab === 'music' ? (
                                     <>
@@ -455,8 +499,9 @@ const AdminDashboard = () => {
                                             <input type="file" onChange={(e) => setThumbnailFile(e.target.files[0])} style={{marginTop: '5px'}}/>
                                         </div>
                                         <div className="form-group">
-                                            <label>File URL</label>
-                                            <input type="text" value={formData.file_url} onChange={(e) => setFormData({...formData, file_url: e.target.value})} />
+                                            <label>File URL / Upload Audio</label>
+                                            <input type="text" value={formData.file_url} onChange={(e) => setFormData({...formData, file_url: e.target.value})} placeholder="Direct Audio URL" />
+                                            <input type="file" onChange={(e) => setAudioFile(e.target.files[0])} accept="audio/*" style={{marginTop: '5px'}}/>
                                         </div>
                                     </>
                                 ) : (
@@ -475,8 +520,9 @@ const AdminDashboard = () => {
                                             <input type="file" onChange={(e) => setThumbnailFile(e.target.files[0])} style={{marginTop: '5px'}}/>
                                         </div>
                                         <div className="form-group">
-                                            <label>File URL</label>
-                                            <input type="text" value={formData.file_url} onChange={(e) => setFormData({...formData, file_url: e.target.value})} />
+                                            <label>File URL / Upload Document/Audio</label>
+                                            <input type="text" value={formData.file_url} onChange={(e) => setFormData({...formData, file_url: e.target.value})} placeholder="Direct File URL" />
+                                            <input type="file" onChange={(e) => setAudioFile(e.target.files[0])} accept="audio/*,application/pdf" style={{marginTop: '5px'}}/>
                                         </div>
                                     </>
                                 )}

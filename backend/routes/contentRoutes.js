@@ -10,7 +10,6 @@ const {
 } = require('../controllers/contentController');
 const upload = require('../middleware/upload');
 
-/*
 // Categories
 router.get('/categories/:section', getCategories);
 
@@ -29,6 +28,5 @@ router.route('/podcast/:id').put(protect, admin, upload.single('thumbnail'), upd
 // Ebook
 router.route('/ebook').get(getEbook).post(protect, admin, upload.single('thumbnail'), createEbook);
 router.route('/ebook/:id').put(protect, admin, upload.single('thumbnail'), updateEbook).delete(protect, admin, deleteEbook);
-*/
 
 module.exports = router;

@@ -24,7 +24,7 @@ exports.getHomeContent = async (req, res) => {
 
 exports.getContentByType = async (req, res) => {
     const { type } = req.params;
-    const { category, q, limit = 10, offset = 0 } = req.query;
+    const { category, q, limit = 0, offset = 0 } = req.query;
     
     let model;
     const normalizedType = type.toLowerCase();

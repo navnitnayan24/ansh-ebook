@@ -6,6 +6,27 @@ const Ebook = require('../models/Ebook');
 const Category = require('../models/Category');
 const Settings = require('../models/Settings');
 const Subscriber = require('../models/Subscriber');
+const User = require('../models/User');
+
+exports.getUsers = async (req, res) => {
+    try {
+        const users = await User.find().select('-password').sort({ createdAt: -1 });
+        res.json(users);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+exports.deleteUser = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const user = await User.findByIdAndDelete(id);
+        if (!user) return res.status(404).json({ error: 'User not found' });
+        res.json({ message: 'User deleted' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
 
 // Generic helper to get model by type
 const getModel = (type) => {
@@ -47,12 +68,19 @@ exports.addContent = async (req, res) => {
         }
 
         // Handle File Upload or Manual URL Mapping
-        if (req.file) {
-            const uploadedUrl = `/uploads/${req.file.filename}`;
-            if (['music', 'ebook', 'ebooks'].includes(type.toLowerCase())) {
-                data.cover_url = uploadedUrl;
-            } else if (['podcast', 'podcasts'].includes(type.toLowerCase())) {
-                data.thumbnail_url = uploadedUrl;
+        if (req.files && req.files.length > 0) {
+            for (let file of req.files) {
+                const uploadedUrl = `/uploads/${file.filename}`;
+                if (file.fieldname === 'thumbnail') {
+                    data.thumbnail = uploadedUrl;
+                    if (['music', 'ebook', 'ebooks'].includes(type.toLowerCase())) {
+                        data.cover_url = uploadedUrl;
+                    } else if (['podcast', 'podcasts'].includes(type.toLowerCase())) {
+                        data.thumbnail_url = uploadedUrl;
+                    }
+                } else if (file.fieldname === 'audio_file' || file.fieldname === 'document_file' || file.fieldname === 'file') {
+                    data.file_url = uploadedUrl;
+                }
             }
         } else {
             // Manual URL provided
@@ -109,12 +137,19 @@ exports.updateContent = async (req, res) => {
         }
 
         // Handle File Upload or Manual URL Mapping
-        if (req.file) {
-            const uploadedUrl = `/uploads/${req.file.filename}`;
-            if (['music', 'ebook', 'ebooks'].includes(type.toLowerCase())) {
-                data.cover_url = uploadedUrl;
-            } else if (['podcast', 'podcasts'].includes(type.toLowerCase())) {
-                data.thumbnail_url = uploadedUrl;
+        if (req.files && req.files.length > 0) {
+            for (let file of req.files) {
+                const uploadedUrl = `/uploads/${file.filename}`;
+                if (file.fieldname === 'thumbnail') {
+                    data.thumbnail = uploadedUrl;
+                    if (['music', 'ebook', 'ebooks'].includes(type.toLowerCase())) {
+                        data.cover_url = uploadedUrl;
+                    } else if (['podcast', 'podcasts'].includes(type.toLowerCase())) {
+                        data.thumbnail_url = uploadedUrl;
+                    }
+                } else if (file.fieldname === 'audio_file' || file.fieldname === 'document_file' || file.fieldname === 'file') {
+                    data.file_url = uploadedUrl;
+                }
             }
         } else {
             // Manual URL provided

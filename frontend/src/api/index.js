@@ -80,21 +80,21 @@ export const addContent = (type, data) => {
     let route = `${type}`;
     if (type === 'podcasts') route = 'podcast';
     if (type === 'ebooks') route = 'ebook';
-    return API.post(`admin/${route}`, data);
+    return API.post(`${route}`, data);
 };
 
 export const updateContent = (type, id, data) => {
     let route = `${type}`;
     if (type === 'podcasts') route = 'podcast';
     if (type === 'ebooks') route = 'ebook';
-    return API.put(`admin/${route}/${id}`, data);
+    return API.put(`${route}/${id}`, data);
 };
 
 export const deleteContent = (type, id) => {
     let route = `${type}`;
     if (type === 'podcasts') route = 'podcast';
     if (type === 'ebooks') route = 'ebook';
-    return API.delete(`admin/${route}/${id}`);
+    return API.delete(`${route}/${id}`);
 };
 
 // Auth
@@ -112,10 +112,12 @@ export const fetchSettings = () => API.get('admin/settings');
 export const updateSetting = (data) => API.post('admin/settings', data);
 export const fetchPublicSettings = () => API.get('settings');
 
-// Subscribers
+// Subscribers & Users
 export const fetchSubscribers = () => API.get('admin/subscribers');
 export const deleteSubscriber = (id) => API.delete(`admin/subscribers/${id}`);
 export const subscribeUser = (email) => API.post('subscribe', { email });
+export const fetchUsers = () => API.get('admin/users');
+export const deleteUser = (id) => API.delete(`admin/users/${id}`);
 
 
 export default API;
