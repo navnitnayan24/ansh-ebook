@@ -470,11 +470,6 @@ const AdminDashboard = () => {
                                             <label>Author</label>
                                             <input type="text" value={formData.author} onChange={(e) => setFormData({...formData, author: e.target.value})} />
                                         </div>
-                                        <div className="form-group full">
-                                            <label>Thumbnail / Image Upload (Optional)</label>
-                                            <input type="text" value={formData.thumbnail} onChange={(e) => setFormData({...formData, thumbnail: e.target.value})} placeholder="Image URL" />
-                                            <input type="file" onChange={(e) => setThumbnailFile(e.target.files[0])} accept="image/*" style={{marginTop: '5px'}}/>
-                                        </div>
                                     </>
                                 ) : activeTab === 'music' ? (
                                     <>
