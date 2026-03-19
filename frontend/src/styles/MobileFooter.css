@@ -1,0 +1,56 @@
+.mobile-footer-wrapper {
+    display: none; /* Hidden on PC */
+}
+
+@media (max-width: 1100px) {
+    .mobile-footer-wrapper {
+        display: flex;
+        justify-content: center;
+        position: fixed;
+        bottom: 1.5rem;
+        left: 0;
+        width: 100%;
+        z-index: 2000;
+        pointer-events: none;
+    }
+
+    .mobile-bottom-pill {
+        pointer-events: auto;
+        width: 85%;
+        max-width: 400px;
+        height: 65px;
+        background: rgba(10, 1, 16, 0.9) !important;
+        backdrop-filter: blur(20px) !important;
+        border: 1px solid rgba(255, 20, 147, 0.3) !important;
+        border-radius: 50px !important;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+        display: flex;
+        align-items: center;
+        padding: 0 1rem;
+    }
+
+    .pill-content {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        gap: 0.5rem;
+    }
+
+    .pill-item {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        color: rgba(255,255,255,0.5);
+        transition: 0.3s ease;
+    }
+
+    .pill-item.active {
+        background: rgba(255, 20, 147, 0.15);
+        color: var(--accent);
+        box-shadow: 0 0 15px rgba(255, 20, 147, 0.2);
+    }
+}

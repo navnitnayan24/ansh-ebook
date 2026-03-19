@@ -1,0 +1,128 @@
+/* V2 Premium Auth Styles */
+.auth-content-centered {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2rem;
+    width: 100%;
+}
+
+.auth-brand-icon {
+    margin-bottom: 2.5rem;
+    position: relative;
+}
+
+.icon-circle {
+    width: 90px;
+    height: 90px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 30px var(--accent-glow);
+    color: var(--accent);
+}
+
+.auth-card-v2 {
+    width: 100%;
+    max-width: 480px;
+}
+
+.auth-header-v2 {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.auth-header-v2 h2 {
+    font-size: 2.5rem;
+    font-family: var(--font-heading);
+    margin-bottom: 0.5rem;
+}
+
+.auth-header-v2 p {
+    color: var(--text-secondary);
+}
+
+.mode-toggle-pill {
+    display: flex;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: var(--radius-full);
+    padding: 5px;
+    margin-bottom: 2.5rem;
+    border: 1px solid var(--glass-border);
+}
+
+.mode-toggle-pill button {
+    flex: 1;
+    padding: 0.8rem;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+    border-radius: var(--radius-full);
+}
+
+.mode-toggle-pill button.active {
+    background: var(--accent);
+    color: white;
+}
+
+.auth-form-v2 {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-group-v2 {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+}
+
+.form-group-v2 label {
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.form-group-v2 input {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    padding: 1.1rem;
+    border-radius: var(--radius-sm);
+    color: white;
+    outline: none;
+    transition: 0.3s;
+}
+
+.form-group-v2 input:focus {
+    border-color: var(--accent);
+    background: rgba(255, 255, 255, 0.07);
+}
+
+.error-msg-v2 {
+    background: rgba(255, 0, 0, 0.05);
+    border-left: 4px solid var(--accent);
+    padding: 1rem;
+    color: #ff4d4d;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+    border-radius: 4px;
+}
+
+.auth-footer-v2 {
+    margin-top: 2.5rem;
+    text-align: center;
+    font-size: 0.95rem;
+}
+
+.pink-link {
+    color: var(--accent);
+    font-weight: 700;
+    text-decoration: none;
+}

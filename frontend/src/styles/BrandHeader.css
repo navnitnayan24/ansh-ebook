@@ -1,0 +1,124 @@
+.brand-header-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 2500; /* Higher than almost everything */
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0 !important;
+    border: none !important;
+    border-bottom: 1px solid var(--glass-border) !important;
+    background: var(--bg-surface) !important;
+    backdrop-filter: blur(25px) !important;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+}
+
+.brand-header-container {
+    width: 100%;
+    max-width: 1440px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.header-mobile-toggle {
+    position: absolute;
+    right: 0;
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    cursor: pointer;
+    padding: 10px;
+}
+
+.header-theme-toggle {
+    position: absolute;
+    left: 0;
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    cursor: pointer;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.header-theme-toggle:hover {
+    color: var(--accent-primary);
+    transform: scale(1.1);
+}
+
+.brand-link {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.brand-name-main {
+    font-family: var(--font-heading);
+    font-size: 2.2rem;
+    font-weight: 800;
+    letter-spacing: 6px;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    transition: all 0.3s ease;
+}
+
+.brand-link:hover .brand-name-main {
+    filter: drop-shadow(0 0 8px var(--accent-glow));
+    transform: scale(1.02);
+}
+
+.brand-subtitle-line {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: -5px;
+}
+
+.subtitle-text {
+    font-size: 0.7rem;
+    letter-spacing: 4px;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.brand-subtitle-line .line {
+    height: 1px;
+    width: 30px;
+    background: var(--border-color);
+    opacity: 0.5;
+}
+
+@media (max-width: 768px) {
+    .brand-header-wrapper {
+        height: 80px;
+        position: fixed;
+        top: 0;
+        padding: 0 1rem !important;
+    }
+    
+    .brand-name-main {
+        font-size: 1.6rem;
+        letter-spacing: 4px;
+    }
+    
+    .subtitle-text {
+        font-size: 0.6rem;
+        letter-spacing: 3px;
+    }
+}
