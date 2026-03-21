@@ -213,7 +213,8 @@ const AdminDashboard = () => {
                 setItems(items.filter(item => item._id !== id));
             } catch (err) {
                 console.error('Delete Error:', err);
-                alert('Delete failed');
+                const errorMsg = err.response?.data?.error || err.response?.data?.message || err.message;
+                alert(`Delete failed: ${errorMsg}`);
             }
         }
     };
