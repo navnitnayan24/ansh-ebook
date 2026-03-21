@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Play, Pause, Headphones, Music, Heart } from 'lucide-react';
+import { Search, Play, Pause, Headphones, Music as MusicIcon, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fetchContentByType, fetchCategories } from '../api';
