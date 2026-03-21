@@ -92,25 +92,25 @@ const Ebooks = () => {
                     <div className="glass-card filter-card-sidebar mb-4" style={{ padding: '1.5rem', borderRadius: '15px' }}>
                         <h4 style={{ fontSize: '1rem', marginBottom: '1rem', letterSpacing: '1px', opacity: 0.7 }}>CATEGORIES</h4>
                         <div className="category-list-vertical" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                            {categories.map(cat => (
-                                <button 
-                                    key={cat}
-                                    onClick={() => setActiveCategory(cat)}
-                                    style={{ 
-                                        textAlign: 'left',
-                                        padding: '0.8rem 1rem',
-                                        borderRadius: '8px',
-                                        border: 'none',
-                                        background: activeCategory === cat ? 'rgba(255,20,147,0.15)' : 'transparent',
-                                        color: activeCategory === cat ? 'var(--pink-primary)' : 'white',
-                                        fontSize: '0.9rem',
-                                        cursor: 'pointer',
-                                        transition: 'all 0.2s ease'
-                                    }}
-                                >
-                                    {cat}
-                                </button>
-                            ))}
+                                        {categories.map(cat => (
+                                            <button 
+                                                key={cat}
+                                                onClick={() => setSelectedCategory(cat)}
+                                                style={{ 
+                                                    textAlign: 'left',
+                                                    padding: '0.8rem 1rem',
+                                                    borderRadius: '8px',
+                                                    border: 'none',
+                                                    background: selectedCategory === cat ? 'rgba(255,20,147,0.15)' : 'transparent',
+                                                    color: selectedCategory === cat ? 'var(--pink-primary)' : 'white',
+                                                    fontSize: '0.9rem',
+                                                    cursor: 'pointer',
+                                                    transition: 'all 0.2s ease'
+                                                }}
+                                            >
+                                                {cat}
+                                            </button>
+                                        ))}
                         </div>
                     </div>
 
@@ -157,7 +157,14 @@ const Ebooks = () => {
                                                     <p className="ebook-desc-short">{book.description?.substring(0, 100)}...</p>
                                                     <div className="ebook-footer-actions">
                                                         <span className="price-label">{book.price === 0 ? '₹ 0' : `₹ ${book.price}`}</span>
-                                                        <button className="btn btn-primary btn-sm btn-pill shadow-neon">
+                                                        <button 
+                                                            className="btn btn-primary btn-sm btn-pill shadow-neon"
+                                                            onClick={() => {
+                                                                const target = book.file_url || book.link;
+                                                                if (target) window.open(target.startsWith('/uploads') ? `${MEDIA_URL}${target}` : target, '_blank');
+                                                                else alert('Link coming soon! ✨');
+                                                            }}
+                                                        >
                                                             {book.price === 0 ? <><Download size={16}/> DOWNLOAD</> : <><BookOpen size={16}/> BUY NOW</>}
                                                         </button>
                                                     </div>

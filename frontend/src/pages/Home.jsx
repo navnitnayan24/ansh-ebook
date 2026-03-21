@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Play, Book, Mic, Quote, ArrowRight, BookOpen, Instagram, Youtube, MessageCircle, PlayCircle, Music, Star, ThumbsUp, ThumbsDown, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { fetchHomeContent, fetchReviews, addReview, updateReviewReaction } from '../api';
+import { fetchHomeContent, fetchReviews, addReview, updateReviewReaction, API } from '../api';
 import { MEDIA_URL } from '../config';
 import AdSpace from '../components/AdSpace';
 import SEO from '../components/SEO';
@@ -74,14 +74,18 @@ const Home = () => {
 
     const handleReviewSubmit = async (e) => {
         e.preventDefault();
+        if (!user) {
+            navigate('/login');
+            return;
+        }
         setIsReviewing(true);
         try {
             const { data } = await addReview({
                 ...reviewForm,
-                username: reviewForm.username || 'Anonymous User'
+                username: user.username || 'Anonymous User'
             });
             setReviews([data, ...reviews]);
-            setReviewForm({ username: user?.username || '', content: '', rating: 5 });
+            setReviewForm({ username: user.username || '', content: '', rating: 5 });
             alert('Thank you for your review! ✨');
         } catch (err) {
             alert('Failed to submit review.');
@@ -91,11 +95,29 @@ const Home = () => {
     };
 
     const handleReviewReaction = async (id, type) => {
+        if (!user) {
+            navigate('/login');
+            return;
+        }
         try {
             const { data } = await updateReviewReaction(id, type);
             setReviews(reviews.map(r => r._id === id ? data : r));
         } catch (err) {
             console.error('Reaction failed:', err);
+        }
+    };
+
+    const handleShayariLike = async (id) => {
+        try {
+            const { data } = await API.post(`shayari/${id}/like`);
+            setContent(prev => ({
+                ...prev,
+                latest_shayari: prev.latest_shayari.map(s => 
+                    s._id === id ? { ...s, likes_count: data.likes_count } : s
+                )
+            }));
+        } catch (err) {
+            console.error('Shayari like failed:', err);
         }
     };
 
@@ -112,10 +134,12 @@ const Home = () => {
     };
 
     // Only lock Music, Podcast, Ebook — NOT Shayari
-    const checkPremiumAccess = (e) => {
+    const checkPremiumAccess = (e, targetPath) => {
         if (!user) {
             e.preventDefault();
             navigate('/login');
+        } else if (targetPath) {
+            navigate(targetPath);
         }
     };
 
@@ -192,8 +216,8 @@ const Home = () => {
                     <motion.h2 className="hero-main-branding"><span className="pink-gradient-text">Ansh-Ebook</span></motion.h2>
                     <motion.p className="hero-description-v2">A digital sanctuary where words find meaning, melodies touch the soul, and stories inspire greatness.</motion.p>
                     <div className="hero-actions-v2">
-                        <a href="#shayari" className="btn btn-primary btn-lg shadow-neon">READ SHAYARI</a>
-                        <a href="#premium" className="btn btn-dark-outline btn-lg">PREMIUM CONTENT</a>
+                        <Link to="/shayari" className="btn btn-primary btn-lg shadow-neon">READ SHAYARI</Link>
+                        <Link to="/music" className="btn btn-dark-outline btn-lg">PREMIUM CONTENT</Link>
                     </div>
                 </motion.div>
             </section>
@@ -205,36 +229,36 @@ const Home = () => {
                 </motion.div>
                 <div className="explore-grid">
                     {/* Shayari — FREE, no login needed */}
-                    <motion.a href="#shayari" className="explore-card glass-card" variants={itemVariants} whileHover={{ y: -10 }}>
+                    <motion.div onClick={() => navigate('/shayari')} className="explore-card glass-card" variants={itemVariants} whileHover={{ y: -10 }} style={{ cursor: 'pointer' }}>
                         <Quote size={40} className="pink-text mb-3" />
                         <h3>Shayari</h3>
                         <p>Deep words for every emotion.</p>
                         <span className="access-label free">🔓 FREE</span>
-                    </motion.a>
+                    </motion.div>
 
                     {/* Music — Login Required */}
-                    <motion.a href="#premium" className="explore-card glass-card" onClick={checkPremiumAccess} variants={itemVariants} whileHover={{ y: -10 }}>
+                    <motion.div onClick={(e) => checkPremiumAccess(e, '/music')} className="explore-card glass-card" variants={itemVariants} whileHover={{ y: -10 }} style={{ cursor: 'pointer' }}>
                         <Play size={40} className="pink-text mb-3" />
                         <h3>Music</h3>
                         <p>Soulful melodies.</p>
                         <span className="access-label locked">🔒 LOGIN</span>
-                    </motion.a>
+                    </motion.div>
 
                     {/* Podcast — Login Required */}
-                    <motion.a href="#premium" className="explore-card glass-card" onClick={checkPremiumAccess} variants={itemVariants} whileHover={{ y: -10 }}>
+                    <motion.div onClick={(e) => checkPremiumAccess(e, '/podcasts')} className="explore-card glass-card" variants={itemVariants} whileHover={{ y: -10 }} style={{ cursor: 'pointer' }}>
                         <Mic size={40} className="pink-text mb-3" />
                         <h3>Podcast</h3>
                         <p>Inspiring stories.</p>
                         <span className="access-label locked">🔒 LOGIN</span>
-                    </motion.a>
+                    </motion.div>
 
                     {/* E-Books — Login Required */}
-                    <motion.a href="#premium" className="explore-card glass-card" onClick={checkPremiumAccess} variants={itemVariants} whileHover={{ y: -10 }}>
+                    <motion.div onClick={(e) => checkPremiumAccess(e, '/ebooks')} className="explore-card glass-card" variants={itemVariants} whileHover={{ y: -10 }} style={{ cursor: 'pointer' }}>
                         <Book size={40} className="pink-text mb-3" />
                         <h3>E-Books</h3>
                         <p>Literary gems.</p>
                         <span className="access-label locked">🔒 LOGIN</span>
-                    </motion.a>
+                    </motion.div>
                 </div>
             </section>
 
@@ -254,7 +278,7 @@ const Home = () => {
                             <p className="shayari-text">{item?.content}</p>
                             <div className="card-footer">
                                 <span className="cat-badge-mini">{item?.category_id?.name || 'SHAYARI'}</span>
-                                <button className="like-btn">❤️ {item?.likes_count || 0}</button>
+                                <button className="like-btn" onClick={() => handleShayariLike(item._id)}>❤️ {item?.likes_count || 0}</button>
                             </div>
                         </motion.div>
                     ))}
@@ -272,7 +296,7 @@ const Home = () => {
                         <h3 className="premium-sub-title mb-4"><PlayCircle size={20} className="mr-2"/> Music & Melodies</h3>
                         <div className="grid-3">
                             {content?.latest_music?.map((track, idx) => (
-                                <motion.div key={track?._id || idx} className={`glass-card music-card-mini ${!user ? 'restricted-content' : ''}`} onClick={checkPremiumAccess} variants={itemVariants}>
+                                <motion.div key={track?._id || idx} className={`glass-card music-card-mini ${!user ? 'restricted-content' : ''}`} onClick={(e) => checkPremiumAccess(e, '/music')} variants={itemVariants} style={{ cursor: 'pointer' }}>
                                     <div className="music-thumb">
                                         <img src={track?.thumbnail?.startsWith('/uploads') ? `${MEDIA_URL}${track.thumbnail}` : (track?.thumbnail || '/default-music.png')} alt={track?.title} loading="lazy" />
                                         {!user && <div className="lock-overlay"><div className="lock-circle">🔒</div></div>}
@@ -290,7 +314,7 @@ const Home = () => {
                         <h3 className="premium-sub-title mb-4"><Mic size={20} className="mr-2"/> Podcasts</h3>
                         <div className="grid-2">
                             {content?.latest_podcasts?.map((pod, idx) => (
-                                <motion.div key={pod?._id || idx} className={`glass-card podcast-card-mini ${!user ? 'restricted-content' : ''}`} onClick={checkPremiumAccess} variants={itemVariants}>
+                                <motion.div key={pod?._id || idx} className={`glass-card podcast-card-mini ${!user ? 'restricted-content' : ''}`} onClick={(e) => checkPremiumAccess(e, '/podcasts')} variants={itemVariants} style={{ cursor: 'pointer' }}>
                                         <div className="podcast-thumb">
                                             <img src={pod?.thumbnail?.startsWith('/uploads') ? `${MEDIA_URL}${pod.thumbnail}` : (pod?.thumbnail || '/default-podcast.png')} alt={pod?.title} loading="lazy" />
                                             {!user && <div className="lock-overlay"><div className="lock-circle">🔒</div></div>}
@@ -309,7 +333,7 @@ const Home = () => {
                         <div className="grid-4">
                             {content?.featured_ebooks?.length > 0 ? (
                                 content.featured_ebooks.map((book, idx) => (
-                                    <motion.div key={book?._id || idx} className={`glass-card ebook-card-mini ${!user ? 'restricted-content' : ''}`} onClick={checkPremiumAccess} variants={itemVariants}>
+                                    <motion.div key={book?._id || idx} className={`glass-card ebook-card-mini ${!user ? 'restricted-content' : ''}`} onClick={(e) => checkPremiumAccess(e, '/ebooks')} variants={itemVariants} style={{ cursor: 'pointer' }}>
                                         <div className="ebook-cover">
                                             <img src={book?.cover_url?.startsWith('/uploads') ? `${MEDIA_URL}${book.cover_url}` : (book?.cover_url || '/default-ebook.png')} alt={book?.title} loading="lazy" />
                                             {!user && <div className="lock-overlay"><div className="lock-circle">🔒</div></div>}
@@ -473,16 +497,34 @@ const Home = () => {
                                         <button 
                                             className="reaction-btn" 
                                             onClick={() => handleReviewReaction(rev._id, 'like')}
-                                            style={{ background: 'none', border: 'none', color: 'white', display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer', opacity: 0.7 }}
+                                            style={{ 
+                                                background: 'none', 
+                                                border: 'none', 
+                                                color: user && rev.likedBy?.includes(user.id || user._id) ? 'var(--color-pink)' : 'white', 
+                                                display: 'flex', 
+                                                alignItems: 'center', 
+                                                gap: '5px', 
+                                                cursor: 'pointer', 
+                                                opacity: user && rev.likedBy?.includes(user.id || user._id) ? 1 : 0.7 
+                                            }}
                                         >
-                                            <ThumbsUp size={16} /> {rev.likes}
+                                            <ThumbsUp size={16} fill={user && rev.likedBy?.includes(user.id || user._id) ? "var(--color-pink)" : "none"} /> {rev.likes}
                                         </button>
                                         <button 
                                             className="reaction-btn" 
                                             onClick={() => handleReviewReaction(rev._id, 'dislike')}
-                                            style={{ background: 'none', border: 'none', color: 'white', display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer', opacity: 0.7 }}
+                                            style={{ 
+                                                background: 'none', 
+                                                border: 'none', 
+                                                color: user && rev.dislikedBy?.includes(user.id || user._id) ? '#ff4b2b' : 'white', 
+                                                display: 'flex', 
+                                                alignItems: 'center', 
+                                                gap: '5px', 
+                                                cursor: 'pointer', 
+                                                opacity: user && rev.dislikedBy?.includes(user.id || user._id) ? 1 : 0.7 
+                                            }}
                                         >
-                                            <ThumbsDown size={16} /> {rev.dislikes}
+                                            <ThumbsDown size={16} fill={user && rev.dislikedBy?.includes(user.id || user._id) ? "#ff4b2b" : "none"} /> {rev.dislikes}
                                         </button>
                                     </div>
                                 </motion.div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Home, Music, Book, BookOpen, Mic, Youtube, MessageCircle, Instagram, Facebook, Linkedin, Sun, Moon, Settings } from 'lucide-react';
+import { Home, Music, Book, BookOpen, Mic, Youtube, MessageCircle, Instagram, Facebook, Linkedin, Sun, Moon, Settings, User, LogOut } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import '../styles/Sidebar.css';
 
@@ -56,6 +56,44 @@ const Sidebar = () => {
                             <span>DASHBOARD</span>
                         </NavLink>
                     </li>
+                )}
+                {user ? (
+                    <>
+                        <li>
+                            <NavLink to="/profile" className={({isActive}) => isActive ? 'active' : ''}>
+                                <User size={20} className="sidebar-icon" />
+                                <span>PROFILE</span>
+                            </NavLink>
+                        </li>
+                        <li>
+                            <button 
+                                onClick={() => {
+                                    localStorage.removeItem('token');
+                                    localStorage.removeItem('user');
+                                    window.location.href = '/';
+                                }} 
+                                className="sidebar-link-btn"
+                            >
+                                <LogOut size={20} className="sidebar-icon" />
+                                <span>LOGOUT</span>
+                            </button>
+                        </li>
+                    </>
+                ) : (
+                    <>
+                        <li>
+                            <NavLink to="/login" className={({isActive}) => isActive ? 'active' : ''}>
+                                <User size={20} className="sidebar-icon" />
+                                <span>LOGIN</span>
+                            </NavLink>
+                        </li>
+                        <li>
+                            <NavLink to="/register" className={({isActive}) => isActive ? 'active' : ''}>
+                                <User size={20} className="sidebar-icon" />
+                                <span>SIGN UP</span>
+                            </NavLink>
+                        </li>
+                    </>
                 )}
             </ul>
 

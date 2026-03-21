@@ -7,6 +7,7 @@ const Category = require('../models/Category');
 const Settings = require('../models/Settings');
 const Subscriber = require('../models/Subscriber');
 const User = require('../models/User');
+const Review = require('../models/Review');
 
 exports.getUsers = async (req, res) => {
     try {
@@ -35,6 +36,7 @@ const getModel = (type) => {
     if (normalizedType === 'music') return Music;
     if (normalizedType === 'podcast' || normalizedType === 'podcasts') return Podcast;
     if (normalizedType === 'ebook' || normalizedType === 'ebooks') return Ebook;
+    if (normalizedType === 'review' || normalizedType === 'reviews') return Review;
     return null;
 };
 

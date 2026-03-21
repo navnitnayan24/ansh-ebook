@@ -5,8 +5,10 @@ import {
     fetchContentByType, addContent, updateContent, deleteContent, 
     fetchCategories, fetchSettings, updateSetting, 
     changePassword as changePasswordApi, 
-    fetchSubscribers, fetchUsers, deleteSubscriber, deleteUser, deleteCategory 
+    fetchSubscribers, fetchUsers, deleteSubscriber, deleteUser, deleteCategory,
+    fetchReviews, deleteReview
 } from '../api';
+import { motion, AnimatePresence } from 'framer-motion';
 import { MEDIA_URL } from '../config';
 import '../styles/Dashboard.css';
 
@@ -71,6 +73,9 @@ const AdminDashboard = () => {
                 setItems(data);
             } else if (activeTab === 'categories') {
                 const { data } = await fetchCategories();
+                setItems(data);
+            } else if (activeTab === 'reviews') {
+                const { data } = await fetchReviews();
                 setItems(data);
             } else {
                 const { data } = await fetchContentByType(activeTab);
@@ -198,6 +203,8 @@ const AdminDashboard = () => {
             try {
                 if (activeTab === 'categories') {
                     await deleteCategory(id);
+                } else if (activeTab === 'reviews') {
+                    await deleteReview(id);
                 } else {
                     const typeMap = { 'podcasts': 'podcast', 'ebooks': 'ebook' };
                     const modelName = typeMap[activeTab] || activeTab;
@@ -264,7 +271,7 @@ const AdminDashboard = () => {
             >
                 <div className="dashboard-controls">
                     <div className="tabs">
-                        {['shayari', 'music', 'podcasts', 'ebooks', 'users', 'subscribers', 'categories', 'advertisements', 'settings', 'security'].map(tab => (
+                        {['shayari', 'music', 'podcasts', 'ebooks', 'users', 'subscribers', 'categories', 'reviews', 'advertisements', 'settings', 'security'].map(tab => (
                             <motion.button 
                                 key={tab} 
                                 className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
@@ -443,6 +450,39 @@ const AdminDashboard = () => {
                                                         setItems(items.filter(i => i._id !== item._id));
                                                     }
                                                 }}><Trash2 size={18} /></button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        ) : activeTab === 'reviews' ? (
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>User</th>
+                                        <th>Review Content</th>
+                                        <th>Rating</th>
+                                        <th>Interactions</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {filteredItems.map(item => (
+                                        <tr key={item._id} className="table-row">
+                                            <td style={{fontWeight: 'bold', color: 'var(--pink-primary)'}}>{item.username}</td>
+                                            <td style={{maxWidth: '300px', fontSize: '0.85rem'}}>{item.content}</td>
+                                            <td>
+                                                <div style={{display: 'flex', color: '#ffd700'}}>
+                                                    {[...Array(5)].map((_, i) => (
+                                                        <span key={i} style={{opacity: i < item.rating ? 1 : 0.2}}>★</span>
+                                                    ))}
+                                                </div>
+                                            </td>
+                                            <td style={{fontSize: '0.8rem'}}>
+                                                <span style={{color: '#4caf50'}}>👍 {item.likes}</span> | <span style={{color: '#f44336'}}>👎 {item.dislikes}</span>
+                                            </td>
+                                            <td>
+                                                <button className="icon-btn delete" onClick={() => handleDelete(item._id)}><Trash2 size={18} /></button>
                                             </td>
                                         </tr>
                                     ))}

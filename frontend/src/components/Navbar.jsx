@@ -45,11 +45,11 @@ const Navbar = ({ isOpen, setIsOpen, closeMenu }) => {
     const toggleMenu = () => setIsOpen(!isOpen);
 
     const navItems = [
-        { path: '/#hero', label: 'HOME', icon: <Home size={20} /> },
-        { path: '/#music-section', label: 'MUSIC', icon: <Music size={20} /> },
-        { path: '/#shayari', label: 'SHAYARI', icon: <Book size={20} /> },
-        { path: '/#ebook-section', label: 'E-BOOK', icon: <BookOpen size={20} /> },
-        { path: '/#podcast-section', label: 'PODCAST', icon: <Mic size={20} /> },
+        { path: '/', label: 'HOME', icon: <Home size={20} /> },
+        { path: '/music', label: 'MUSIC', icon: <Music size={20} /> },
+        { path: '/shayari', label: 'SHAYARI', icon: <Book size={20} /> },
+        { path: '/ebooks', label: 'E-BOOK', icon: <BookOpen size={20} /> },
+        { path: '/podcasts', label: 'PODCAST', icon: <Mic size={20} /> },
         { path: '/#about', label: 'ABOUT', icon: <User size={20} /> },
     ];
 
@@ -69,46 +69,52 @@ const Navbar = ({ isOpen, setIsOpen, closeMenu }) => {
     };
 
     return (
-        <>
-            <AnimatePresence>
-                {isOpen && (
-                    <>
-                        <motion.div 
-                            key="drawer-backdrop"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            onClick={closeMenu}
-                            className="drawer-backdrop"
-                        />
+        <AnimatePresence>
+            {isOpen && (
+                <>
+                    <motion.div 
+                        key="drawer-backdrop"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={closeMenu}
+                        className="drawer-backdrop"
+                    />
 
-                        <motion.div 
-                            key="navigation-drawer"
-                            initial={{ x: '100%' }}
-                            animate={{ x: 0 }}
-                            exit={{ x: '100%' }}
-                            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                            className="mobile-side-drawer glass-drawer"
-                        >
-                            <div className="drawer-inner">
-                                <Link to="/" className="drawer-home-top" onClick={closeMenu}>
-                                    <Home size={22} /> <span>BACK TO HOME</span>
-                                </Link>
+                    <motion.div 
+                        key="navigation-drawer"
+                        initial={{ x: '100%' }}
+                        animate={{ x: 0 }}
+                        exit={{ x: '100%' }}
+                        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                        className="mobile-side-drawer glass-drawer"
+                    >
+                        <div className="drawer-inner">
+                            <Link to="/" className="drawer-home-top" onClick={closeMenu}>
+                                <Home size={22} /> <span>BACK TO HOME</span>
+                            </Link>
 
-                                <div className="drawer-branding">
-                                    <h3 className="pink-gradient-text">ANSH-EBOOK</h3>
-                                    <button className="drawer-close" onClick={closeMenu}><X size={28} /></button>
-                                </div>
-                                
-                                <ul className="drawer-nav">
-                                    {navItems.map(item => (
-                                        <li key={item.label}>
+                            <div className="drawer-branding">
+                                <h3 className="pink-gradient-text">ANSH-EBOOK</h3>
+                                <button className="drawer-close" onClick={closeMenu}><X size={28} /></button>
+                            </div>
+                            
+                            <ul className="drawer-nav">
+                                {navItems.map(item => (
+                                    <li key={item.label}>
+                                        {item.path.startsWith('/#') ? (
                                             <a href={item.path} onClick={(e) => handleNavClick(e, item.path)} className="drawer-link">
                                                 <span className="drawer-icon">{item.icon}</span>
                                                 <span className="drawer-label">{item.label}</span>
                                             </a>
-                                        </li>
-                                    ))}
+                                        ) : (
+                                            <Link to={item.path} onClick={closeMenu} className="drawer-link">
+                                                <span className="drawer-icon">{item.icon}</span>
+                                                <span className="drawer-label">{item.label}</span>
+                                            </Link>
+                                        )}
+                                    </li>
+                                ))}
                                     {user?.role === 'admin' && (
                                         <li>
                                             <Link to="/admin" onClick={closeMenu} className="drawer-link">
@@ -117,21 +123,39 @@ const Navbar = ({ isOpen, setIsOpen, closeMenu }) => {
                                             </Link>
                                         </li>
                                     )}
+                                    {user ? (
+                                        <>
+                                            <li>
+                                                <Link to="/profile" onClick={closeMenu} className="drawer-link">
+                                                    <span className="drawer-icon"><User size={20} /></span>
+                                                    <span className="drawer-label">PROFILE</span>
+                                                </Link>
+                                            </li>
+                                            <li>
+                                                <button onClick={handleLogout} className="drawer-link-btn w-100">
+                                                    <span className="drawer-icon"><LogOut size={20} /></span>
+                                                    <span className="drawer-label">LOGOUT</span>
+                                                </button>
+                                            </li>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <li>
+                                                <Link to="/login" onClick={closeMenu} className="drawer-link">
+                                                    <span className="drawer-icon"><User size={20} /></span>
+                                                    <span className="drawer-label">LOGIN</span>
+                                                </Link>
+                                            </li>
+                                            <li>
+                                                <Link to="/register" onClick={closeMenu} className="drawer-link">
+                                                    <span className="drawer-icon"><User size={20} /></span>
+                                                    <span className="drawer-label">SIGN UP</span>
+                                                </Link>
+                                            </li>
+                                        </>
+                                    )}
                                 </ul>
 
-                                <div className="drawer-footer">
-                                    {user ? (
-                                        <div className="drawer-user">
-                                            <Link to="/profile" className="drawer-auth-btn" onClick={closeMenu}>PROFILE</Link>
-                                            <button onClick={handleLogout} className="drawer-auth-btn logout">LOGOUT</button>
-                                        </div>
-                                    ) : (
-                                        <div className="drawer-auth">
-                                            <Link to="/login" className="drawer-auth-btn" onClick={closeMenu}>LOGIN</Link>
-                                            <Link to="/register" className="drawer-auth-btn signup" onClick={closeMenu}>SIGN UP</Link>
-                                        </div>
-                                    )}
-                                </div>
                                 <div className="drawer-socials">
                                     <a href="https://www.instagram.com/_.unknown_shadow?igsh=MXczMmZ2a3N2cGs0Mw==" target="_blank" rel="noopener noreferrer" title="Instagram"><Instagram size={20} /></a>
                                     <a href="https://youtube.com/@vibexmusicx?si=-h93up_MiovLiyS8" target="_blank" rel="noopener noreferrer" title="YouTube"><Youtube size={20} /></a>
@@ -143,7 +167,6 @@ const Navbar = ({ isOpen, setIsOpen, closeMenu }) => {
                     </>
                 )}
             </AnimatePresence>
-        </>
     );
 };
 

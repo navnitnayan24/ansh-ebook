@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Mic, Play, Pause, Headphones, Search, Heart, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { fetchContentByType } from '../api';
+import { fetchContentByType, fetchCategories } from '../api';
 import API from '../api';
 import { MEDIA_URL } from '../config';
 import AdSpace from '../components/AdSpace';
@@ -46,6 +46,13 @@ const Podcasts = () => {
         } catch (err) {
             console.error(err);
         }
+    };
+
+    const [playingPodcast, setPlayingPodcast] = useState(null);
+
+    const togglePlay = (pod) => {
+        if (playingPodcast?._id === pod._id) setPlayingPodcast(null);
+        else setPlayingPodcast(pod);
     };
 
     const categories = ['All', ...new Set(podcasts.map(p => p.category_id?.name || 'General'))];
@@ -135,10 +142,10 @@ const Podcasts = () => {
                                         exit={{ opacity: 0, scale: 0.9 }}
                                         whileHover={{ y: -5, scale: 1.01 }}
                                     >
-                                        <div className="podcast-thumb">
+                                        <div className="podcast-thumb" onClick={() => togglePlay(pod)} style={{ cursor: 'pointer' }}>
                                             <img src={pod.thumbnail?.startsWith('/uploads') ? `${MEDIA_URL}${pod.thumbnail}` : (pod.thumbnail || pod.thumbnail_url || '/default-podcast.png')} alt={`${pod.title} - Ansh Ebook Podcast Episode`} />
                                             <div className="play-overlay-large">
-                                                <Play fill="white" size={40} />
+                                                {playingPodcast?._id === pod._id ? <Pause fill="white" size={40} /> : <Play fill="white" size={40} />}
                                             </div>
                                         </div>
                                         <div className="podcast-details">
@@ -156,11 +163,17 @@ const Podcasts = () => {
                                             </div>
                                             <h3>{pod.title}</h3>
                                             <p className="podcast-desc">{pod.description}</p>
-                                            <div className="podcast-footer mt-auto">
-                                                <audio controls className="custom-audio">
-                                                    <source src={pod.file_url?.startsWith('/uploads') ? `${MEDIA_URL}${pod.file_url}` : pod.file_url} type="audio/mpeg" />
-                                                </audio>
-                                                <button className="btn btn-primary btn-pill shadow-neon">LISTEN ON WEB</button>
+                                            <div className="podcast-footer mt-auto" style={{ gap: '10px', display: 'flex', flexDirection: 'column' }}>
+                                                {playingPodcast?._id === pod._id && (
+                                                    <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} className="w-100">
+                                                        <audio autoPlay controls className="custom-audio w-100">
+                                                            <source src={pod.file_url?.startsWith('/uploads') ? `${MEDIA_URL}${pod.file_url}` : pod.file_url} type="audio/mpeg" />
+                                                        </audio>
+                                                    </motion.div>
+                                                )}
+                                                <button className="btn btn-primary btn-pill shadow-neon w-100" onClick={() => togglePlay(pod)}>
+                                                    {playingPodcast?._id === pod._id ? 'PAUSE EPISODE' : 'LISTEN ON WEB'}
+                                                </button>
                                             </div>
                                         </div>
                                     </motion.div>

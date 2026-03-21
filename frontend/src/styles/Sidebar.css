@@ -87,3 +87,24 @@
 .sidebar-icon {
     min-width: 20px;
 }
+
+.sidebar-link-btn {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 12px;
+    color: var(--text-muted);
+    background: transparent;
+    border: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    width: 100%;
+    cursor: pointer;
+    text-align: left;
+}
+
+.sidebar-link-btn:hover {
+    background: rgba(255, 94, 98, 0.1);
+    color: var(--primary-pink);
+}

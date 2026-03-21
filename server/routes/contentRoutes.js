@@ -55,6 +55,6 @@ router.post('/subscribe', contentController.subscribe);
 // Review System
 router.get('/reviews', contentController.getReviews);
 router.post('/reviews', contentController.addReview);
-router.post('/reviews/:id/reaction', contentController.updateReviewReaction);
+router.post('/reviews/:id/reaction', authenticate, contentController.updateReviewReaction);
 
 module.exports = router;

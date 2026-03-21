@@ -17,6 +17,10 @@ const Privacy = lazy(() => import('./pages/Privacy'));
 const Disclaimer = lazy(() => import('./pages/Disclaimer'));
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword'));
+const Shayari = lazy(() => import('./pages/Shayari'));
+const Music = lazy(() => import('./pages/Music'));
+const Podcasts = lazy(() => import('./pages/Podcasts'));
+const Ebooks = lazy(() => import('./pages/Ebooks'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 import Sidebar from './components/Sidebar';
@@ -92,11 +96,11 @@ const AnimatedRoutes = () => {
                 {/* Main SPA Route */}
                 <Route path="/" element={<PageWrapper><Home /></PageWrapper>} />
                 
-                {/* Section Redirects to Home (SPA style) */}
-                <Route path="/shayari" element={<Navigate to="/#shayari" replace />} />
-                <Route path="/music" element={<Navigate to="/#premium" replace />} />
-                <Route path="/podcasts" element={<Navigate to="/#premium" replace />} />
-                <Route path="/ebooks" element={<Navigate to="/#premium" replace />} />
+                {/* Dedicated Pages */}
+                <Route path="/shayari" element={<PageWrapper><Shayari /></PageWrapper>} />
+                <Route path="/music" element={<LoginRequiredRoute><PageWrapper><Music /></PageWrapper></LoginRequiredRoute>} />
+                <Route path="/podcasts" element={<LoginRequiredRoute><PageWrapper><Podcasts /></PageWrapper></LoginRequiredRoute>} />
+                <Route path="/ebooks" element={<LoginRequiredRoute><PageWrapper><Ebooks /></PageWrapper></LoginRequiredRoute>} />
                 
                 {/* Legacy & SEO Redirects */}
                 <Route path="/poetry" element={<Navigate to="/#shayari" replace />} />

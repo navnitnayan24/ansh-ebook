@@ -131,11 +131,46 @@ exports.addReview = async (req, res) => {
 exports.updateReviewReaction = async (req, res) => {
     const { id } = req.params;
     const { type } = req.body; // 'like' or 'dislike'
+    const userId = req.user.id; // From authenticate middleware
     
     try {
-        const update = type === 'like' ? { $inc: { likes: 1 } } : { $inc: { dislikes: 1 } };
-        const review = await Review.findByIdAndUpdate(id, update, { new: true });
+        const review = await Review.findById(id);
         if (!review) return res.status(404).json({ error: 'Review not found' });
+
+        const hasLiked = review.likedBy.includes(userId);
+        const hasDisliked = review.dislikedBy.includes(userId);
+
+        if (type === 'like') {
+            if (hasLiked) {
+                // Toggle off
+                review.likedBy = review.likedBy.filter(u => u.toString() !== userId);
+                review.likes = Math.max(0, review.likes - 1);
+            } else {
+                // Remove dislike if exists
+                if (hasDisliked) {
+                    review.dislikedBy = review.dislikedBy.filter(u => u.toString() !== userId);
+                    review.dislikes = Math.max(0, review.dislikes - 1);
+                }
+                review.likedBy.push(userId);
+                review.likes += 1;
+            }
+        } else if (type === 'dislike') {
+            if (hasDisliked) {
+                // Toggle off
+                review.dislikedBy = review.dislikedBy.filter(u => u.toString() !== userId);
+                review.dislikes = Math.max(0, review.dislikes - 1);
+            } else {
+                // Remove like if exists
+                if (hasLiked) {
+                    review.likedBy = review.likedBy.filter(u => u.toString() !== userId);
+                    review.likes = Math.max(0, review.likes - 1);
+                }
+                review.dislikedBy.push(userId);
+                review.dislikes += 1;
+            }
+        }
+
+        await review.save();
         res.json(review);
     } catch (err) {
         res.status(500).json({ error: err.message });

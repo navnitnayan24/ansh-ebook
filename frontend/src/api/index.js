@@ -112,6 +112,7 @@ export const deleteUser = (id) => API.delete(`admin/users/${id}`);
 // Reviews
 export const fetchReviews = () => API.get('reviews');
 export const addReview = (data) => API.post('reviews', data);
+export const deleteReview = (id) => API.delete(`admin/reviews/${id}`);
 export const updateReviewReaction = (id, type) => API.post(`reviews/${id}/reaction`, { type });
 
 export { API };
