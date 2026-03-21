@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Play, Pause, Headphones, Music as MusicIcon, Heart } from 'lucide-react';
+import { Search, Play, Pause, Headphones, Music as MusicIcon, Heart, ArrowLeft, Youtube } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fetchContentByType, fetchCategories } from '../api';
@@ -137,7 +137,7 @@ const Music = () => {
                     >
                         All Music
                     </button>
-                    {categories && categories.length > 0 && categories.map(cat => (
+                    {allCategories && allCategories.length > 0 && allCategories.map(cat => (
                         <button 
                             key={cat._id} 
                             className={`music-pill-v2 ${selectedCategory === cat._id ? 'active' : ''}`} 
