@@ -31,10 +31,10 @@ const Footer = () => {
                     <div className="footer-col">
                         <h4>Explore</h4>
                         <ul className="footer-links-v2">
-                            <li><a href="/#music-section"><Music size={16} /> Music & Melodies</a></li>
-                            <li><a href="/#shayari"><Quote size={16} /> Heartfelt Shayari</a></li>
-                            <li><a href="/#podcast-section"><Mic size={16} /> Original Podcasts</a></li>
-                            <li><a href="/#ebook-section"><Book size={16} /> Premium E-books</a></li>
+                            <li><Link to="/music"><Music size={16} /> Music & Melodies</Link></li>
+                            <li><Link to="/shayari"><Quote size={16} /> Heartfelt Shayari</Link></li>
+                            <li><Link to="/podcasts"><Mic size={16} /> Original Podcasts</Link></li>
+                            <li><Link to="/ebooks"><Book size={16} /> Premium E-books</Link></li>
                             <li><a href="/#about"><Info size={16} /> About Us</a></li>
                             <li><a href="/#connect"><Mail size={16} /> Get In Touch</a></li>
                         </ul>
