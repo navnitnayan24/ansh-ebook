@@ -49,4 +49,6 @@ router.get('/ebooks', authenticate, (req, res) => {
     contentController.getContentByType(req, res);
 });
 
+router.post('/:type/:id/like', contentController.likeContent);
+
 module.exports = router;

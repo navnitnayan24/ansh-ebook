@@ -61,7 +61,7 @@ const Login = () => {
                 <div className="auth-card-v2 glass-card animate-zoom-in">
                     <div className="auth-header-v2">
                         <h2>Welcome <span className="pink-text">Back</span></h2>
-                        <p>Login to your account.</p>
+                        <p className="opacity-75">Access your premium digital sanctuary.</p>
                     </div>
 
                     <div className="mode-toggle-pill">

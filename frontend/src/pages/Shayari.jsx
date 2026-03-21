@@ -3,60 +3,52 @@ import { Link } from 'react-router-dom';
 import { Quote, Heart, Copy, Search, ArrowLeft, Share2, PenTool } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fetchContentByType, fetchCategories } from '../api';
-import AdSpace from '../components/AdSpace';
 import SEO from '../components/SEO';
+import AdSpace from '../components/AdSpace';
 import '../styles/Shayari.css';
 
 const Shayari = () => {
     const [shayaris, setShayaris] = useState([]);
-    const [categories, setCategories] = useState([]);
+    const [allCategories, setAllCategories] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('All');
 
     useEffect(() => {
-        const loadCategories = async () => {
+        const fetchData = async () => {
             try {
-                const { data } = await fetchCategories('shayari');
-                setCategories(data);
+                const [shRes, catRes] = await Promise.all([
+                    fetchContentByType('shayari'),
+                    fetchCategories('shayari')
+                ]);
+                setShayaris(shRes.data);
+                setAllCategories(catRes.data);
             } catch (err) {
-                console.error('Error fetching categories:', err);
-            }
-        };
-        loadCategories();
-    }, []);
-
-    useEffect(() => {
-        const fetchShayaris = async () => {
-            setLoading(true);
-            try {
-                const { data } = await fetchContentByType('shayari', {
-                    category: selectedCategory,
-                    q: searchQuery
-                });
-                setShayaris(data);
-            } catch (err) {
-                console.error("AJAX Error:", err);
+                console.error(err);
             } finally {
                 setLoading(false);
             }
         };
-
-        const timeoutId = setTimeout(() => {
-            fetchShayaris();
-        }, 500);
-
-        return () => clearTimeout(timeoutId);
+        fetchData();
     }, [selectedCategory, searchQuery]);
 
     const handleSearch = (e) => {
         setSearchQuery(e.target.value);
     };
 
-    const toggleLike = (id) => {
-        setShayaris(shayaris.map(s => 
-            s._id === id ? { ...s, likes_count: s.likes_count + 1 } : s
-        ));
+    const toggleLike = async (id) => {
+        try {
+            const { data } = await (await import('../api')).API.post(`shayari/${id}/like`);
+            setShayaris(shayaris.map(s => 
+                s._id === id ? { ...s, likes_count: data.likes_count } : s
+            ));
+        } catch (err) {
+            console.error("Like error:", err);
+            // Fallback to local increment if API fails
+            setShayaris(shayaris.map(s => 
+                s._id === id ? { ...s, likes_count: s.likes_count + 1 } : s
+            ));
+        }
     };
 
     const copyToClipboard = (text) => {
@@ -167,7 +159,10 @@ const Shayari = () => {
                                                     <button className="icon-btn-plain ml-2" onClick={() => copyToClipboard(s.content)}>
                                                         <Share2 size={16} />
                                                     </button>
-                                                    <span className="cat-tag ml-auto">{s.category_id?.name || 'General'}</span>
+                                                    <div className="shayari-meta ml-auto">
+                                                        <span className="date-tag mr-2">{new Date(s.createdAt).toLocaleDateString()}</span>
+                                                        <span className="cat-tag">{s.category_id?.name || 'General'}</span>
+                                                    </div>
                                                 </div>
                                             </motion.div>
                                         ))}

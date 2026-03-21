@@ -6,10 +6,10 @@ const Category = require('../models/Category');
 
 exports.getHomeContent = async (req, res) => {
     try {
-        const latestShayari = await Shayari.find().sort({ createdAt: -1 }).limit(3);
-        const latestMusic = await Music.find().sort({ createdAt: -1 }).limit(3);
-        const latestPodcasts = await Podcast.find().sort({ createdAt: -1 }).limit(2);
-        const featuredEbooks = await Ebook.find().sort({ createdAt: -1 }).limit(4);
+        const latestShayari = await Shayari.find().sort({ createdAt: -1 }).limit(3).populate('category_id');
+        const latestMusic = await Music.find().sort({ createdAt: -1 }).limit(3).populate('category_id');
+        const latestPodcasts = await Podcast.find().sort({ createdAt: -1 }).limit(2).populate('category_id');
+        const featuredEbooks = await Ebook.find().sort({ createdAt: -1 }).limit(4).populate('category_id');
 
         res.json({
             latest_shayari: latestShayari,
@@ -45,9 +45,8 @@ exports.getContentByType = async (req, res) => {
 
         console.log(`[GET CONTENT] Type: ${type}, Category: ${category}, Query: ${q}`);
         
-        const hasCategory = ['shayari', 'music'].includes(normalizedType);
         const items = await model.find(query)
-            .populate(hasCategory ? 'category_id' : '')
+            .populate('category_id')
             .sort({ createdAt: -1 })
             .limit(parseInt(limit))
             .skip(parseInt(offset));
@@ -66,6 +65,25 @@ exports.getCategories = async (req, res) => {
         if (section) query.section = section;
         const categories = await Category.find(query).sort({ name: 1 });
         res.json(categories);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+exports.likeContent = async (req, res) => {
+    const { type, id } = req.params;
+    let model;
+    const normalizedType = type.toLowerCase();
+    
+    if (normalizedType === 'shayari') model = Shayari;
+    else if (normalizedType === 'music') model = Music;
+    else if (normalizedType === 'podcast' || normalizedType === 'podcasts') model = Podcast;
+    else if (normalizedType === 'ebook' || normalizedType === 'ebooks') model = Ebook;
+    else return res.status(400).json({ error: 'Invalid content type' });
+
+    try {
+        const item = await model.findByIdAndUpdate(id, { $inc: { likes_count: 1 } }, { new: true });
+        if (!item) return res.status(404).json({ error: 'Item not found' });
+        res.json({ success: true, likes_count: item.likes_count });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

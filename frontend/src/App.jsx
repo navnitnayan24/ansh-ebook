@@ -8,18 +8,12 @@ import MobileFooter from './components/MobileFooter';
 
 // Lazy loaded pages for performance (Goal 6)
 const Home = lazy(() => import('./pages/Home'));
-const Shayari = lazy(() => import('./pages/Shayari'));
-const Music = lazy(() => import('./pages/Music'));
-const Podcasts = lazy(() => import('./pages/Podcasts'));
-const Ebooks = lazy(() => import('./pages/Ebooks'));
 const Login = lazy(() => import('./pages/Login'));
 const Register = lazy(() => import('./pages/Register'));
 const Profile = lazy(() => import('./pages/Profile'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const Terms = lazy(() => import('./pages/Terms'));
 const Privacy = lazy(() => import('./pages/Privacy'));
-const About = lazy(() => import('./pages/About'));
-const Contact = lazy(() => import('./pages/Contact'));
 const Disclaimer = lazy(() => import('./pages/Disclaimer'));
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword'));
@@ -95,29 +89,34 @@ const AnimatedRoutes = () => {
     return (
         <AnimatePresence mode="wait">
             <Routes location={location} key={location.pathname}>
+                {/* Main SPA Route */}
                 <Route path="/" element={<PageWrapper><Home /></PageWrapper>} />
-                <Route path="/shayari" element={<PageWrapper><Shayari /></PageWrapper>} />
-                <Route path="/poetry" element={<Navigate to="/shayari" replace />} />
-                <Route path="/music" element={<LoginRequiredRoute><PageWrapper><Music /></PageWrapper></LoginRequiredRoute>} />
-                <Route path="/songs" element={<Navigate to="/music" replace />} />
-                <Route path="/podcasts" element={<LoginRequiredRoute><PageWrapper><Podcasts /></PageWrapper></LoginRequiredRoute>} />
-                <Route path="/ebooks" element={<LoginRequiredRoute><PageWrapper><Ebooks /></PageWrapper></LoginRequiredRoute>} />
                 
-                {/* Legacy Redirects */}
-                <Route path="/anshnote" element={<Navigate to="/shayari" replace />} />
-                <Route path="/creative-writing" element={<Navigate to="/shayari" replace />} />
+                {/* Section Redirects to Home (SPA style) */}
+                <Route path="/shayari" element={<Navigate to="/#shayari" replace />} />
+                <Route path="/music" element={<Navigate to="/#premium" replace />} />
+                <Route path="/podcasts" element={<Navigate to="/#premium" replace />} />
+                <Route path="/ebooks" element={<Navigate to="/#premium" replace />} />
                 
-                {/* Auth & Admin */}
+                {/* Legacy & SEO Redirects */}
+                <Route path="/poetry" element={<Navigate to="/#shayari" replace />} />
+                <Route path="/songs" element={<Navigate to="/#premium" replace />} />
+                <Route path="/anshnote" element={<Navigate to="/#shayari" replace />} />
+                
+                {/* Auth & Admin - Keep as separate pages */}
                 <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
                 <Route path="/register" element={<PageWrapper><Register /></PageWrapper>} />
-                <Route path="/profile" element={<PageWrapper><Profile /></PageWrapper>} />
+                <Route path="/profile" element={<LoginRequiredRoute><PageWrapper><Profile /></PageWrapper></LoginRequiredRoute>} />
                 <Route path="/admin" element={<ProtectedRoute><PageWrapper><AdminDashboard /></PageWrapper></ProtectedRoute>} />
                 
-                {/* Legal & Static */}
+                {/* Legal & Static - Keep as separate pages or move to Home? 
+                    The user wants About and Connect on Home. 
+                    We'll keep these routes but they will redirect or we keep them for SEO.
+                */}
+                <Route path="/about" element={<Navigate to="/#about" replace />} />
+                <Route path="/contact" element={<Navigate to="/#connect" replace />} />
                 <Route path="/terms" element={<PageWrapper><Terms /></PageWrapper>} />
                 <Route path="/privacy" element={<PageWrapper><Privacy /></PageWrapper>} />
-                <Route path="/about" element={<PageWrapper><About /></PageWrapper>} />
-                <Route path="/contact" element={<PageWrapper><Contact /></PageWrapper>} />
                 <Route path="/disclaimer" element={<PageWrapper><Disclaimer /></PageWrapper>} />
                 <Route path="/forgot-password" element={<PageWrapper><ForgotPassword /></PageWrapper>} />
                 <Route path="/reset-password/:token" element={<PageWrapper><ResetPassword /></PageWrapper>} />

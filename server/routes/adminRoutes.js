@@ -13,6 +13,7 @@ router.use(authenticate);
 router.use(isAdmin);
 
 router.post('/categories', adminController.addCategory);
+router.delete('/categories/:id', adminController.deleteCategory);
 router.get('/settings', adminController.getSettings);
 router.post('/settings', adminController.updateSettings);
 
@@ -24,7 +25,10 @@ router.delete('/subscribers/:id', adminController.deleteSubscriber);
 router.get('/users', adminController.getUsers);
 router.delete('/users/:id', adminController.deleteUser);
 
-router.post('/:type', upload.any(), adminController.addContent);
+router.post('/:type', (req, res, next) => {
+    console.log(`[ADMIN POST] Target: ${req.params.type}`);
+    next();
+}, upload.any(), adminController.addContent);
 router.put('/:type/:id', upload.any(), adminController.updateContent);
 router.delete('/:type/:id', adminController.deleteContent);
 

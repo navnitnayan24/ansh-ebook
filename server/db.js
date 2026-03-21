@@ -94,12 +94,36 @@ async function autoSeed() {
             { section: 'shayari', name: 'Friendship' },
             { section: 'shayari', name: 'Funny' },
             { section: 'shayari', name: 'Heartbreak' },
+            
             { section: 'music', name: 'Pop' },
             { section: 'music', name: 'Classical' },
             { section: 'music', name: 'Lo-Fi' },
+            { section: 'music', name: 'Soulful' },
+            { section: 'music', name: 'Instrumental' },
+            { section: 'music', name: 'Devotional' },
+            { section: 'music', name: 'Hip-Hop' },
+            { section: 'music', name: 'Folk' },
+            { section: 'music', name: 'Cinematic' },
+
             { section: 'podcasts', name: 'Stories' },
+            { section: 'podcasts', name: 'Interviews' },
+            { section: 'podcasts', name: 'Growth' },
+            { section: 'podcasts', name: 'Tech' },
+            { section: 'podcasts', name: 'Crime' },
+            { section: 'podcasts', name: 'Comedy' },
+            { section: 'podcasts', name: 'Mythology' },
+            { section: 'podcasts', name: 'Poetry' },
+            { section: 'podcasts', name: 'Reflection' },
+
             { section: 'ebooks', name: 'Poetry' },
-            { section: 'ebooks', name: 'Self-help' }
+            { section: 'ebooks', name: 'Self-help' },
+            { section: 'ebooks', name: 'Fiction' },
+            { section: 'ebooks', name: 'Non-Fiction' },
+            { section: 'ebooks', name: 'Biography' },
+            { section: 'ebooks', name: 'History' },
+            { section: 'ebooks', name: 'Philosophy' },
+            { section: 'ebooks', name: 'Art' },
+            { section: 'ebooks', name: 'Education' }
         ]);
 
         const catMap = {};

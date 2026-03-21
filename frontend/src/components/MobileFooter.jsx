@@ -6,21 +6,47 @@ import '../styles/MobileFooter.css';
 
 const MobileFooter = () => {
     const navItems = [
-        { path: '/', label: 'Home', icon: <Home size={22} /> },
-        { path: '/shayari', label: 'Shayari', icon: <Book size={22} /> },
-        { path: '/music', label: 'Music', icon: <Music size={22} /> },
-        { path: '/podcasts', label: 'Podcast', icon: <Mic size={22} /> },
-        { path: '/ebooks', label: 'E-Books', icon: <BookOpen size={22} /> },
+        { path: '/#hero', label: 'Home', icon: <Home size={22} /> },
+        { path: '/#shayari', label: 'Shayari', icon: <Book size={22} /> },
+        { path: '/#premium', label: 'Music', icon: <Music size={22} /> },
+        { path: '/#premium', label: 'Podcast', icon: <Mic size={22} /> },
+        { path: '/#premium', label: 'E-Books', icon: <BookOpen size={22} /> },
     ];
+
+    const [activeHash, setActiveHash] = useState(window.location.hash || '#hero');
+
+    React.useEffect(() => {
+        const handleHashChange = () => setActiveHash(window.location.hash);
+        window.addEventListener('hashchange', handleHashChange);
+        return () => window.removeEventListener('hashchange', handleHashChange);
+    }, []);
+
+    const handleNavClick = (e, path) => {
+        if (path.startsWith('/#')) {
+            const id = path.substring(2);
+            const element = document.getElementById(id);
+            if (element) {
+                e.preventDefault();
+                element.scrollIntoView({ behavior: 'smooth' });
+                window.history.pushState(null, null, path);
+                setActiveHash('#' + id);
+            }
+        }
+    };
 
     return (
         <div className="mobile-footer-wrapper">
             <div className="mobile-bottom-pill glass-card">
                 <div className="pill-content">
                     {navItems.map(item => (
-                        <NavLink key={item.path} to={item.path} end className={({isActive}) => `pill-item ${isActive ? 'active' : ''}`}>
+                        <a 
+                            key={item.label} 
+                            href={item.path} 
+                            onClick={(e) => handleNavClick(e, item.path)} 
+                            className={`pill-item ${activeHash === item.path.substring(1) ? 'active' : ''}`}
+                        >
                             <span className="pill-icon">{item.icon}</span>
-                        </NavLink>
+                        </a>
                     ))}
                 </div>
             </div>

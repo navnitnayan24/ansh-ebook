@@ -43,10 +43,10 @@ if (fs.existsSync(uploadsPath)) {
     app.use('/uploads', express.static(uploadsPath));
 }
 
-// API Routes
-app.use('/api', contentRoutes);
+// API Routes - Order matters: Specific to General
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api', contentRoutes);
 
 // Serve static files from the React app
 const distPath = path.resolve(__dirname, '../frontend/dist');

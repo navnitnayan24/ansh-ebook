@@ -17,10 +17,7 @@ const ForgotPassword = () => {
         setMessage('');
         try {
             const { data } = await forgotPassword(email);
-            setMessage('Success! Check the server console for the reset link (SMTP not configured).');
-            if (data.debugToken) {
-                console.log("DEBUG: Your reset link is: /reset-password/" + data.debugToken);
-            }
+            setMessage('A password reset link has been sent to your email (Please check your inbox/spam).');
         } catch (err) {
             setError(err.response?.data?.error || 'Failed to send reset link');
         } finally {

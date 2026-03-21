@@ -29,7 +29,7 @@ class ErrorBoundary extends Component {
           padding: '2rem'
         }}>
           <h1 style={{ fontSize: '3rem', marginBottom: '1rem' }}>ECHO OF AN ERROR</h1>
-          <p style={{ color: 'white', maxWidth: '600px', marginBottom: '2rem' }}>
+          <p style={{ color: 'var(--text-secondary)', maxWidth: '600px', marginBottom: '2rem' }}>
             The creative flow was interrupted by an unexpected event. We are working to restore the harmony.
           </p>
           <pre style={{ 

@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const ebookSchema = new mongoose.Schema({
+    category_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' },
     title: { type: String, required: true },
     description: { type: String },
     author: { type: String },

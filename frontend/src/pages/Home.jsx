@@ -340,7 +340,7 @@ const Home = () => {
                         <h2 className="pink-gradient-text mb-4">Let's Connect</h2>
                         <div className="mb-4">
                             <h4 className="pink-text mb-1">Email</h4>
-                            <a href="mailto:anshbgmi24@gmail.com" style={{color:'white', textDecoration:'none'}}>anshbgmi24@gmail.com</a>
+                            <a href="mailto:anshbgmi24@gmail.com" style={{color:'var(--text-primary)', textDecoration:'none'}}>anshbgmi24@gmail.com</a>
                         </div>
                         <div>
                             <h4 className="pink-text mb-3">Follow Us</h4>

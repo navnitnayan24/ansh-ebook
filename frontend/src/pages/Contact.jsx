@@ -37,42 +37,42 @@ const Contact = () => {
         >
             <SEO 
                 title="Contact Us" 
-                description="Get in touch with us. Direct inquiries for collaborations, feedback, or support for The Alfaz-E-Diaries." 
+                description="Get in touch with us. Direct inquiries for collaborations, feedback, or support for Ansh-Ebook." 
             />
             <h1 className="pink-gradient-text" style={{ fontSize: '3rem', marginBottom: '2rem', textAlign: 'center' }}>Contact Us</h1>
             
-            <div className="glass-card page-content-box" style={{ padding: '4rem 3rem', maxWidth: '900px', margin: '0 auto', textAlign: 'center' }}>
+            <div className="glass-card page-content-box contact-card-main">
                 <h2 className="mb-4">Get In Touch</h2>
                 <p className="mb-5 text-muted" style={{ fontSize: '1.1rem', lineHeight: '1.6' }}>
                     We would love to hear from you! Whether you have questions regarding our content, need support, or simply want to share your feedback about our Shayari, Music, or Podcasts, feel free to reach out.
                 </p>
 
-                <div className="contact-methods" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', marginTop: '2rem' }}>
+                <div className="contact-methods-grid">
                     {/* Left Side - Info */}
-                    <div className="contact-info" style={{ display: 'flex', flexDirection: 'column', gap: '2rem', textAlign: 'left' }}>
+                    <div className="contact-info">
                         <div className="contact-item d-flex align-items-center" style={{ gap: '15px' }}>
                             <div className="icon-wrapper" style={{ background: 'rgba(255,20,147,0.1)', padding: '15px', borderRadius: '50%' }}>
                                 <Mail className="pink-text" size={28} />
                             </div>
                             <div>
                                 <span style={{ display: 'block', fontSize: '0.9rem', color: 'var(--text-muted)' }}>Email Us</span>
-                                <a href="mailto:anshbgmi24@gmail.com" className="hover-pink" style={{ fontSize: '1.1rem', fontWeight: 'bold', textDecoration: 'none', color: 'white' }}>anshbgmi24@gmail.com</a>
+                                <a href="mailto:anshbgmi24@gmail.com" className="hover-pink" style={{ fontSize: '1.1rem', fontWeight: 'bold', textDecoration: 'none', color: 'var(--text-primary)' }}>anshbgmi24@gmail.com</a>
                             </div>
                         </div>
 
-                        <div className="contact-item d-flex align-items-center" style={{ gap: '15px' }}>
+                        <div className="contact-item d-flex align-items-center" style={{ gap: '15px', marginTop: '2rem' }}>
                             <div className="icon-wrapper" style={{ background: 'rgba(255,20,147,0.1)', padding: '15px', borderRadius: '50%' }}>
                                 <MapPin className="pink-text" size={28} />
                             </div>
                             <div>
                                 <span style={{ display: 'block', fontSize: '0.9rem', color: 'var(--text-muted)' }}>Location</span>
-                                <span style={{ fontSize: '1.1rem', fontWeight: '600', color: 'white' }}>India</span>
+                                <span style={{ fontSize: '1.1rem', fontWeight: '600', color: 'var(--text-primary)' }}>India</span>
                             </div>
                         </div>
                     </div>
 
                     {/* Right Side - Form */}
-                    <div className="contact-form-wrapper" style={{ textAlign: 'left' }}>
+                    <div className="contact-form-wrapper">
                         <form className="glass-form" onSubmit={sendEmail} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                             <div className="form-group">
                                 <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--text-muted)' }}>Your Name</label>
@@ -101,7 +101,7 @@ const Contact = () => {
                 </div>
 
                 <div className="mt-5 pt-4" style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-                    <p className="text-muted" style={{ fontSize: '0.9rem' }}>We typically respond to all correspondence within 24-48 hours. Thank you for your interest in The Alfaz-E-Diaries.</p>
+                    <p className="text-muted" style={{ fontSize: '0.9rem' }}>We typically respond to all correspondence within 24-48 hours. Thank you for your interest in Ansh-Ebook.</p>
                 </div>
             </div>
         </motion.div>

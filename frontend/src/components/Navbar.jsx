@@ -38,42 +38,41 @@ const Navbar = ({ isOpen, setIsOpen }) => {
     const closeMenu = () => setIsOpen(false);
 
     const navItems = [
-        { path: '/', label: 'HOME', icon: <Home size={20} /> },
-        { path: '/music', label: 'MUSIC', icon: <Music size={20} /> },
-        { path: '/shayari', label: 'SHAYARI', icon: <Book size={20} /> },
-        { path: '/ebooks', label: 'E-BOOK', icon: <BookOpen size={20} /> },
-        { path: '/podcasts', label: 'PODCAST', icon: <Mic size={20} /> },
+        { path: '/#hero', label: 'HOME', icon: <Home size={20} /> },
+        { path: '/#premium', label: 'MUSIC', icon: <Music size={20} /> },
+        { path: '/#shayari', label: 'SHAYARI', icon: <Book size={20} /> },
+        { path: '/#premium', label: 'E-BOOK', icon: <BookOpen size={20} /> },
+        { path: '/#premium', label: 'PODCAST', icon: <Mic size={20} /> },
+        { path: '/#about', label: 'ABOUT', icon: <User size={20} /> },
     ];
+
+    const handleNavClick = (e, path) => {
+        if (path.startsWith('/#')) {
+            const id = path.substring(2);
+            const element = document.getElementById(id);
+            if (element) {
+                e.preventDefault();
+                element.scrollIntoView({ behavior: 'smooth' });
+                closeMenu();
+                window.history.pushState(null, null, path);
+            }
+        } else {
+            closeMenu();
+        }
+    };
 
     return (
         <>
-            {/* The top bar is now handled by BrandHeader.jsx */}
-
-            {/* Sub Navbar removed in favor of strict Sidebar layout */}
-
-            {/* Mobile Bottom Navigation - (Managed in MobileFooter.jsx) */}
-
-            {/* Mobile Side Drawer Overlay */}
             <AnimatePresence>
                 {isOpen && (
                     <>
-                        {/* Semi-transparent Black Backdrop */}
                         <motion.div 
                             key="drawer-backdrop"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={closeMenu}
-                            style={{
-                                position: 'fixed',
-                                top: 0,
-                                left: 0,
-                                right: 0,
-                                bottom: 0,
-                                background: 'rgba(0, 0, 0, 0.7)',
-                                backdropFilter: 'blur(4px)',
-                                zIndex: 2999
-                            }}
+                            className="drawer-backdrop"
                         />
 
                         <motion.div 
@@ -83,15 +82,6 @@ const Navbar = ({ isOpen, setIsOpen }) => {
                             exit={{ x: '100%' }}
                             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
                             className="mobile-side-drawer glass-drawer"
-                            style={{ 
-                                position: 'fixed', 
-                                top: 0, 
-                                right: 0, 
-                                width: '300px', 
-                                height: '100vh', 
-                                zIndex: 3000, 
-                                overflowY: 'auto' 
-                            }}
                         >
                             <div className="drawer-inner">
                                 <Link to="/" className="drawer-home-top" onClick={closeMenu}>
@@ -99,27 +89,25 @@ const Navbar = ({ isOpen, setIsOpen }) => {
                                 </Link>
 
                                 <div className="drawer-branding">
-                                    <h3 className="pink-gradient-text" style={{ letterSpacing: '2px' }}>ANSH SHARMA</h3>
-                                    <div className="drawer-actions-top">
-                                        <button className="drawer-close" onClick={closeMenu} aria-label="Close Menu"><X size={28} /></button>
-                                    </div>
+                                    <h3 className="pink-gradient-text">ANSH-EBOOK</h3>
+                                    <button className="drawer-close" onClick={closeMenu}><X size={28} /></button>
                                 </div>
                                 
                                 <ul className="drawer-nav">
                                     {navItems.map(item => (
-                                        <li key={item.path}>
-                                            <NavLink to={item.path} end onClick={closeMenu} className={({isActive}) => isActive ? 'active' : ''}>
+                                        <li key={item.label}>
+                                            <a href={item.path} onClick={(e) => handleNavClick(e, item.path)} className="drawer-link">
                                                 <span className="drawer-icon">{item.icon}</span>
                                                 <span className="drawer-label">{item.label}</span>
-                                            </NavLink>
+                                            </a>
                                         </li>
                                     ))}
                                     {user?.role === 'admin' && (
                                         <li>
-                                            <NavLink to="/admin" onClick={closeMenu} className={({isActive}) => isActive ? 'active' : ''}>
+                                            <Link to="/admin" onClick={closeMenu} className="drawer-link">
                                                 <span className="drawer-icon"><Settings size={20} /></span>
                                                 <span className="drawer-label">DASHBOARD</span>
-                                            </NavLink>
+                                            </Link>
                                         </li>
                                     )}
                                 </ul>
@@ -127,22 +115,21 @@ const Navbar = ({ isOpen, setIsOpen }) => {
                                 <div className="drawer-footer">
                                     {user ? (
                                         <div className="drawer-user">
-                                            <Link to="/profile" className="drawer-auth-btn" onClick={closeMenu}>MY ACCOUNT</Link>
+                                            <Link to="/profile" className="drawer-auth-btn" onClick={closeMenu}>PROFILE</Link>
                                             <button onClick={handleLogout} className="drawer-auth-btn logout">LOGOUT</button>
                                         </div>
                                     ) : (
                                         <div className="drawer-auth">
                                             <Link to="/login" className="drawer-auth-btn" onClick={closeMenu}>LOGIN</Link>
-                                            <Link to="/register" className="drawer-auth-btn signup" onClick={closeMenu}>SIGN UP NOW</Link>
+                                            <Link to="/register" className="drawer-auth-btn signup" onClick={closeMenu}>SIGN UP</Link>
                                         </div>
                                     )}
                                 </div>
-                                <div className="drawer-socials" style={{ marginTop: '2rem', padding: '1rem', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', gap: '15px', flexWrap: 'wrap', justifyContent: 'center' }}>
-                                    <a href="https://whatsapp.com/channel/0029VaFlezo3QxSA5zNTQF0b" target="_blank" rel="noopener noreferrer" style={{color: 'var(--text-secondary)'}}><MessageCircle size={20} /></a>
-                                    <a href="https://youtube.com/@vibexmusicx" target="_blank" rel="noopener noreferrer" style={{color: 'var(--text-secondary)'}}><Youtube size={20} /></a>
-                                    <a href="https://www.instagram.com/_.unknown_shadow" target="_blank" rel="noopener noreferrer" style={{color: 'var(--text-secondary)'}}><Instagram size={20} /></a>
-                                    <a href="https://www.facebook.com/share/1PNsduGWcq/" target="_blank" rel="noopener noreferrer" style={{color: 'var(--text-secondary)'}}><Facebook size={20} /></a>
-                                    <a href="https://www.linkedin.com/in/navnit-nayan-14b4b9278" target="_blank" rel="noopener noreferrer" style={{color: 'var(--text-secondary)'}}><Linkedin size={20} /></a>
+                                <div className="drawer-socials">
+                                    <a href="https://www.instagram.com/_.unknown_shadow?igsh=MXczMmZ2a3N2cGs0Mw==" target="_blank" rel="noopener noreferrer" title="Instagram"><Instagram size={20} /></a>
+                                    <a href="https://youtube.com/@vibexmusicx?si=-h93up_MiovLiyS8" target="_blank" rel="noopener noreferrer" title="YouTube"><Youtube size={20} /></a>
+                                    <a href="https://whatsapp.com/channel/0029VaFlezo3QxSA5zNTQF0b" target="_blank" rel="noopener noreferrer" title="WhatsApp"><MessageCircle size={20} /></a>
+                                    <a href="https://www.linkedin.com/in/navnit-nayan-14b4b9278?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank" rel="noopener noreferrer" title="LinkedIn"><Linkedin size={20} /></a>
                                 </div>
                             </div>
                         </motion.div>

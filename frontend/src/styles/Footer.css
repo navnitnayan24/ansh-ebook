@@ -102,7 +102,7 @@
     background: transparent;
     border: none;
     outline: none;
-    color: white;
+    color: var(--text-primary);
     padding: 0.7rem 0.6rem;
     flex: 1;
     min-width: 0;
@@ -151,7 +151,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
+    color: var(--text-primary);
     transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
     flex-shrink: 0;
     text-decoration: none;

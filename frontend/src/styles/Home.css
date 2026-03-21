@@ -399,6 +399,13 @@ section {
     .drawer-socials {
         justify-content: center !important;
     }
+    .drawer-socials a {
+        color: var(--text-primary);
+        transition: color 0.3s ease;
+    }
+    .drawer-socials a:hover {
+        color: var(--accent);
+    }
 
     /* Subscribe banner */
     .newsletter-inner {

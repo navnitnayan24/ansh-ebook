@@ -43,7 +43,7 @@ const Register = () => {
                 <div className="auth-card-v2 glass-card animate-zoom-in">
                     <div className="auth-header-v2">
                         <h2>Create <span className="pink-text">Account</span></h2>
-                        <p>Join the digital community.</p>
+                        <p className="opacity-75">Join our exclusive digital community.</p>
                     </div>
 
                     {error && <div className="error-msg-v2">{error}</div>}

@@ -44,14 +44,19 @@ exports.addContent = async (req, res) => {
     }
     const { type } = req.params;
     const model = getModel(type);
-    if (!model) return res.status(400).json({ error: 'Invalid content type' });
+    if (!model) {
+        console.error(`[ADMIN ERROR] Invalid content type: ${type}`);
+        return res.status(400).json({ error: 'Invalid content type' });
+    }
 
     try {
         const data = { ...req.body };
 
         // Handle Category Resolution (Name to ID)
         const normalizedType = type.toLowerCase();
-        const section = normalizedType.replace(/s$/, ''); // handle plural to singular section
+        let section = normalizedType;
+        if (normalizedType === 'podcast') section = 'podcasts';
+        if (normalizedType === 'ebook') section = 'ebooks';
         
         if (data.category && !data.category_id) {
             let foundCat = await Category.findOne({ 
@@ -65,6 +70,14 @@ exports.addContent = async (req, res) => {
                 await foundCat.save();
             }
             data.category_id = foundCat._id;
+        }
+
+        // --- NEW: Robustify category_id (Fix for 400/404 errors) ---
+        if (data.category_id === "" || data.category_id === "null" || data.category_id === undefined) {
+            delete data.category_id;
+        } else if (data.category_id && !mongoose.Types.ObjectId.isValid(data.category_id)) {
+            console.warn(`[DB SAVE] Invalid category_id provided: "${data.category_id}". Removing from payload.`);
+            delete data.category_id;
         }
 
         // Handle File Upload or Manual URL Mapping
@@ -120,7 +133,9 @@ exports.updateContent = async (req, res) => {
 
         // Handle Category Resolution
         const normalizedType = type.toLowerCase();
-        const section = normalizedType.replace(/s$/, '');
+        let section = normalizedType;
+        if (normalizedType === 'podcast') section = 'podcasts';
+        if (normalizedType === 'ebook') section = 'ebooks';
         
         if (data.category && !data.category_id) {
             let foundCat = await Category.findOne({ 
@@ -196,6 +211,17 @@ exports.addCategory = async (req, res) => {
         res.status(201).json(category);
     } catch (err) {
         res.status(400).json({ error: err.message });
+    }
+};
+
+exports.deleteCategory = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const category = await Category.findByIdAndDelete(id);
+        if (!category) return res.status(404).json({ error: 'Category not found' });
+        res.json({ message: 'Category deleted' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 };
 

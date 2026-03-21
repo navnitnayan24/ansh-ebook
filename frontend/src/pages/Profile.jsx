@@ -84,12 +84,12 @@ const Profile = () => {
                 <div className="profile-actions glass-card">
                     <h3>Quick <span className="text-gradient">Links</span></h3>
                     <div className="action-links">
-                        <Link to="/shayari" className="action-card">
+                        <Link to="/#shayari" className="action-card">
                             <Heart size={20} />
                             <span>Saved Shayari</span>
                             <ArrowRight size={16} className="arrow" />
                         </Link>
-                        <Link to="/ebooks" className="action-card">
+                        <Link to="/#premium" className="action-card">
                             <BookOpen size={20} />
                             <span>My Library</span>
                             <ArrowRight size={16} className="arrow" />

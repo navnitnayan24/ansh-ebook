@@ -105,7 +105,7 @@ const Podcasts = () => {
                                 borderRadius: '30px',
                                 border: '1px solid rgba(255,255,255,0.1)',
                                 background: activeCategory === cat ? 'var(--pink-primary)' : 'rgba(255,255,255,0.05)',
-                                color: 'white',
+                                color: 'var(--text-primary)',
                                 cursor: 'pointer',
                                 transition: 'all 0.3s ease',
                                 flexShrink: 0
