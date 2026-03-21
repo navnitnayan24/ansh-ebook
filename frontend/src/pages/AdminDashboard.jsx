@@ -36,7 +36,14 @@ const AdminDashboard = () => {
     const [thumbnailFile, setThumbnailFile] = useState(null);
     const [audioFile, setAudioFile] = useState(null);
 
-    const user = JSON.parse(localStorage.getItem('user'));
+    const getSavedUser = () => {
+        try {
+            const saved = localStorage.getItem('user');
+            if (!saved || saved === 'undefined') return null;
+            return JSON.parse(saved);
+        } catch (e) { return null; }
+    };
+    const user = getSavedUser();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -190,7 +197,7 @@ const AdminDashboard = () => {
                     const { deleteCategory } = await import('../api');
                     await deleteCategory(id);
                 } else {
-                    const modelName = activeTab === 'podcasts' ? 'PODCAST' : activeTab === 'ebooks' ? 'EBOOK' : activeTab;
+                    const modelName = activeTab === 'podcasts' ? 'podcast' : activeTab === 'ebooks' ? 'ebook' : activeTab;
                     await deleteContent(modelName, id);
                 }
                 setItems(items.filter(item => item._id !== id));
@@ -212,9 +219,18 @@ const AdminDashboard = () => {
         }
     };
 
-    const filteredItems = Array.isArray(items) ? items.filter(item => 
-        (item.title || item.content || item.email || item.username || '').toLowerCase().includes(searchTerm.toLowerCase())
-    ) : [];
+    const filteredItems = Array.isArray(items) ? items.filter(item => {
+        const searchStr = searchTerm.toLowerCase();
+        return (
+            (item.title || '').toLowerCase().includes(searchStr) || 
+            (item.content || '').toLowerCase().includes(searchStr) || 
+            (item.description || '').toLowerCase().includes(searchStr) || 
+            (item.name || '').toLowerCase().includes(searchStr) || 
+            (item.key || '').toLowerCase().includes(searchStr) || 
+            (item.email || '').toLowerCase().includes(searchStr) || 
+            (item.username || '').toLowerCase().includes(searchStr)
+        );
+    }) : [];
 
     return (
         <div className="dashboard-page container">
@@ -225,7 +241,7 @@ const AdminDashboard = () => {
                             <Home size={16} /> Home
                         </Link>
                         <h1 className="admin-title">Admin <span className="text-gradient">Panel</span></h1>
-                        <span className="badge ml-2" style={{fontSize: '0.8rem'}}>{items.length} Items</span>
+                        <span className="badge ml-2" style={{fontSize: '0.8rem'}}>{Array.isArray(items) ? items.length : 0} Items</span>
                     </div>
                     <p className="welcome-txt">Welcome, {user?.username}</p>
                 </div>
