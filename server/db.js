@@ -7,21 +7,16 @@ let mongod = null;
 
 async function connectDB() {
     try {
-        let uri = process.env.MONGODB_URI;
+        const uri = process.env.MONGODB_URI;
 
         if (!uri) {
-            console.log('🍃 No MONGODB_URI found. Starting MongoMemoryServer...');
-            if (mongod) {
-                console.log('🛑 Stopping existing MongoMemoryServer...');
-                await mongod.stop();
-            }
-            console.log('📦 Creating new MongoMemoryServer instance (this may take time if binary is downloading)...');
-            mongod = await MongoMemoryServer.create();
-            uri = mongod.getUri();
-            console.log('✅ MongoMemoryServer live at:', uri);
+            console.error('❌ FATAL ERROR: MONGODB_URI is not defined in environment variables!');
+            console.error('⚠️ Falling back to Localhost if available, but likely to fail on Render.');
+            // We throw an error here so the server stops and makes the issue obvious
+            throw new Error('MONGODB_URI is missing. Please set it in Render environment variables.');
         }
 
-        console.log('🔗 Connecting mongoose to:', uri);
+        console.log('🔗 Connecting mongoose to cloud/local database...');
         await mongoose.connect(uri, {
             serverSelectionTimeoutMS: 30000 // 30 second timeout for cloud stability
         });

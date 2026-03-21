@@ -11,7 +11,8 @@ exports.authenticate = (req, res, next) => {
         req.user = decoded;
         next();
     } catch (err) {
-        res.status(400).json({ error: 'Invalid token.' });
+        console.error('🔓 [AUTH ERROR] Token Verification Failed:', err.message);
+        res.status(401).json({ error: 'Invalid or expired token. Please login again.' });
     }
 };
 
@@ -24,8 +25,8 @@ exports.isAdmin = async (req, res, next) => {
         // Extra hardening: Check if this admin actually exists in the DB
         const adminExists = await Admin.findById(req.user.id);
         if (!adminExists) {
-            console.log('⛔ Admin record not found for ID:', req.user.id);
-            return res.status(403).json({ error: 'Access denied. Invalid admin record.' });
+            console.warn('⛔ [ADMIN ERROR] Record not found for ID:', req.user.id);
+            return res.status(403).json({ error: 'Access denied. Valid admin record not found in current database.' });
         }
         
         next();

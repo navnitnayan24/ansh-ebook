@@ -100,6 +100,48 @@ const Navbar = ({ isOpen, setIsOpen, closeMenu }) => {
                             </div>
                             
                             <ul className="drawer-nav">
+                                {user ? (
+                                    <>
+                                        <li>
+                                            <Link to="/profile" onClick={closeMenu} className="drawer-link profile-link-highlight">
+                                                <span className="drawer-icon"><User size={20} /></span>
+                                                <span className="drawer-label">MY PROFILE</span>
+                                            </Link>
+                                        </li>
+                                        {user.role === 'admin' && (
+                                            <li>
+                                                <Link to="/admin" onClick={closeMenu} className="drawer-link admin-link-highlight">
+                                                    <span className="drawer-icon"><Settings size={20} /></span>
+                                                    <span className="drawer-label">ADMIN PANEL</span>
+                                                </Link>
+                                            </li>
+                                        )}
+                                        <li>
+                                            <button onClick={handleLogout} className="drawer-link-btn logout-highlight w-100">
+                                                <span className="drawer-icon"><LogOut size={20} /></span>
+                                                <span className="drawer-label">LOGOUT</span>
+                                            </button>
+                                        </li>
+                                        <hr className="drawer-divider" />
+                                    </>
+                                ) : (
+                                    <>
+                                        <li>
+                                            <Link to="/login" onClick={closeMenu} className="drawer-link auth-link-highlight">
+                                                <span className="drawer-icon"><User size={20} /></span>
+                                                <span className="drawer-label">LOGIN</span>
+                                            </Link>
+                                        </li>
+                                        <li>
+                                            <Link to="/register" onClick={closeMenu} className="drawer-link auth-link-highlight">
+                                                <span className="drawer-icon"><User size={20} /></span>
+                                                <span className="drawer-label">CREATE ACCOUNT</span>
+                                            </Link>
+                                        </li>
+                                        <hr className="drawer-divider" />
+                                    </>
+                                )}
+
                                 {navItems.map(item => (
                                     <li key={item.label}>
                                         {item.path.startsWith('/#') ? (
@@ -115,46 +157,7 @@ const Navbar = ({ isOpen, setIsOpen, closeMenu }) => {
                                         )}
                                     </li>
                                 ))}
-                                    {user?.role === 'admin' && (
-                                        <li>
-                                            <Link to="/admin" onClick={closeMenu} className="drawer-link">
-                                                <span className="drawer-icon"><Settings size={20} /></span>
-                                                <span className="drawer-label">DASHBOARD</span>
-                                            </Link>
-                                        </li>
-                                    )}
-                                    {user ? (
-                                        <>
-                                            <li>
-                                                <Link to="/profile" onClick={closeMenu} className="drawer-link">
-                                                    <span className="drawer-icon"><User size={20} /></span>
-                                                    <span className="drawer-label">PROFILE</span>
-                                                </Link>
-                                            </li>
-                                            <li>
-                                                <button onClick={handleLogout} className="drawer-link-btn w-100">
-                                                    <span className="drawer-icon"><LogOut size={20} /></span>
-                                                    <span className="drawer-label">LOGOUT</span>
-                                                </button>
-                                            </li>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <li>
-                                                <Link to="/login" onClick={closeMenu} className="drawer-link">
-                                                    <span className="drawer-icon"><User size={20} /></span>
-                                                    <span className="drawer-label">LOGIN</span>
-                                                </Link>
-                                            </li>
-                                            <li>
-                                                <Link to="/register" onClick={closeMenu} className="drawer-link">
-                                                    <span className="drawer-icon"><User size={20} /></span>
-                                                    <span className="drawer-label">SIGN UP</span>
-                                                </Link>
-                                            </li>
-                                        </>
-                                    )}
-                                </ul>
+                            </ul>
 
                                 <div className="drawer-socials">
                                     <a href="https://www.instagram.com/_.unknown_shadow?igsh=MXczMmZ2a3N2cGs0Mw==" target="_blank" rel="noopener noreferrer" title="Instagram"><Instagram size={20} /></a>
