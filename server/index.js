@@ -21,11 +21,23 @@ app.use(express.json());
 let lastDbError = null;
 
 // Health Check
-app.get('/health', (req, res) => {
+app.get('/health', async (req, res) => {
     const dbStatus = mongoose.connection.readyState === 1 ? 'CONNECTED' : 'DISCONNECTED';
+    let adminInfo = 'N/A';
+    try {
+        if (dbStatus === 'CONNECTED') {
+            const Admin = require('./models/Admin');
+            const count = await Admin.countDocuments();
+            adminInfo = `Connected. Found ${count} admins.`;
+        }
+    } catch (err) {
+        adminInfo = `Error: ${err.message}`;
+    }
+    
     res.json({ 
         status: 'OK', 
         database: dbStatus, 
+        adminInfo,
         lastError: lastDbError ? lastDbError.message : null,
         timestamp: new Date() 
     });

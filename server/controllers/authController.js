@@ -50,7 +50,13 @@ exports.adminLogin = async (req, res) => {
             $or: [{ username: loginId }, { email: loginId }] 
         });
         
+        console.log(`🔐 [ADMIN LOGIN DEBUG] Attempt for: ${loginId}. Found in DB: ${admin ? 'YES' : 'NO'}`);
+        if (admin) {
+            console.log(`🔐 [ADMIN LOGIN DEBUG] DB Username: ${admin.username}. Email: ${admin.email}`);
+        }
+
         if (!admin || !(await bcrypt.compare(password, admin.password))) {
+            console.warn(`🔐 [ADMIN LOGIN DEBUG] Login failed for ${loginId}. Reason: ${!admin ? 'Record Not Found' : 'Incorrect Password'}`);
             return res.status(401).json({ error: 'Invalid credentials' });
         }
         const secret = process.env.JWT_SECRET || 'the_alfaz_e_diaries_secure_fallback_2026';
@@ -63,6 +69,7 @@ exports.adminLogin = async (req, res) => {
             role: 'admin' 
         });
     } catch (err) {
+        console.error('🔐 [ADMIN LOGIN CRITICAL ERROR]:', err);
         res.status(500).json({ error: err.message });
     }
 };
