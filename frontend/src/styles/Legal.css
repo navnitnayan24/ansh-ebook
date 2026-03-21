@@ -1,11 +1,27 @@
+/* =============================================
+   LEGAL PAGES — Terms, Privacy, Disclaimer
+   Fully responsive with proper mobile padding
+   ============================================= */
+
 .legal-page {
-    padding-bottom: 80px;
+    padding-top: 2rem;
+    padding-bottom: 100px;
+    min-height: 80vh;
 }
 
 .legal-card {
-    padding: 4rem;
+    padding: 3.5rem;
     max-width: 900px;
     margin: 0 auto;
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
+.legal-card h1 {
+    font-size: clamp(2rem, 7vw, 3.5rem);
+    font-family: var(--font-heading);
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
 }
 
 .last-updated {
@@ -31,9 +47,65 @@
 .legal-card h3 {
     color: var(--accent);
     margin-bottom: 1rem;
+    font-size: clamp(1rem, 3vw, 1.2rem);
+    line-height: 1.4;
 }
 
 .legal-card p {
     color: var(--text-secondary);
     line-height: 1.8;
+    font-size: 0.95rem;
+}
+
+/* =============================================
+   DISCLAIMER page (uses inline styles — override here)
+   ============================================= */
+.disclaimer-card {
+    padding: 3rem;
+    line-height: 1.8;
+    font-size: 1rem;
+    max-width: 800px;
+    margin: 0 auto;
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
+.disclaimer-card h1 {
+    font-size: clamp(2rem, 8vw, 3rem);
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.disclaimer-card h3 {
+    font-size: clamp(1rem, 4vw, 1.2rem);
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+}
+
+/* =============================================
+   RESPONSIVE
+   ============================================= */
+@media (max-width: 768px) {
+    .legal-card {
+        padding: 2rem 1.5rem;
+    }
+
+    .disclaimer-card {
+        padding: 1.5rem 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .legal-card {
+        padding: 1.5rem 1rem;
+    }
+
+    .disclaimer-card {
+        padding: 1.25rem 0.75rem;
+        font-size: 0.92rem;
+    }
+
+    .last-updated {
+        margin-bottom: 2rem;
+    }
 }
