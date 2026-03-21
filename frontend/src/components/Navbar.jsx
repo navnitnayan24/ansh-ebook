@@ -46,10 +46,10 @@ const Navbar = ({ isOpen, setIsOpen }) => {
 
     const navItems = [
         { path: '/#hero', label: 'HOME', icon: <Home size={20} /> },
-        { path: '/#premium', label: 'MUSIC', icon: <Music size={20} /> },
+        { path: '/#music-section', label: 'MUSIC', icon: <Music size={20} /> },
         { path: '/#shayari', label: 'SHAYARI', icon: <Book size={20} /> },
-        { path: '/#premium', label: 'E-BOOK', icon: <BookOpen size={20} /> },
-        { path: '/#premium', label: 'PODCAST', icon: <Mic size={20} /> },
+        { path: '/#ebook-section', label: 'E-BOOK', icon: <BookOpen size={20} /> },
+        { path: '/#podcast-section', label: 'PODCAST', icon: <Mic size={20} /> },
         { path: '/#about', label: 'ABOUT', icon: <User size={20} /> },
     ];
 

@@ -8,9 +8,9 @@ const MobileFooter = () => {
     const navItems = [
         { path: '/#hero', label: 'Home', icon: <Home size={22} /> },
         { path: '/#shayari', label: 'Shayari', icon: <Book size={22} /> },
-        { path: '/#premium', label: 'Music', icon: <Music size={22} /> },
-        { path: '/#premium', label: 'Podcast', icon: <Mic size={22} /> },
-        { path: '/#premium', label: 'E-Books', icon: <BookOpen size={22} /> },
+        { path: '/#music-section', label: 'Music', icon: <Music size={22} /> },
+        { path: '/#podcast-section', label: 'Podcast', icon: <Mic size={22} /> },
+        { path: '/#ebook-section', label: 'E-Books', icon: <BookOpen size={22} /> },
     ];
 
     const [activeHash, setActiveHash] = useState(window.location.hash || '#hero');

@@ -276,6 +276,52 @@
     margin-bottom: 3rem;
 }
 
+.music-card-mini {
+    display: flex;
+    flex-direction: column;
+    padding: 0 !important;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+}
+
+.music-card-mini:hover {
+    transform: translateY(-5px);
+}
+
+.music-thumb {
+    width: 100%;
+    aspect-ratio: 1/1;
+    position: relative;
+    overflow: hidden;
+}
+
+.music-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.music-card-mini:hover .music-thumb img {
+    transform: scale(1.1);
+}
+
+.music-info {
+    padding: 1rem;
+    text-align: center;
+}
+
+.music-info h3 {
+    font-size: 1rem;
+    margin-bottom: 0.2rem;
+    color: var(--white);
+}
+
+.music-info p {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
 /* =============================================
    SUBSCRIBE NEWSLETTER SECTION
    ============================================= */
@@ -394,6 +440,14 @@ section {
     .podcast-thumb {
         width: 100%;
         height: 200px;
+    }
+
+    .music-card-mini {
+        flex-direction: column;
+    }
+
+    .music-thumb {
+        height: 180px;
     }
 
     /* Connect section social icons */

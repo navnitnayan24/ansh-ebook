@@ -229,7 +229,25 @@ const Home = () => {
                 </motion.div>
                 
                 <div className="premium-tabs-v2">
-                    <div className="premium-sub-section mb-5">
+                    <div id="music-section" className="premium-sub-section mb-5">
+                        <h3 className="premium-sub-title mb-4"><PlayCircle size={20} className="mr-2"/> Music & Melodies</h3>
+                        <div className="grid-3">
+                            {content?.latest_music?.map((track, idx) => (
+                                <motion.div key={track?._id || idx} className={`glass-card music-card-mini ${!user ? 'restricted-content' : ''}`} onClick={checkPremiumAccess} variants={itemVariants}>
+                                    <div className="music-thumb">
+                                        <img src={track?.thumbnail?.startsWith('/uploads') ? `${MEDIA_URL}${track.thumbnail}` : (track?.thumbnail || '/default-music.png')} alt={track?.title} loading="lazy" />
+                                        {!user && <div className="lock-overlay"><div className="lock-circle">🔒</div></div>}
+                                    </div>
+                                    <div className="music-info">
+                                        <h3>{track?.title}</h3>
+                                        <p>{track?.artist || 'Original Mix'}</p>
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div id="podcast-section" className="premium-sub-section mb-5">
                         <h3 className="premium-sub-title mb-4"><Mic size={20} className="mr-2"/> Podcasts</h3>
                         <div className="grid-2">
                             {content?.latest_podcasts?.map((pod, idx) => (
@@ -247,7 +265,7 @@ const Home = () => {
                         </div>
                     </div>
 
-                    <div className="premium-sub-section">
+                    <div id="ebook-section" className="premium-sub-section">
                         <h3 className="premium-sub-title mb-4"><BookOpen size={20} className="mr-2"/> E-Books</h3>
                         <div className="grid-4">
                             {content?.featured_ebooks?.length > 0 ? (
