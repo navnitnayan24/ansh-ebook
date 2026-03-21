@@ -8,8 +8,44 @@
 
 .ebooks-layout {
     display: grid;
-    grid-template-columns: 280px 1fr;
+    grid-template-columns: 320px minmax(0, 1fr);
     gap: 3rem;
+}
+
+/* Sidebar Search & Content */
+.sidebar-widget {
+    padding: 1.5rem !important;
+}
+
+.sidebar-search-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.glass-input-sidebar {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 0.8rem 1rem 0.8rem 2.8rem;
+    color: white;
+    font-size: 0.9rem;
+    outline: none;
+    transition: 0.3s;
+}
+
+.sidebar-search-wrapper:focus-within .glass-input-sidebar {
+    border-color: var(--accent);
+    background: rgba(255, 20, 147, 0.08);
+    box-shadow: 0 0 15px var(--accent-glow);
+}
+
+.search-icon-sidebar {
+    position: absolute;
+    left: 12px;
+    color: var(--accent);
+    opacity: 0.8;
 }
 
 /* Sidebar Promo Card */

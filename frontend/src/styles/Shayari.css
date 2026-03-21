@@ -48,9 +48,14 @@
     transition: 0.3s;
 }
 
-.glass-input-sidebar:focus {
+.sidebar-search-wrapper:focus-within .glass-input-sidebar {
     border-color: var(--accent);
-    background: rgba(255, 20, 147, 0.05);
+    background: rgba(255, 20, 147, 0.08);
+    box-shadow: 0 0 15px var(--accent-glow);
+}
+
+.glass-input-sidebar:focus {
+    outline: none;
 }
 
 .search-icon-sidebar {

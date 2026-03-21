@@ -76,15 +76,15 @@ const Ebooks = () => {
 
             <div className="ebooks-layout">
                 <motion.aside className="sidebar" variants={itemVariants}>
-                    <div className="search-box-ebooks glass-card mb-4" style={{ padding: '1rem', borderRadius: '15px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.05)', padding: '0.8rem 1rem', borderRadius: '10px' }}>
-                            <BookOpen size={18} className="pink-text mr-2" />
+                    <div className="search-box-ebooks sidebar-widget glass-card mb-4">
+                        <div className="sidebar-search-wrapper">
+                            <BookOpen size={18} className="search-icon-sidebar" />
                             <input 
                                 type="text" 
+                                className="glass-input-sidebar"
                                 placeholder="Search library..." 
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                style={{ background: 'transparent', border: 'none', color: 'var(--text-primary)', outline: 'none', width: '100%', fontSize: '0.9rem' }}
                             />
                         </div>
                     </div>
