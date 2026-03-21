@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Play, Book, Mic, Quote, ArrowRight, BookOpen, Instagram, Youtube, MessageCircle } from 'lucide-react';
+import { Play, Book, Mic, Quote, ArrowRight, BookOpen, Instagram, Youtube, MessageCircle, PlayCircle, Music } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { fetchHomeContent } from '../api';
 import { MEDIA_URL } from '../config';
