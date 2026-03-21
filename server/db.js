@@ -1,9 +1,6 @@
-const { MongoMemoryServer } = require('mongodb-memory-server');
 const mongoose = require('mongoose');
 const path = require('path');
 const fs = require('fs');
-
-let mongod = null;
 
 async function connectDB() {
     try {
@@ -11,9 +8,8 @@ async function connectDB() {
 
         if (!uri) {
             console.error('❌ FATAL ERROR: MONGODB_URI is not defined in environment variables!');
-            console.error('⚠️ Falling back to Localhost if available, but likely to fail on Render.');
-            // We throw an error here so the server stops and makes the issue obvious
-            throw new Error('MONGODB_URI is missing. Please set it in Render environment variables.');
+            console.error('⚠️ The server will likely crash if you don\'t set MONGODB_URI on Render.');
+            throw new Error('MONGODB_URI is missing. Set it in Render dashboard.');
         }
 
         console.log('🔗 Connecting mongoose to cloud/local database...');
@@ -24,7 +20,6 @@ async function connectDB() {
         await autoSeed();
     } catch (err) {
         console.error('❌ Connection Error:', err.message);
-        // We will allow the server to start, but subsequent DB operations will fail fast
     }
 }
 
@@ -69,14 +64,23 @@ async function autoSeed() {
             { key: 'meta_tags', value: '<meta name="description" content="THE ALFAZ-E-DIARIES - Premium Shayari & E-books">', description: 'SEO Meta Tags' }
         ]);
 
-        // 2. Admin
-        const hashedPassword = await bcrypt.hash('ansh@sh2002', 10);
-        await Admin.create({
-            username: 'anshsharma2026',
-            password: hashedPassword,
-            email: 'anshbgmi24@gmail.com',
-            profile_name: 'Ansh Sharma'
-        });
+        // 2. Admin - Explicitly Upsert the specific admin account
+        const adminUsername = 'anshsharma2026';
+        const adminEmail = 'anshbgmi24@gmail.com';
+        const adminPassword = await bcrypt.hash('ansh@sh2002', 10);
+        
+        console.log(`🔐 Ensuring admin account: ${adminUsername}...`);
+        await Admin.findOneAndUpdate(
+            { $or: [{ username: adminUsername }, { email: adminEmail }] },
+            { 
+                username: adminUsername,
+                password: adminPassword,
+                email: adminEmail,
+                profile_name: 'Ansh Sharma'
+            },
+            { upsert: true, new: true, setDefaultsOnInsert: true }
+        );
+        console.log('✅ Admin account synced.');
 
         // 3. Categories (Meticulously synced with screenshots)
         const categories = await Category.insertMany([
