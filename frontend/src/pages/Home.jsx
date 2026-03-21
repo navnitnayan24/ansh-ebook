@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Play, Book, Mic, Quote, ArrowRight, BookOpen, Instagram, Youtube, MessageCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { fetchHomeContent } from '../api';
@@ -9,6 +9,7 @@ import SEO from '../components/SEO';
 import '../styles/Home.css';
 
 const Home = () => {
+    const navigate = useNavigate();
     const [content, setContent] = useState({ latest_shayari: [], latest_music: [], latest_podcasts: [], featured_ebooks: [] });
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState(null);
@@ -75,7 +76,7 @@ const Home = () => {
     const checkPremiumAccess = (e) => {
         if (!user) {
             e.preventDefault();
-            alert("🔒 Please login or register to access this premium content.");
+            navigate('/login');
         }
     };
 
