@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Plus, Trash2, Edit, Save, X, Search, Settings as SettingsIcon, ArrowLeft, Home } from 'lucide-react';
-import { fetchContentByType, addContent, updateContent, deleteContent, fetchCategories, fetchSettings, updateSetting, changePassword as changePasswordApi } from '../api';
+import { 
+    fetchContentByType, addContent, updateContent, deleteContent, 
+    fetchCategories, fetchSettings, updateSetting, 
+    changePassword as changePasswordApi, 
+    fetchSubscribers, fetchUsers, deleteSubscriber, deleteUser, deleteCategory 
+} from '../api';
 import { MEDIA_URL } from '../config';
 import '../styles/Dashboard.css';
 
@@ -59,11 +64,9 @@ const AdminDashboard = () => {
                 const { data } = await fetchSettings();
                 setItems(data);
             } else if (activeTab === 'subscribers') {
-                const { fetchSubscribers } = await import('../api');
                 const { data } = await fetchSubscribers();
                 setItems(data);
             } else if (activeTab === 'users') {
-                const { fetchUsers } = await import('../api');
                 const { data } = await fetchUsers();
                 setItems(data);
             } else if (activeTab === 'categories') {
@@ -194,14 +197,15 @@ const AdminDashboard = () => {
         if (window.confirm('ARE YOU SURE YOU WANT TO DELETE THIS ITEM?')) {
             try {
                 if (activeTab === 'categories') {
-                    const { deleteCategory } = await import('../api');
                     await deleteCategory(id);
                 } else {
-                    const modelName = activeTab === 'podcasts' ? 'podcast' : activeTab === 'ebooks' ? 'ebook' : activeTab;
+                    const typeMap = { 'podcasts': 'podcast', 'ebooks': 'ebook' };
+                    const modelName = typeMap[activeTab] || activeTab;
                     await deleteContent(modelName, id);
                 }
                 setItems(items.filter(item => item._id !== id));
             } catch (err) {
+                console.error('Delete Error:', err);
                 alert('Delete failed');
             }
         }
@@ -210,7 +214,6 @@ const AdminDashboard = () => {
     const handleAddCategory = async (e) => {
         e.preventDefault();
         try {
-            const { addCategory } = await import('../api');
             await addCategory(newCategory);
             setNewCategory({ name: '', section: 'shayari' });
             loadItems();
@@ -406,7 +409,6 @@ const AdminDashboard = () => {
                                             <td>
                                                 <button className="icon-btn delete" onClick={async () => {
                                                     if (window.confirm('Remove?')) {
-                                                        const { deleteSubscriber } = await import('../api');
                                                         await deleteSubscriber(item._id);
                                                         setItems(items.filter(i => i._id !== item._id));
                                                     }
@@ -437,7 +439,6 @@ const AdminDashboard = () => {
                                             <td>
                                                 <button className="icon-btn delete" onClick={async () => {
                                                     if (window.confirm('Delete User?')) {
-                                                        const { deleteUser } = await import('../api');
                                                         await deleteUser(item._id);
                                                         setItems(items.filter(i => i._id !== item._id));
                                                     }

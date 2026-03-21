@@ -3,8 +3,9 @@ import { Link, NavLink, useLocation } from 'react-router-dom';
 import { Menu, X, LogOut, Settings, Sun, Moon, Home, Book, Music, Mic, BookOpen, Quote, User, MessageCircle, Youtube, Instagram, Facebook, Linkedin } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
+import '../styles/Navbar.css';
 
-const Navbar = ({ isOpen, setIsOpen }) => {
+const Navbar = ({ isOpen, setIsOpen, closeMenu }) => {
     const { theme, toggleTheme } = useTheme();
     const [isScrolled, setIsScrolled] = useState(false);
     const [user, setUser] = useState(null);
@@ -42,7 +43,6 @@ const Navbar = ({ isOpen, setIsOpen }) => {
     };
 
     const toggleMenu = () => setIsOpen(!isOpen);
-    const closeMenu = () => setIsOpen(false);
 
     const navItems = [
         { path: '/#hero', label: 'HOME', icon: <Home size={20} /> },
