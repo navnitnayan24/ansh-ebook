@@ -356,8 +356,15 @@
     background: rgba(10, 1, 16, 0.98);
     backdrop-filter: blur(25px);
     z-index: 3000;
-    padding: 2.5rem 1.5rem;
+    padding: 2rem 1rem;
     box-shadow: -10px 0 40px rgba(0,0,0,0.5);
+    overflow-y: auto;
+    scrollbar-width: none; /* Hide scrollbar for clean look */
+    -ms-overflow-style: none;
+}
+
+.mobile-side-drawer::-webkit-scrollbar {
+    display: none;
 }
 
 .drawer-inner {
