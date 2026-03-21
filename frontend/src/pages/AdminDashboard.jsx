@@ -205,6 +205,8 @@ const AdminDashboard = () => {
                     await deleteCategory(id);
                 } else if (activeTab === 'reviews') {
                     await deleteReview(id);
+                } else if (activeTab === 'users') {
+                    await deleteUser(id);
                 } else {
                     const typeMap = { 'podcasts': 'podcast', 'ebooks': 'ebook' };
                     const modelName = typeMap[activeTab] || activeTab;
@@ -545,16 +547,30 @@ const AdminDashboard = () => {
                                                     {item.thumbnail && <img src={item.thumbnail.startsWith('/uploads') ? `${MEDIA_URL}${item.thumbnail}` : item.thumbnail} alt="" className="cell-thumb" />}
                                                     {item.cover_url && !item.thumbnail && <img src={item.cover_url.startsWith('/uploads') ? `${MEDIA_URL}${item.cover_url}` : item.cover_url} alt="" className="cell-thumb" />}
                                                     <div>
-                                                        <span className="item-title">{item.title || (item.content?.substring(0, 30) + '...')}</span>
-                                                        <span className="item-sub">{item.artist || item.author || 'N/A'}</span>
+                                                        <span className="item-title">
+                                                            {activeTab === 'users' ? (item.username || item.email) : 
+                                                             activeTab === 'reviews' ? (item.content?.substring(0, 50) + '...') :
+                                                             (item.title || (item.content?.substring(0, 30) + '...'))}
+                                                        </span>
+                                                        <span className="item-sub">
+                                                            {activeTab === 'users' ? item.email : 
+                                                             activeTab === 'reviews' ? `By: ${item.username || 'Anonymous'}` :
+                                                             (item.artist || item.author || 'N/A')}
+                                                        </span>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td className="hide-mobile">
-                                                <span className="badge">{item.category_id?.name || item.category || item.genre || 'General'}</span>
+                                                <span className="badge">
+                                                    {activeTab === 'users' ? 'USER' : 
+                                                     activeTab === 'reviews' ? `Rating: ${item.rating}/5` :
+                                                     (item.category_id?.name || item.category || item.genre || 'General')}
+                                                </span>
                                             </td>
                                             <td className="actions-cell">
-                                                <button className="icon-btn edit" onClick={() => handleOpenModal(item)}><Edit size={18} /></button>
+                                                {activeTab !== 'users' && activeTab !== 'reviews' && (
+                                                    <button className="icon-btn edit" onClick={() => handleOpenModal(item)}><Edit size={18} /></button>
+                                                )}
                                                 <button className="icon-btn delete" onClick={() => handleDelete(item._id)}><Trash2 size={18} /></button>
                                             </td>
                                         </tr>
