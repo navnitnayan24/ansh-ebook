@@ -1,38 +1,58 @@
 import React, { useState, useEffect } from 'react';
-import { Play, Mic, ArrowLeft } from 'lucide-react';
+import { Mic, Play, Pause, Headphones, Search, Heart, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { fetchContentByType } from '../api';
+import { fetchContentByType, API } from '../api';
+import { MEDIA_URL } from '../config';
 import AdSpace from '../components/AdSpace';
 import SEO from '../components/SEO';
 import '../styles/Podcasts.css';
 
 const Podcasts = () => {
     const [podcasts, setPodcasts] = useState([]);
+    const [allCategories, setAllCategories] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [searchTerm, setSearchTerm] = useState('');
     const [activeCategory, setActiveCategory] = useState('All');
+    const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
-        const loadPodcasts = async () => {
+        const fetchData = async () => {
             try {
-                const { data } = await fetchContentByType('podcasts');
-                setPodcasts(data);
+                const [podRes, catRes] = await Promise.all([
+                    fetchContentByType('podcasts'),
+                    fetchCategories('podcasts')
+                ]);
+                setPodcasts(podRes.data);
+                setAllCategories(catRes.data);
             } catch (err) {
                 console.error(err);
             } finally {
                 setLoading(false);
             }
         };
-        loadPodcasts();
+        fetchData();
     }, []);
 
-    const categories = ['All', ...new Set(podcasts.map(p => p.category || 'Inspiration'))];
+    const toggleLike = async (id) => {
+        try {
+            setPodcasts(prev => prev.map(p => 
+                p._id === id ? { ...p, likes_count: (p.likes_count || 0) + 1 } : p
+            ));
+            const { data } = await API.post(`/podcast/${id}/like`);
+            setPodcasts(prev => prev.map(p => 
+                p._id === id ? { ...p, likes_count: data.likes_count } : p
+            ));
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const categories = ['All', ...new Set(podcasts.map(p => p.category_id?.name || 'General'))];
 
     const filteredPodcasts = Array.isArray(podcasts) ? podcasts.filter(pod => {
         const matchesSearch = (pod.title || '').toLowerCase().includes(searchTerm.toLowerCase()) || 
                              (pod.description || '').toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesCategory = activeCategory === 'All' || pod.category === activeCategory;
+        const matchesCategory = activeCategory === 'All' || pod.category_id?.name === activeCategory;
         return matchesSearch && matchesCategory;
     }) : [];
 
@@ -47,59 +67,47 @@ const Podcasts = () => {
     };
 
     return (
-        <motion.div 
-            className="podcasts-page container"
-            initial="hidden"
-            animate="visible"
-            variants={containerVariants}
-        >
-            <SEO 
-                title="Original Podcasts & Stories" 
-                description="Listen to premium original podcasts, stories, and reflections. Deep dives into life, art, and creativity." 
-            />
-            <div className="page-header mb-4">
-                <Link to="/" className="back-btn btn btn-outline btn-sm btn-pill">
-                    <ArrowLeft size={16} /> Back to Home
-                </Link>
+        <motion.div className="podcasts-page" initial="hidden" animate="visible" variants={containerVariants}>
+            <SEO title="Original Podcasts | Ansh Ebook" description="Listen to soulful and inspiring podcasts by Ansh Sharma on Ansh Ebook." />
+            
+            <div className="podcasts-hero">
+                <div className="hero-content container">
+                    <motion.div variants={itemVariants}>
+                        <Link to="/" className="back-link"><ArrowLeft size={16}/> Back to Home</Link>
+                        <h1 className="hero-title mt-3">Soulful <span className="text-gradient">Podcasts</span></h1>
+                        <p className="hero-subtitle">Kalam Se Dil Tak - Original voices, authentic stories.</p>
+                    </motion.div>
+                    
+                    <motion.div className="hero-search-box" variants={itemVariants}>
+                        <div className="glass-search">
+                            <Search className="search-icon" size={20} />
+                            <input 
+                                type="text" 
+                                placeholder="Search episodes, stories..." 
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
+                    </motion.div>
+                </div>
             </div>
 
-            <section className="section-hero-v2">
-                <div className="section-header-centered animate-slide-in-top">
-                    <motion.h1 className="centered-title" variants={itemVariants}>
-                        Inspiring <span className="pink-gradient-text">Podcasts</span>
-                    </motion.h1>
-                    <motion.p className="centered-subtitle" variants={itemVariants}>
-                        Deep conversations, motivational talks, and stories that matter.
-                    </motion.p>
-                </div>
-            </section>
-
-            <div className="search-filter-controls mb-5">
-                <div className="search-box-premium glass-card mb-4" style={{ maxWidth: '600px', margin: '0 auto 2rem', display: 'flex', alignItems: 'center', padding: '0.5rem 1.5rem', borderRadius: '50px' }}>
-                    <Mic size={20} className="pink-text mr-3" />
-                    <input 
-                        type="text" 
-                        placeholder="Search episodes, topics, or stories..." 
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        style={{ background: 'transparent', border: 'none', color: 'white', padding: '0.8rem 0', width: '100%', outline: 'none' }}
-                    />
-                </div>
-
-                <div className="filter-chips" style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <div className="category-bar-sticky">
+                <div className="category-scroll container">
                     {categories.map(cat => (
                         <button 
                             key={cat}
-                            className={`pill-btn ${activeCategory === cat ? 'active shadow-neon' : ''}`}
                             onClick={() => setActiveCategory(cat)}
-                            style={{ 
-                                padding: '0.6rem 1.5rem', 
-                                borderRadius: '50px', 
+                            className={`cat-pill ${activeCategory === cat ? 'active' : ''}`}
+                            style={{
+                                padding: '0.6rem 1.5rem',
+                                borderRadius: '30px',
                                 border: '1px solid rgba(255,255,255,0.1)',
                                 background: activeCategory === cat ? 'var(--pink-primary)' : 'rgba(255,255,255,0.05)',
                                 color: 'white',
                                 cursor: 'pointer',
-                                transition: 'all 0.3s ease'
+                                transition: 'all 0.3s ease',
+                                flexShrink: 0
                             }}
                         >
                             {cat.toUpperCase()}
@@ -127,21 +135,29 @@ const Podcasts = () => {
                                         whileHover={{ y: -5, scale: 1.01 }}
                                     >
                                         <div className="podcast-thumb">
-                                            <img src={pod.thumbnail || pod.thumbnail_url || '/default-podcast.jpg'} alt={pod.title} />
+                                            <img src={pod.thumbnail?.startsWith('/uploads') ? `${MEDIA_URL}${pod.thumbnail}` : (pod.thumbnail || pod.thumbnail_url || '/default-podcast.png')} alt={`${pod.title} - Ansh Ebook Podcast Episode`} />
                                             <div className="play-overlay-large">
                                                 <Play fill="white" size={40} />
                                             </div>
                                         </div>
                                         <div className="podcast-details">
                                             <div className="podcast-meta">
-                                                <span className="pill-small">{pod.category || 'EPISODE'}</span>
-                                                <span className="date-small">{pod.createdAt ? new Date(pod.createdAt).toLocaleDateString() : 'New'}</span>
+                                                <span className="pill-small">{pod.category_id?.name || 'EPISODE'}</span>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                    <span className="date-small">{pod.createdAt ? new Date(pod.createdAt).toLocaleDateString() : 'New'}</span>
+                                                    <button 
+                                                        onClick={(e) => { e.stopPropagation(); toggleLike(pod._id); }}
+                                                        style={{ background: 'transparent', border: 'none', color: 'var(--accent)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.9rem' }}
+                                                    >
+                                                        <Heart size={16} fill={pod.liked_by_user ? "var(--accent)" : "transparent"} /> {pod.likes_count || 0}
+                                                    </button>
+                                                </div>
                                             </div>
                                             <h3>{pod.title}</h3>
                                             <p className="podcast-desc">{pod.description}</p>
                                             <div className="podcast-footer mt-auto">
                                                 <audio controls className="custom-audio">
-                                                    <source src={pod.file_url} type="audio/mpeg" />
+                                                    <source src={pod.file_url?.startsWith('/uploads') ? `${MEDIA_URL}${pod.file_url}` : pod.file_url} type="audio/mpeg" />
                                                 </audio>
                                                 <button className="btn btn-primary btn-pill shadow-neon">LISTEN ON WEB</button>
                                             </div>

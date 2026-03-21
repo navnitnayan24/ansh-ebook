@@ -2,37 +2,43 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { BookOpen, Download, ArrowLeft, Book } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { fetchContentByType } from '../api';
+import { fetchContentByType, fetchCategories } from '../api';
+import { MEDIA_URL } from '../config';
 import AdSpace from '../components/AdSpace';
 import SEO from '../components/SEO';
 import '../styles/Ebooks.css';
 
 const Ebooks = () => {
     const [ebooks, setEbooks] = useState([]);
+    const [allCategories, setAllCategories] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [selectedCategory, setSelectedCategory] = useState('All');
     const [searchTerm, setSearchTerm] = useState('');
-    const [activeCategory, setActiveCategory] = useState('All');
 
     useEffect(() => {
-        const getEbooks = async () => {
+        const fetchData = async () => {
             try {
-                const { data } = await fetchContentByType('ebooks');
-                setEbooks(data);
+                const [ebRes, catRes] = await Promise.all([
+                    fetchContentByType('ebooks'),
+                    fetchCategories('ebooks')
+                ]);
+                setEbooks(ebRes.data);
+                setAllCategories(catRes.data);
             } catch (err) {
                 console.error(err);
             } finally {
                 setLoading(false);
             }
         };
-        getEbooks();
+        fetchData();
     }, []);
 
-    const categories = ['All', ...new Set(ebooks.map(book => book.category || 'Literature'))];
+    const categories = ['All', ...allCategories.map(c => c.name)];
 
     const filteredEbooks = Array.isArray(ebooks) ? ebooks.filter(book => {
         const matchesSearch = (book.title || '').toLowerCase().includes(searchTerm.toLowerCase()) || 
                              (book.description || '').toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesCategory = activeCategory === 'All' || book.category === activeCategory;
+        const matchesCategory = selectedCategory === 'All' || book.category_id?.name === selectedCategory;
         return matchesSearch && matchesCategory;
     }) : [];
 
@@ -139,11 +145,14 @@ const Ebooks = () => {
                                                 whileHover={{ y: -15, scale: 1.02 }}
                                             >
                                                 <div className="ebook-cover-wrapper">
-                                                    <img src={book.cover_url || '/default-ebook.jpg'} alt={book.title} />
+                                                    <img src={book.cover_url?.startsWith('/uploads') ? `${MEDIA_URL}${book.cover_url}` : (book.cover_url || book.thumbnail || '/default-ebook.png')} alt={`${book.title} - Ansh Ebook E-book`} />
                                                     <div className="ebook-badge">{book.price === 0 ? 'FREE' : 'PREMIUM'}</div>
                                                 </div>
                                                 <div className="ebook-details-main">
-                                                    <span className="category-tag-plain">{book.category || 'Literature'}</span>
+                                                    <div className="ebook-meta-top">
+                                                        <span className="category-tag-plain">{book.category_id?.name || 'General'}</span>
+                                                        <span className="date-tag-mini">{new Date(book.createdAt).toLocaleDateString()}</span>
+                                                    </div>
                                                     <h2>{book.title}</h2>
                                                     <p className="ebook-desc-short">{book.description?.substring(0, 100)}...</p>
                                                     <div className="ebook-footer-actions">

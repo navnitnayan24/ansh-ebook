@@ -1,25 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Play, Pause, ArrowLeft, Headphones, Youtube, Facebook, Instagram, Linkedin, Globe } from 'lucide-react';
+import { Search, Play, Pause, Headphones, Music, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fetchContentByType, fetchCategories } from '../api';
+import { MEDIA_URL } from '../config';
 import AdSpace from '../components/AdSpace';
 import SEO from '../components/SEO';
 import '../styles/Music.css';
 
 const Music = () => {
     const [tracks, setTracks] = useState([]);
-    const [categories, setCategories] = useState([]);
+    const [allCategories, setAllCategories] = useState([]);
     const [loading, setLoading] = useState(true);
     const [query, setQuery] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('All');
     const [playingTrack, setPlayingTrack] = useState(null);
 
     useEffect(() => {
         const loadCategories = async () => {
             try {
                 const { data } = await fetchCategories('music');
-                setCategories(data);
+                setAllCategories(data);
             } catch (err) {
                 console.error(err);
             }
@@ -31,10 +32,7 @@ const Music = () => {
         const loadTracks = async () => {
             setLoading(true);
             try {
-                const { data } = await fetchContentByType('music', {
-                    q: query,
-                    category: selectedCategory
-                });
+                const { data } = await fetchContentByType('music', selectedCategory === 'All' ? '' : selectedCategory, query);
                 setTracks(data);
             } catch (err) {
                 console.error(err);
@@ -44,6 +42,16 @@ const Music = () => {
         };
         loadTracks();
     }, [query, selectedCategory]);
+
+    const toggleLike = async (id) => {
+        try {
+            const { API } = await import('../api');
+            const { data } = await API.post(`music/${id}/like`);
+            setTracks(tracks.map(t => t._id === id ? { ...t, likes_count: data.likes_count } : t));
+        } catch (err) {
+            console.error(err);
+        }
+    };
 
     const togglePlay = (track) => {
         if (playingTrack?._id === track._id) {
@@ -110,6 +118,18 @@ const Music = () => {
             </section>
 
             <motion.div className="music-filter-wrapper mb-5" variants={itemVariants}>
+                <div className="search-bar-centered mb-4">
+                    <div className="glass-card search-input-wrapper-v2">
+                        <Search size={20} className="search-icon-v2" />
+                        <input 
+                            type="text" 
+                            placeholder="Search by track name or artist..." 
+                            value={query} 
+                            onChange={(e) => setQuery(e.target.value)} 
+                            className="search-input-v2"
+                        />
+                    </div>
+                </div>
                 <div className="pill-container-centered">
                     <button 
                         className={`music-pill-v2 ${!selectedCategory ? 'active' : ''}`} 
@@ -146,7 +166,7 @@ const Music = () => {
                                         whileHover={{ y: -10, scale: 1.02 }}
                                     >
                                         <div className="card-cover-area">
-                                            <img src={track.cover_url || '/default-music.jpg'} alt={track.title} />
+                                            <img src={track.thumbnail?.startsWith('/uploads') ? `${MEDIA_URL}${track.thumbnail}` : (track.thumbnail || track.thumbnail_url || '/default-music.png')} alt={`${track.title} - Music by Ansh Ebook`} />
                                             <div className="cover-overlay">
                                                 <button className="play-trigger" onClick={() => togglePlay(track)}>
                                                     {playingTrack?._id === track._id ? <Pause fill="white" size={32} /> : <Play fill="white" size={32} />}
@@ -155,7 +175,21 @@ const Music = () => {
                                         </div>
                                         <div className="track-details">
                                             <h3>{track.title}</h3>
-                                            <p className="artist-label">{track.artist}</p>
+                                            <div className="track-meta-bottom">
+                                                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                                    <p className="artist-label">{track.artist}</p>
+                                                    <span className="badge" style={{ fontSize: '0.65rem', alignSelf: 'flex-start', marginTop: '4px' }}>{track.category_id?.name || 'MUSIC'}</span>
+                                                </div>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                    <span className="date-tag-mini">{new Date(track.createdAt).toLocaleDateString()}</span>
+                                                    <button 
+                                                        onClick={() => toggleLike(track._id)}
+                                                        style={{ background: 'transparent', border: 'none', color: 'var(--pink-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px', fontSize: '0.8rem' }}
+                                                    >
+                                                        <Heart size={14} fill={track.likes_count > 0 ? "var(--pink-primary)" : "transparent"} /> {track.likes_count || 0}
+                                                    </button>
+                                                </div>
+                                            </div>
                                             {playingTrack?._id === track._id && (
                                                 <motion.div 
                                                     initial={{ height: 0, opacity: 0 }}
@@ -163,7 +197,7 @@ const Music = () => {
                                                     className="player-mount mt-3"
                                                 >
                                                     <audio autoPlay controls className="compact-audio-player">
-                                                        <source src={track.file_url} type="audio/mpeg" />
+                                                        <source src={track.file_url?.startsWith('/uploads') ? `${MEDIA_URL}${track.file_url}` : track.file_url} type="audio/mpeg" />
                                                     </audio>
                                                 </motion.div>
                                             )}

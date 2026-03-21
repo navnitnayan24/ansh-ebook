@@ -1,7 +1,12 @@
 import axios from 'axios';
 
+const getBaseURL = () => {
+    const url = import.meta.env.VITE_API_URL || '/api';
+    return url.endsWith('/') ? url : `${url}/`;
+};
+
 const API = axios.create({ 
-    baseURL: import.meta.env.VITE_API_URL || '/api/'
+    baseURL: getBaseURL()
 });
 
 API.interceptors.request.use((req) => {
@@ -34,33 +39,14 @@ API.interceptors.response.use(
 );
 
 // Home Dashboard Content (Mocking the previous aggregate fetch)
-export const fetchHomeContent = async () => {
-    try {
-        const [shayari, podcasts, ebooks] = await Promise.all([
-            API.get('shayari'),
-            API.get('podcast'),
-            API.get('ebook')
-        ]);
-        
-        return {
-            data: {
-                latest_shayari: shayari.data.slice(0, 3),
-                latest_podcasts: podcasts.data.slice(0, 2),
-                featured_ebooks: ebooks.data.slice(0, 4)
-            }
-        };
-    } catch (error) {
-        console.error("fetchHomeContent error:", error);
-        return { data: { latest_shayari: [], latest_podcasts: [], featured_ebooks: [] } };
-    }
-};
+export const fetchHomeContent = () => API.get('home');
 
 export const fetchContentByType = async (type, params = {}) => {
     try {
         // Map the existing frontend "types" to our new backend routes
         let route = `${type}`;
-        if (type === 'podcasts') route = 'podcast';
-        if (type === 'ebooks') route = 'ebook';
+        if (type === 'podcasts' || type === 'PODCAST') route = 'podcast';
+        if (type === 'ebooks' || type === 'EBOOK') route = 'ebook';
         
         // Ensure query params are passed if present (e.g. ?q=search)
         const response = await API.get(`${route}`, { params });
@@ -72,7 +58,7 @@ export const fetchContentByType = async (type, params = {}) => {
 };
 
 export const fetchCategories = async (section) => {
-    return API.get('content/categories', { params: { section } });
+    return API.get('categories', { params: { section } });
 };
 
 // Admin CRUD Operations
@@ -80,27 +66,31 @@ export const addContent = (type, data) => {
     let route = `${type}`;
     if (type === 'podcasts') route = 'podcast';
     if (type === 'ebooks') route = 'ebook';
-    return API.post(`${route}`, data);
+    return API.post(`admin/${route}`, data);
 };
 
 export const updateContent = (type, id, data) => {
     let route = `${type}`;
     if (type === 'podcasts') route = 'podcast';
     if (type === 'ebooks') route = 'ebook';
-    return API.put(`${route}/${id}`, data);
+    return API.put(`admin/${route}/${id}`, data);
 };
 
 export const deleteContent = (type, id) => {
     let route = `${type}`;
     if (type === 'podcasts') route = 'podcast';
     if (type === 'ebooks') route = 'ebook';
-    return API.delete(`${route}/${id}`);
+    return API.delete(`admin/${route}/${id}`);
 };
 
 // Auth
 export const login = (data) => API.post('auth/login', data);
 export const register = (data) => API.post('auth/register', data);
 export const adminLogin = (data) => API.post('auth/admin/login', data);
+
+// Categories
+export const addCategory = (data) => API.post('admin/categories', data);
+export const deleteCategory = (id) => API.delete(`admin/categories/${id}`);
 
 // Password Management
 export const forgotPassword = (email) => API.post('auth/forgot-password', { email });

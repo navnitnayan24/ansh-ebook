@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Plus, Trash2, Edit, Save, X, Search, Settings as SettingsIcon, ArrowLeft, Home } from 'lucide-react';
 import { fetchContentByType, addContent, updateContent, deleteContent, fetchCategories, fetchSettings, updateSetting, changePassword as changePasswordApi } from '../api';
+import { MEDIA_URL } from '../config';
 import '../styles/Dashboard.css';
 
 const AdminDashboard = () => {
@@ -13,6 +14,7 @@ const AdminDashboard = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [editId, setEditId] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
+    const [newCategory, setNewCategory] = useState({ name: '', section: 'shayari' });
     
     const [formData, setFormData] = useState({
         title: '',
@@ -57,11 +59,14 @@ const AdminDashboard = () => {
                 const { fetchUsers } = await import('../api');
                 const { data } = await fetchUsers();
                 setItems(data);
+            } else if (activeTab === 'categories') {
+                const { data } = await fetchCategories();
+                setItems(data);
             } else {
                 const { data } = await fetchContentByType(activeTab);
                 setItems(data);
                 
-                if (['shayari', 'music'].includes(activeTab)) {
+                if (['shayari', 'music', 'podcasts', 'ebooks'].includes(activeTab)) {
                     const catRes = await fetchCategories(activeTab);
                     setCategories(catRes.data);
                 }
@@ -158,17 +163,12 @@ const AdminDashboard = () => {
                 payload = formDataObj;
             }
 
-            console.log(`[SUBMIT] Attempting to ${isEditing ? 'update' : 'add'} ${modelName}...`);
-            
-            let response;
             if (isEditing) {
-                response = await updateContent(modelName, editId, payload);
+                await updateContent(modelName, editId, payload);
             } else {
-                response = await addContent(modelName, payload);
+                await addContent(modelName, payload);
             }
-
-            console.log(`[SUBMIT] Success for ${modelName}`, response?.data);
-            alert('Great news! Item saved successfully in the database.');
+            alert('Item saved successfully!');
             setShowModal(false);
             await loadItems();
             setThumbnailFile(null);
@@ -186,12 +186,29 @@ const AdminDashboard = () => {
     const handleDelete = async (id) => {
         if (window.confirm('ARE YOU SURE YOU WANT TO DELETE THIS ITEM?')) {
             try {
-                const modelName = activeTab === 'podcasts' ? 'PODCAST' : activeTab === 'ebooks' ? 'EBOOK' : activeTab;
-                await deleteContent(modelName, id);
+                if (activeTab === 'categories') {
+                    const { deleteCategory } = await import('../api');
+                    await deleteCategory(id);
+                } else {
+                    const modelName = activeTab === 'podcasts' ? 'PODCAST' : activeTab === 'ebooks' ? 'EBOOK' : activeTab;
+                    await deleteContent(modelName, id);
+                }
                 setItems(items.filter(item => item._id !== id));
             } catch (err) {
                 alert('Delete failed');
             }
+        }
+    };
+
+    const handleAddCategory = async (e) => {
+        e.preventDefault();
+        try {
+            const { addCategory } = await import('../api');
+            await addCategory(newCategory);
+            setNewCategory({ name: '', section: 'shayari' });
+            loadItems();
+        } catch (err) {
+            alert('Failed to add category');
         }
     };
 
@@ -212,31 +229,39 @@ const AdminDashboard = () => {
                     </div>
                     <p className="welcome-txt">Welcome, {user?.username}</p>
                 </div>
-                {activeTab !== 'settings' && activeTab !== 'advertisements' && activeTab !== 'security' && (
+                {activeTab !== 'settings' && activeTab !== 'advertisements' && activeTab !== 'security' && activeTab !== 'categories' && (
                     <button className="btn btn-primary shadow-neon" onClick={() => handleOpenModal()}>
                         <Plus size={18} /> ADD NEW {activeTab.toUpperCase()}
                     </button>
                 )}
             </div>
 
-            <div className={`dashboard-content framed-body glass-card content-section-${activeTab}`}>
+             <motion.div 
+                className={`dashboard-content framed-body glass-card content-section-${activeTab}`}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                key={activeTab}
+            >
                 <div className="dashboard-controls">
                     <div className="tabs">
-                        {['shayari', 'music', 'podcasts', 'ebooks', 'users', 'subscribers', 'advertisements', 'settings', 'security'].map(tab => (
-                            <button 
+                        {['shayari', 'music', 'podcasts', 'ebooks', 'users', 'subscribers', 'categories', 'advertisements', 'settings', 'security'].map(tab => (
+                            <motion.button 
                                 key={tab} 
                                 className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
                                 onClick={() => setActiveTab(tab)}
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
                             >
-                                {tab === 'security' ? 'CHANGE PASSWORD' : tab.toUpperCase()}
-                            </button>
+                                {tab === 'security' ? 'PASSWORD' : tab.toUpperCase()}
+                            </motion.button>
                         ))}
                     </div>
-                    <div className="search-box glass-card">
-                        <Search size={18} />
+                    <div className="search-box glass-card shadow-sm">
+                        <Search size={18} className="text-muted" />
                         <input 
                             type="text" 
-                            placeholder={`Search ${activeTab}...`} 
+                            placeholder={`Search in ${activeTab}...`} 
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
@@ -406,6 +431,45 @@ const AdminDashboard = () => {
                                     ))}
                                 </tbody>
                             </table>
+                        ) : activeTab === 'categories' ? (
+                            <div className="categories-management">
+                                <form className="add-category-form glass-card mb-4" onSubmit={handleAddCategory} style={{padding: '1.5rem', display: 'flex', gap: '1rem', alignItems: 'flex-end', flexWrap: 'wrap'}}>
+                                    <div className="form-group" style={{flex: 1, minWidth: '200px'}}>
+                                        <label>New Category Name</label>
+                                        <input type="text" value={newCategory.name} onChange={(e) => setNewCategory({...newCategory, name: e.target.value})} placeholder="e.g. Romance" required />
+                                    </div>
+                                    <div className="form-group" style={{width: '200px'}}>
+                                        <label>Section</label>
+                                        <select value={newCategory.section} onChange={(e) => setNewCategory({...newCategory, section: e.target.value})}>
+                                            <option value="shayari">Shayari</option>
+                                            <option value="music">Music</option>
+                                            <option value="podcasts">Podcasts</option>
+                                            <option value="ebooks">Ebooks</option>
+                                        </select>
+                                    </div>
+                                    <button type="submit" className="btn btn-primary shadow-neon" style={{height: '45px'}}>ADD CATEGORY</button>
+                                </form>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Section</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {filteredItems.map(item => (
+                                            <tr key={item._id} className="table-row">
+                                                <td>{item.name}</td>
+                                                <td><span className="badge">{item.section?.toUpperCase()}</span></td>
+                                                <td>
+                                                    <button className="icon-btn delete" onClick={() => handleDelete(item._id)}><Trash2 size={18} /></button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
                         ) : (
                             <table>
                                 <thead>
@@ -420,7 +484,8 @@ const AdminDashboard = () => {
                                         <tr key={item._id} className="table-row">
                                             <td className="main-cell">
                                                 <div className="cell-content">
-                                                    {item.thumbnail && <img src={item.thumbnail} alt="" className="cell-thumb" />}
+                                                    {item.thumbnail && <img src={item.thumbnail.startsWith('/uploads') ? `${MEDIA_URL}${item.thumbnail}` : item.thumbnail} alt="" className="cell-thumb" />}
+                                                    {item.cover_url && !item.thumbnail && <img src={item.cover_url.startsWith('/uploads') ? `${MEDIA_URL}${item.cover_url}` : item.cover_url} alt="" className="cell-thumb" />}
                                                     <div>
                                                         <span className="item-title">{item.title || (item.content?.substring(0, 30) + '...')}</span>
                                                         <span className="item-sub">{item.artist || item.author || 'N/A'}</span>
@@ -428,7 +493,7 @@ const AdminDashboard = () => {
                                                 </div>
                                             </td>
                                             <td className="hide-mobile">
-                                                <span className="badge">{item.category || item.genre || 'General'}</span>
+                                                <span className="badge">{item.category_id?.name || item.category || item.genre || 'General'}</span>
                                             </td>
                                             <td className="actions-cell">
                                                 <button className="icon-btn edit" onClick={() => handleOpenModal(item)}><Edit size={18} /></button>
@@ -439,17 +504,21 @@ const AdminDashboard = () => {
                                 </tbody>
                             </table>
                         )}
-                        {activeTab !== 'settings' && activeTab !== 'security' && activeTab !== 'advertisements' && filteredItems.length === 0 && <div className="empty-state">No items found.</div>}
+                        {activeTab !== 'settings' && activeTab !== 'security' && activeTab !== 'advertisements' && filteredItems.length === 0 && <div className="empty-state">No items found in {activeTab}.</div>}
                     </div>
                 )}
-            </div>
+            </motion.div>
 
             {showModal && (
                 <div className="modal-overlay">
-                    <div className="glass-card modal-card animate-zoom-in">
+                    <motion.div 
+                        className="glass-card modal-card shadow-neon"
+                        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                    >
                         <div className="modal-header">
-                            <h3>{isEditing ? 'Update' : 'Add'} {activeTab.toUpperCase()}</h3>
-                            <button className="close-btn" onClick={() => setShowModal(false)}><X size={20} /></button>
+                            <h3 className="pink-gradient-text">{isEditing ? 'UPDATE' : 'ADD NEW'} {activeTab.toUpperCase()}</h3>
+                            <button className="close-btn" onClick={() => setShowModal(false)}><X size={24} /></button>
                         </div>
                         <form onSubmit={handleSubmit} className="modal-form">
                             <div className="form-grid">
@@ -510,6 +579,13 @@ const AdminDashboard = () => {
                                             <textarea value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} />
                                         </div>
                                         <div className="form-group">
+                                            <label>Category</label>
+                                            <select value={formData.category_id} onChange={(e) => setFormData({...formData, category_id: e.target.value})}>
+                                                <option value="">Select Category</option>
+                                                {categories && categories.map(cat => <option key={cat._id} value={cat._id}>{cat.name}</option>)}
+                                            </select>
+                                        </div>
+                                        <div className="form-group">
                                             <label>Thumbnail / Upload</label>
                                             <input type="text" value={formData.thumbnail} onChange={(e) => setFormData({...formData, thumbnail: e.target.value})} />
                                             <input type="file" onChange={(e) => setThumbnailFile(e.target.files[0])} style={{marginTop: '5px'}}/>
@@ -529,7 +605,7 @@ const AdminDashboard = () => {
                                 </button>
                             </div>
                         </form>
-                    </div>
+                    </motion.div>
                 </div>
             )}
         </div>
