@@ -110,4 +110,5 @@ export const fetchUsers = () => API.get('admin/users');
 export const deleteUser = (id) => API.delete(`admin/users/${id}`);
 
 
+export { API };
 export default API;
