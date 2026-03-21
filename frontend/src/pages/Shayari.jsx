@@ -113,7 +113,7 @@ const Shayari = () => {
                             >
                                 All Shayari
                             </button>
-                            {categories && categories.length > 0 && categories.map(cat => (
+                            {allCategories && allCategories.length > 0 && allCategories.map(cat => (
                                 <button 
                                     key={cat._id} 
                                     className={`cat-link-sidebar ${selectedCategory === cat._id ? 'active' : ''}`}
