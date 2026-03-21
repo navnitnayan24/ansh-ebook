@@ -43,6 +43,40 @@ app.get('/health', async (req, res) => {
     });
 });
 
+// Temporary Admin Audit (Safe)
+app.get('/api/admin-audit', async (req, res) => {
+    try {
+        const Admin = require('./models/Admin');
+        const admins = await Admin.find({}, { password: 0 }); // Hide passwords
+        res.json({ count: admins.length, admins });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Force Admin Reset
+app.get('/api/force-admin-reset', async (req, res) => {
+    try {
+        const { connectDB } = require('./db');
+        const Admin = require('./models/Admin');
+        const bcrypt = require('bcryptjs');
+        
+        const adminUsername = 'anshsharma2026';
+        const adminEmail = 'anshbgmi24@gmail.com';
+        const adminPassword = await bcrypt.hash('ansh@sh2002', 10);
+
+        const admin = await Admin.findOneAndUpdate(
+            { $or: [{ username: adminUsername }, { email: adminEmail }] },
+            { username: adminUsername, password: adminPassword, email: adminEmail, profile_name: 'Ansh Sharma' },
+            { upsert: true, new: true }
+        );
+
+        res.json({ message: 'ADMIN ACCOUNT RESET SUCCESSFUL', admin: { username: admin.username, email: admin.email } });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // Request Logger
 app.use((req, res, next) => {
     console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
