@@ -1,11 +1,12 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Home, Music, Book, BookOpen, Mic, Youtube, MessageCircle, Instagram, Facebook, Linkedin, Sun, Moon } from 'lucide-react';
+import { Home, Music, Book, BookOpen, Mic, Youtube, MessageCircle, Instagram, Facebook, Linkedin, Sun, Moon, Settings } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import '../styles/Sidebar.css';
 
 const Sidebar = () => {
     const { theme, toggleTheme } = useTheme();
+    const user = JSON.parse(localStorage.getItem('user') || 'null');
     return (
         <aside className="sidebar-desktop glass-drawer">
             <div className="sidebar-top-actions">
@@ -48,6 +49,14 @@ const Sidebar = () => {
                         <span>PODCAST</span>
                     </NavLink>
                 </li>
+                {user?.role === 'admin' && (
+                    <li>
+                        <NavLink to="/admin" className={({isActive}) => isActive ? 'active' : ''}>
+                            <Settings size={20} className="sidebar-icon" />
+                            <span>DASHBOARD</span>
+                        </NavLink>
+                    </li>
+                )}
             </ul>
 
             <div className="sidebar-footer" style={{ marginTop: 'auto', padding: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.05)' }}>

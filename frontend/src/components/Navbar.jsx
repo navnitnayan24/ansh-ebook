@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 import { Menu, X, LogOut, Settings, Sun, Moon, Home, Book, Music, Mic, BookOpen, Quote, User, MessageCircle, Youtube, Instagram, Facebook, Linkedin } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
@@ -9,22 +9,29 @@ const Navbar = ({ isOpen, setIsOpen }) => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [user, setUser] = useState(null);
 
+    const location = useLocation();
+
     useEffect(() => {
         const handleScroll = () => setIsScrolled(window.scrollY > 20);
         window.addEventListener('scroll', handleScroll);
         
-        const savedUser = localStorage.getItem('user');
-        if (savedUser && savedUser !== 'undefined') {
-            try {
-                setUser(JSON.parse(savedUser));
-            } catch (err) {
-                console.error("User state corruption fixed:", err);
-                localStorage.removeItem('user');
+        const syncUser = () => {
+            const savedUser = localStorage.getItem('user');
+            if (savedUser && savedUser !== 'undefined') {
+                try {
+                    setUser(JSON.parse(savedUser));
+                } catch (err) {
+                    console.error("User state sync error:", err);
+                }
+            } else {
+                setUser(null);
             }
-        }
+        };
+
+        syncUser();
 
         return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
+    }, [location]);
 
     const handleLogout = () => {
         localStorage.removeItem('token');
