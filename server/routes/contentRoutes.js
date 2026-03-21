@@ -50,5 +50,11 @@ router.get('/ebooks', authenticate, (req, res) => {
 });
 
 router.post('/:type/:id/like', contentController.likeContent);
+router.post('/subscribe', contentController.subscribe);
+
+// Review System
+router.get('/reviews', contentController.getReviews);
+router.post('/reviews', contentController.addReview);
+router.post('/reviews/:id/reaction', contentController.updateReviewReaction);
 
 module.exports = router;

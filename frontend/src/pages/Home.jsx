@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Play, Book, Mic, Quote, ArrowRight, BookOpen, Instagram, Youtube, MessageCircle, PlayCircle, Music } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { fetchHomeContent } from '../api';
+import { Play, Book, Mic, Quote, ArrowRight, BookOpen, Instagram, Youtube, MessageCircle, PlayCircle, Music, Star, ThumbsUp, ThumbsDown, User } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { fetchHomeContent, fetchReviews, addReview, updateReviewReaction } from '../api';
 import { MEDIA_URL } from '../config';
 import AdSpace from '../components/AdSpace';
 import SEO from '../components/SEO';
@@ -17,6 +17,15 @@ const Home = () => {
     const [subStatus, setSubStatus] = useState({ message: '', success: false });
     const [contactStatus, setContactStatus] = useState({ message: '', success: false });
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Review States
+    const [reviews, setReviews] = useState([]);
+    const [reviewForm, setReviewForm] = useState({ 
+        username: user?.username || '', 
+        content: '', 
+        rating: 5 
+    });
+    const [isReviewing, setIsReviewing] = useState(false);
 
     // Hash Scroll Handling
     useEffect(() => {
@@ -49,16 +58,46 @@ const Home = () => {
     useEffect(() => {
         const getHomeData = async () => {
             try {
-                const { data } = await fetchHomeContent();
-                setContent(data);
+                const homeRes = await fetchHomeContent();
+                setContent(homeRes.data);
+                
+                const reviewsRes = await fetchReviews();
+                setReviews(reviewsRes.data);
             } catch (err) {
-                console.error('Error fetching home content:', err);
+                console.error('Error fetching home data:', err);
             } finally {
                 setLoading(false);
             }
         };
         getHomeData();
     }, []);
+
+    const handleReviewSubmit = async (e) => {
+        e.preventDefault();
+        setIsReviewing(true);
+        try {
+            const { data } = await addReview({
+                ...reviewForm,
+                username: reviewForm.username || 'Anonymous User'
+            });
+            setReviews([data, ...reviews]);
+            setReviewForm({ username: user?.username || '', content: '', rating: 5 });
+            alert('Thank you for your review! ✨');
+        } catch (err) {
+            alert('Failed to submit review.');
+        } finally {
+            setIsReviewing(false);
+        }
+    };
+
+    const handleReviewReaction = async (id, type) => {
+        try {
+            const { data } = await updateReviewReaction(id, type);
+            setReviews(reviews.map(r => r._id === id ? data : r));
+        } catch (err) {
+            console.error('Reaction failed:', err);
+        }
+    };
 
     const handleSubscribe = async (e) => {
         e.preventDefault();
@@ -348,6 +387,109 @@ const Home = () => {
                             {subStatus.message}
                         </p>
                     )}
+                </div>
+            </section>
+
+            {/* REVIEWS SECTION */}
+            <section id="reviews" className="featured-section container mb-5">
+                <div className="section-header text-center mb-5">
+                    <h2 className="pink-gradient-text">Community <span className="text-white">Voices</span></h2>
+                    <p className="opacity-70">See what our premium circle members are saying.</p>
+                </div>
+
+                <div className="grid-2">
+                    {/* Review Form */}
+                    <div className="glass-card" style={{ padding: '2.5rem' }}>
+                        <h3 className="pink-text mb-4">Share Your Experience</h3>
+                        <form onSubmit={handleReviewSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+                            <div className="form-group">
+                                <label className="text-white opacity-70 mb-2 block">Rating</label>
+                                <div style={{ display: 'flex', gap: '8px' }}>
+                                    {[1, 2, 3, 4, 5].map(star => (
+                                        <Star 
+                                            key={star}
+                                            size={24}
+                                            fill={star <= reviewForm.rating ? "var(--color-pink)" : "none"}
+                                            stroke={star <= reviewForm.rating ? "var(--color-pink)" : "white"}
+                                            style={{ cursor: 'pointer' }}
+                                            onClick={() => setReviewForm({ ...reviewForm, rating: star })}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                            <input 
+                                type="text" 
+                                placeholder="Your Name/ID" 
+                                className="glass-input-sidebar"
+                                value={reviewForm.username}
+                                onChange={(e) => setReviewForm({ ...reviewForm, username: e.target.value })}
+                            />
+                            <textarea 
+                                placeholder="Write your review here... (Good/Bad/Amazing)"
+                                className="glass-input-sidebar"
+                                style={{ minHeight: '120px' }}
+                                required
+                                value={reviewForm.content}
+                                onChange={(e) => setReviewForm({ ...reviewForm, content: e.target.value })}
+                            ></textarea>
+                            <button 
+                                type="submit" 
+                                disabled={isReviewing}
+                                className="btn btn-primary shadow-neon w-100"
+                            >
+                                {isReviewing ? 'SUBMITTING...' : 'POST REVIEW'}
+                            </button>
+                        </form>
+                    </div>
+
+                    {/* Review List */}
+                    <div className="reviews-list" style={{ maxHeight: '500px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1.5rem', paddingRight: '10px' }}>
+                        <AnimatePresence>
+                            {reviews.map((rev) => (
+                                <motion.div 
+                                    key={rev._id}
+                                    initial={{ opacity: 0, x: 20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    className="glass-card"
+                                    style={{ padding: '1.5rem', borderLeft: '4px solid var(--color-pink)' }}
+                                >
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.8rem' }}>
+                                        <div>
+                                            <h4 className="text-white mb-1" style={{ fontSize: '1.1rem' }}>{rev.username}</h4>
+                                            <div style={{ display: 'flex', gap: '4px' }}>
+                                                {[...Array(5)].map((_, i) => (
+                                                    <Star key={i} size={14} fill={i < rev.rating ? "var(--color-pink)" : "none"} stroke="var(--color-pink)" />
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <span className="text-white opacity-40" style={{ fontSize: '0.8rem' }}>
+                                            {new Date(rev.createdAt).toLocaleDateString()}
+                                        </span>
+                                    </div>
+                                    <p className="text-white opacity-80 mb-3" style={{ fontSize: '0.95rem', lineHeight: '1.6' }}>
+                                        "{rev.content}"
+                                    </p>
+                                    <div style={{ display: 'flex', gap: '15px' }}>
+                                        <button 
+                                            className="reaction-btn" 
+                                            onClick={() => handleReviewReaction(rev._id, 'like')}
+                                            style={{ background: 'none', border: 'none', color: 'white', display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer', opacity: 0.7 }}
+                                        >
+                                            <ThumbsUp size={16} /> {rev.likes}
+                                        </button>
+                                        <button 
+                                            className="reaction-btn" 
+                                            onClick={() => handleReviewReaction(rev._id, 'dislike')}
+                                            style={{ background: 'none', border: 'none', color: 'white', display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer', opacity: 0.7 }}
+                                        >
+                                            <ThumbsDown size={16} /> {rev.dislikes}
+                                        </button>
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </AnimatePresence>
+                        {reviews.length === 0 && <p className="text-center opacity-40 mt-5">No reviews yet. Be the first!</p>}
+                    </div>
                 </div>
             </section>
 

@@ -109,6 +109,10 @@ export const subscribeUser = (email) => API.post('subscribe', { email });
 export const fetchUsers = () => API.get('admin/users');
 export const deleteUser = (id) => API.delete(`admin/users/${id}`);
 
+// Reviews
+export const fetchReviews = () => API.get('reviews');
+export const addReview = (data) => API.post('reviews', data);
+export const updateReviewReaction = (id, type) => API.post(`reviews/${id}/reaction`, { type });
 
 export { API };
 export default API;
