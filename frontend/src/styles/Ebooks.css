@@ -69,7 +69,7 @@
 /* Ebook Grid */
 .ebook-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 2rem;
 }
 
@@ -167,8 +167,20 @@
     color: white;
 }
 
+@media (max-width: 1024px) {
+    .ebook-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
 @media (max-width: 900px) {
     .ebooks-layout {
         grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 576px) {
+    .ebook-grid {
+        grid-template-columns: 1fr;
     }
 }
