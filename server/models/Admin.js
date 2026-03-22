@@ -5,6 +5,7 @@ const adminSchema = new mongoose.Schema({
     password: { type: String, required: true },
     email: { type: String },
     profile_name: { type: String },
+    profile_pic: { type: String },
     resetPasswordToken: String,
     resetPasswordExpires: Date,
 }, { timestamps: true });

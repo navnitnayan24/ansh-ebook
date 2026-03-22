@@ -2,10 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { User, Mail, Shield, Calendar, LogOut, ArrowRight, Heart, BookOpen } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { API } from '../api';
+import { MEDIA_URL } from '../config';
 import '../styles/Profile.css';
 
 const Profile = () => {
     const [user, setUser] = useState(null);
+    const [uploading, setUploading] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -21,6 +24,29 @@ const Profile = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         window.location.href = '/';
+    };
+
+    const handleProfilePicUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        setUploading(true);
+        const formData = new FormData();
+        formData.append('profile_pic', file);
+
+        try {
+            const { data } = await API.put('auth/profile', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+            setUser(data.user);
+            localStorage.setItem('user', JSON.stringify(data.user));
+            // Dispatch a custom event to update Navbar immediately
+            window.dispatchEvent(new Event('storage'));
+        } catch (err) {
+            alert('Failed to update profile picture: ' + (err.response?.data?.error || err.message));
+        } finally {
+            setUploading(false);
+        }
     };
 
     if (!user) return <div className="loader">Loading Profile...</div>;
@@ -39,9 +65,17 @@ const Profile = () => {
         >
             <div className="profile-header-card glass-card">
                 <div className="profile-hero-area">
-                    <div className="profile-avatar-wrapper">
+                    <div className="profile-avatar-wrapper" style={{ position: 'relative' }}>
                         <div className="avatar-glow"></div>
-                        <User size={60} className="avatar-icon" />
+                        {user.profile_pic ? (
+                            <img src={user.profile_pic.startsWith('/uploads') ? `${MEDIA_URL}${user.profile_pic}` : user.profile_pic} alt="Profile Avatar" className="avatar-icon" style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover' }} />
+                        ) : (
+                            <User size={60} className="avatar-icon" />
+                        )}
+                        <input type="file" id="profile-upload" accept="image/*" style={{ display: 'none' }} onChange={handleProfilePicUpload} />
+                        <label htmlFor="profile-upload" className="edit-avatar-badge" style={{ position: 'absolute', bottom: '-5px', right: '-5px', background: 'var(--pink-primary)', borderRadius: '50%', width: '30px', height: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 10 }}>
+                            {uploading ? <span className="loader" style={{ width: '15px', height: '15px' }}></span> : <span style={{ fontSize: '1rem' }}>+</span>}
+                        </label>
                     </div>
                     <div className="profile-main-info">
                         <h1 className="username-display">{user?.username} <span className="role-badge">{user?.role}</span></h1>

@@ -167,7 +167,11 @@ const Music = () => {
                                         whileHover={{ y: -10, scale: 1.02 }}
                                     >
                                         <div className="card-cover-area">
-                                            <img src={track.thumbnail?.startsWith('/uploads') ? `${MEDIA_URL}${track.thumbnail}` : (track.thumbnail || track.thumbnail_url || '/default-music.png')} alt={`${track.title} - Music by Ansh Ebook`} />
+                                            {(() => {
+                                                const albumArt = track.thumbnail || track.cover_url || track.thumbnail_url;
+                                                const imgSrc = albumArt?.startsWith('/uploads') ? `${MEDIA_URL}${albumArt}` : (albumArt || '/default-music.png');
+                                                return <img src={imgSrc} alt={`${track.title} - Music by Ansh Ebook`} />;
+                                            })()}
                                             <div className="cover-overlay">
                                                 <button className="play-trigger" onClick={() => togglePlay(track)}>
                                                     {playingTrack?._id === track._id ? <Pause fill="white" size={32} /> : <Play fill="white" size={32} />}

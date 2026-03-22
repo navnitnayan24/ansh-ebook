@@ -256,7 +256,19 @@ const AdminDashboard = () => {
                         <h1 className="admin-title">Admin <span className="text-gradient">Panel</span></h1>
                         <span className="badge ml-2" style={{fontSize: '0.8rem'}}>{Array.isArray(items) ? items.length : 0} Items</span>
                     </div>
-                    <p className="welcome-txt">Welcome, {user?.username}</p>
+                    <div className="welcome-txt" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        {user?.profile_pic ? (
+                            <img src={user.profile_pic.startsWith('/uploads') ? `${MEDIA_URL}${user.profile_pic}` : user.profile_pic} alt="Admin" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} />
+                        ) : (
+                            <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--gradient-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <span style={{ color: 'white', fontWeight: 'bold' }}>{user?.username?.charAt(0).toUpperCase()}</span>
+                            </div>
+                        )}
+                        <div>
+                            <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Welcome back,</span><br/>
+                            <span style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>{user?.username}</span>
+                        </div>
+                    </div>
                 </div>
                 {activeTab !== 'settings' && activeTab !== 'advertisements' && activeTab !== 'security' && activeTab !== 'categories' && (
                     <button className="btn btn-primary shadow-neon" onClick={() => handleOpenModal()}>

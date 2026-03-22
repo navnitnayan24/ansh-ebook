@@ -161,3 +161,34 @@ exports.changePassword = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+
+// Update Profile Picture
+exports.updateProfile = async (req, res) => {
+    try {
+        const AccountModel = req.user.role === 'admin' ? Admin : User;
+        const account = await AccountModel.findById(req.user.id);
+        
+        if (!account) return res.status(404).json({ error: 'User not found' });
+
+        if (req.file) {
+            // Cloudinary path or local upload path
+            account.profile_pic = req.file.path || `/uploads/${req.file.filename}`;
+        }
+        
+        await account.save();
+        
+        res.json({
+            message: 'Profile updated successfully',
+            user: {
+                _id: account._id,
+                username: account.username,
+                email: account.email,
+                role: req.user.role,
+                profile_pic: account.profile_pic,
+                profile_name: account.profile_name
+            }
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};

@@ -104,7 +104,13 @@ const Navbar = ({ isOpen, setIsOpen, closeMenu }) => {
                                     <>
                                         <li>
                                             <Link to="/profile" onClick={closeMenu} className="drawer-link profile-link-highlight">
-                                                <span className="drawer-icon"><User size={20} /></span>
+                                                <span className="drawer-icon">
+                                                    {user.profile_pic ? (
+                                                        <img src={user.profile_pic.startsWith('/uploads') ? `${MEDIA_URL}${user.profile_pic}` : user.profile_pic} alt="Profile" style={{ width: '20px', height: '20px', borderRadius: '50%', objectFit: 'cover' }} />
+                                                    ) : (
+                                                        <User size={20} />
+                                                    )}
+                                                </span>
                                                 <span className="drawer-label">MY PROFILE</span>
                                             </Link>
                                         </li>
