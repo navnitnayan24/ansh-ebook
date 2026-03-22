@@ -85,7 +85,8 @@ exports.addContent = async (req, res) => {
         // Handle File Upload or Manual URL Mapping
         if (req.files && req.files.length > 0) {
             for (let file of req.files) {
-                const uploadedUrl = `/uploads/${file.filename}`;
+                // If cloudinary is used, file.path contains the full URL. Otherwise fallback to local.
+                const uploadedUrl = file.path || `/uploads/${file.filename}`;
                 if (file.fieldname === 'thumbnail') {
                     data.thumbnail = uploadedUrl;
                     if (['music', 'ebook', 'ebooks'].includes(type.toLowerCase())) {
@@ -156,7 +157,8 @@ exports.updateContent = async (req, res) => {
         // Handle File Upload or Manual URL Mapping
         if (req.files && req.files.length > 0) {
             for (let file of req.files) {
-                const uploadedUrl = `/uploads/${file.filename}`;
+                // If cloudinary is used, file.path contains the full URL. Otherwise fallback to local.
+                const uploadedUrl = file.path || `/uploads/${file.filename}`;
                 if (file.fieldname === 'thumbnail') {
                     data.thumbnail = uploadedUrl;
                     if (['music', 'ebook', 'ebooks'].includes(type.toLowerCase())) {

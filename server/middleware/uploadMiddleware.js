@@ -1,22 +1,58 @@
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('cloudinary').v2;
+require('dotenv').config();
 
-// Ensure upload directory exists
-const uploadDir = path.join(__dirname, '../../uploads');
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
+let storage;
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, uploadDir);
-    },
-    filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+if (process.env.CLOUDINARY_CLOUD_NAME) {
+    // Configure Cloudinary
+    cloudinary.config({
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET
+    });
+
+    storage = new CloudinaryStorage({
+      cloudinary: cloudinary,
+      params: async (req, file) => {
+        let folder = 'ansh-ebook/general';
+        let resource_type = 'auto';
+
+        if (file.mimetype.startsWith('image/')) {
+            folder = 'ansh-ebook/images';
+            resource_type = 'image';
+        } else if (file.mimetype.startsWith('audio/')) {
+            folder = 'ansh-ebook/audio';
+            resource_type = 'video'; // Cloudinary treats audio as video resource
+        } else if (file.mimetype === 'application/pdf') {
+            folder = 'ansh-ebook/pdfs';
+            resource_type = 'raw'; // PDF can be raw or image but auto sometimes fails
+        }
+
+        return {
+          folder: folder,
+          resource_type: resource_type, 
+        };
+      },
+    });
+} else {
+    // Fallback to local storage
+    const uploadDir = path.join(__dirname, '../../uploads');
+    if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
     }
-});
+
+    storage = multer.diskStorage({
+        destination: (req, file, cb) => cb(null, uploadDir),
+        filename: (req, file, cb) => {
+            const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+            cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+        }
+    });
+}
 
 const fileFilter = (req, file, cb) => {
     // Allow images, audios, and documents (pdfs/ebooks)
