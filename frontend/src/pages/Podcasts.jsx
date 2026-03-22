@@ -17,6 +17,7 @@ const Podcasts = () => {
     const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
+        document.body.classList.add('has-top-bar');
         const fetchData = async () => {
             try {
                 const [podRes, catRes] = await Promise.all([
@@ -32,6 +33,7 @@ const Podcasts = () => {
             }
         };
         fetchData();
+        return () => document.body.classList.remove('has-top-bar');
     }, []);
 
     const toggleLike = async (id) => {
@@ -76,12 +78,16 @@ const Podcasts = () => {
 
     return (
         <motion.div className="podcasts-page" initial="hidden" animate="visible" variants={containerVariants}>
+            <div className="top-back-bar">
+                <Link to="/" className="back-link-top">
+                    <ArrowLeft size={16}/> Back to Home
+                </Link>
+            </div>
             <SEO title="Original Podcasts | Ansh Ebook" description="Listen to soulful and inspiring podcasts by Ansh Sharma on Ansh Ebook." />
             
             <div className="podcasts-hero">
                 <div className="hero-content container">
                     <motion.div variants={itemVariants}>
-                        <Link to="/" className="back-link"><ArrowLeft size={16}/> Back to Home</Link>
                         <h1 className="hero-title mt-3">Soulful <span className="text-gradient">Podcasts</span></h1>
                         <p className="hero-subtitle">Kalam Se Dil Tak - Original voices, authentic stories.</p>
                     </motion.div>
@@ -166,8 +172,14 @@ const Podcasts = () => {
                                             <div className="podcast-footer mt-auto" style={{ gap: '10px', display: 'flex', flexDirection: 'column' }}>
                                                 {playingPodcast?._id === pod._id && (
                                                     <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} className="w-100">
-                                                        <audio autoPlay controls className="custom-audio w-100">
-                                                            <source src={pod.file_url?.startsWith('/uploads') ? `${MEDIA_URL}${pod.file_url}` : pod.file_url} type="audio/mpeg" />
+                                                        <audio 
+                                                            key={pod.file_url}
+                                                            autoPlay 
+                                                            controls 
+                                                            className="custom-audio w-100"
+                                                            src={pod.file_url?.startsWith('/uploads') ? `${MEDIA_URL}${pod.file_url}` : pod.file_url}
+                                                        >
+                                                            Your browser does not support the audio element.
                                                         </audio>
                                                     </motion.div>
                                                 )}

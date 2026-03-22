@@ -15,6 +15,7 @@ const Shayari = () => {
     const [selectedCategory, setSelectedCategory] = useState('All');
 
     useEffect(() => {
+        document.body.classList.add('has-top-bar');
         const fetchData = async () => {
             try {
                 const [shRes, catRes] = await Promise.all([
@@ -30,6 +31,7 @@ const Shayari = () => {
             }
         };
         fetchData();
+        return () => document.body.classList.remove('has-top-bar');
     }, [selectedCategory, searchQuery]);
 
     const handleSearch = (e) => {
@@ -73,15 +75,15 @@ const Shayari = () => {
             animate="visible"
             variants={containerVariants}
         >
+            <div className="top-back-bar">
+                <Link to="/" className="back-link-top">
+                    <ArrowLeft size={16}/> Back to Home
+                </Link>
+            </div>
             <SEO 
                 title="Heartfelt Hindi Shayari" 
                 description="Read premium, original Hindi and Urdu Shayari. Explore poetry on love, life, sadness, and motivation." 
             />
-            <div className="page-header mb-4">
-                <Link to="/" className="back-btn btn btn-outline btn-sm btn-pill">
-                    <ArrowLeft size={16} /> Back to Home
-                </Link>
-            </div>
 
             <motion.div className="main-title-area text-center mb-5" variants={itemVariants}>
                 <h1 className="main-title display-4">Shayari <span className="pink-gradient-text">Collection</span></h1>

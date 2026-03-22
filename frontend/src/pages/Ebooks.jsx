@@ -16,6 +16,7 @@ const Ebooks = () => {
     const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
+        document.body.classList.add('has-top-bar');
         const fetchData = async () => {
             try {
                 const [ebRes, catRes] = await Promise.all([
@@ -31,6 +32,7 @@ const Ebooks = () => {
             }
         };
         fetchData();
+        return () => document.body.classList.remove('has-top-bar');
     }, []);
 
     const categories = ['All', ...allCategories.map(c => c.name)];
@@ -59,15 +61,15 @@ const Ebooks = () => {
             animate="visible"
             variants={containerVariants}
         >
+            <div className="top-back-bar">
+                <Link to="/" className="back-link-top">
+                    <ArrowLeft size={16}/> Back to Home
+                </Link>
+            </div>
             <SEO 
                 title="Premium E-Books Collection" 
                 description="Build your digital library with premium original e-books, poetry collections, and creative guides." 
             />
-            <div className="page-header mb-4">
-                <Link to="/" className="back-btn btn btn-outline btn-sm btn-pill">
-                    <ArrowLeft size={16} /> Back to Home
-                </Link>
-            </div>
 
             <motion.div className="main-title-area text-center mb-5" variants={itemVariants}>
                 <h1 className="main-title display-4">E-Book <span className="pink-gradient-text">Library</span></h1>
@@ -146,7 +148,6 @@ const Ebooks = () => {
                                             >
                                                 <div className="ebook-cover-wrapper">
                                                     <img src={book.cover_url?.startsWith('/uploads') ? `${MEDIA_URL}${book.cover_url}` : (book.cover_url || book.thumbnail || '/default-ebook.png')} alt={`${book.title} - Ansh Ebook E-book`} />
-                                                    <div className="ebook-badge">{book.price === 0 ? 'FREE' : 'PREMIUM'}</div>
                                                 </div>
                                                 <div className="ebook-details-main">
                                                     <div className="ebook-meta-top">
@@ -156,16 +157,15 @@ const Ebooks = () => {
                                                     <h2>{book.title}</h2>
                                                     <p className="ebook-desc-short">{book.description?.substring(0, 100)}...</p>
                                                     <div className="ebook-footer-actions">
-                                                        <span className="price-label">{book.price === 0 ? '₹ 0' : `₹ ${book.price}`}</span>
                                                         <button 
-                                                            className="btn btn-primary btn-sm btn-pill shadow-neon"
+                                                            className="btn btn-primary btn-sm btn-pill shadow-neon w-100"
                                                             onClick={() => {
                                                                 const target = book.file_url || book.link;
                                                                 if (target) window.open(target.startsWith('/uploads') ? `${MEDIA_URL}${target}` : target, '_blank');
                                                                 else alert('Link coming soon! ✨');
                                                             }}
                                                         >
-                                                            {book.price === 0 ? <><Download size={16}/> DOWNLOAD</> : <><BookOpen size={16}/> BUY NOW</>}
+                                                            <BookOpen size={16}/> READ NOW
                                                         </button>
                                                     </div>
                                                 </div>

@@ -17,6 +17,7 @@ const Music = () => {
     const [playingTrack, setPlayingTrack] = useState(null);
 
     useEffect(() => {
+        document.body.classList.add('has-top-bar');
         const loadCategories = async () => {
             try {
                 const { data } = await fetchCategories('music');
@@ -26,6 +27,7 @@ const Music = () => {
             }
         };
         loadCategories();
+        return () => document.body.classList.remove('has-top-bar');
     }, []);
 
     useEffect(() => {
@@ -78,15 +80,15 @@ const Music = () => {
             animate="visible"
             variants={containerVariants}
         >
+            <div className="top-back-bar">
+                <Link to="/" className="back-link-top">
+                    <ArrowLeft size={16}/> Back to Home
+                </Link>
+            </div>
             <SEO 
                 title="Soulful Music & Melodies" 
                 description="Experience premium original music and soundscapes. Soulful tunes for relaxation, meditation, and inspiration." 
             />
-            <div className="page-header mb-4">
-                <Link to="/" className="back-btn btn btn-outline btn-sm btn-pill">
-                    <ArrowLeft size={16} /> Back to Home
-                </Link>
-            </div>
 
             <section className="section-hero-v2">
                 <div className="section-header-centered animate-slide-in-top">
@@ -196,8 +198,14 @@ const Music = () => {
                                                     animate={{ height: 'auto', opacity: 1 }}
                                                     className="player-mount mt-3"
                                                 >
-                                                    <audio autoPlay controls className="compact-audio-player">
-                                                        <source src={track.file_url?.startsWith('/uploads') ? `${MEDIA_URL}${track.file_url}` : track.file_url} type="audio/mpeg" />
+                                                    <audio 
+                                                        key={track.file_url}
+                                                        autoPlay 
+                                                        controls 
+                                                        className="compact-audio-player"
+                                                        src={track.file_url?.startsWith('/uploads') ? `${MEDIA_URL}${track.file_url}` : track.file_url}
+                                                    >
+                                                        Your browser does not support the audio element.
                                                     </audio>
                                                 </motion.div>
                                             )}

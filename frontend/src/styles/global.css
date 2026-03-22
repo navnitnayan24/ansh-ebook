@@ -172,7 +172,55 @@ h1, h2, h3, h4, h5, h6 {
     width: 100%;
     max-width: 1280px;
     margin: 0 auto;
-    padding: 1rem 1.5rem; /* Standard side padding for better mobile feel */
+    padding: 1rem 1.5rem;
+}
+
+/* New Top Back Bar */
+.top-back-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    background: var(--gradient-primary);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    padding: 0 1.5rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+.top-back-bar .back-link-top {
+    color: white;
+    text-decoration: none;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-transform: uppercase;
+}
+
+.top-back-bar .back-link-top:hover {
+    opacity: 0.9;
+    transform: translateX(-3px);
+    transition: all 0.3s ease;
+}
+
+/* Adjust layout for pages with top bar */
+.has-top-bar .brand-header-wrapper {
+    top: 40px !important;
+}
+
+.has-top-bar .layout-body-flex {
+    margin-top: 140px !important;
+}
+
+@media (max-width: 768px) {
+    .has-top-bar .layout-body-flex {
+        margin-top: 120px !important;
+    }
 }
 
 .glass-card {
