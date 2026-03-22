@@ -340,7 +340,6 @@ const Home = () => {
                                         </div>
                                         <div className="ebook-info">
                                             <h3>{book?.title}</h3>
-                                            <p className="price-tag">₹{book?.price || 0}</p>
                                         </div>
                                     </motion.div>
                                 ))
