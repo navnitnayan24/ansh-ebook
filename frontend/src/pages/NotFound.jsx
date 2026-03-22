@@ -7,7 +7,8 @@ import SEO from '../components/SEO';
 const NotFound = () => {
     return (
         <div className="not-found-page container" style={{ 
-            height: '100vh', 
+            minHeight: '60vh', 
+            padding: '4rem 0',
             display: 'flex', 
             flexDirection: 'column', 
             alignItems: 'center', 
