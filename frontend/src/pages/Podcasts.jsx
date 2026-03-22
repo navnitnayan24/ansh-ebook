@@ -146,7 +146,11 @@ const Podcasts = () => {
                                         whileHover={{ y: -5, scale: 1.01 }}
                                     >
                                         <div className="podcast-thumb" onClick={() => togglePlay(pod)} style={{ cursor: 'pointer' }}>
-                                            <img src={pod.thumbnail?.startsWith('/uploads') ? `${MEDIA_URL}${pod.thumbnail}` : (pod.thumbnail || pod.thumbnail_url || '/default-podcast.png')} alt={`${pod.title} - Ansh Ebook Podcast Episode`} />
+                                            {(() => {
+                                                const albumArt = pod.thumbnail || pod.cover_url || pod.thumbnail_url;
+                                                const imgSrc = albumArt?.startsWith('/uploads') ? `${MEDIA_URL}${albumArt}` : (albumArt || '/default-podcast.png');
+                                                return <img src={imgSrc} alt={`${pod.title} - Ansh Ebook Podcast Episode`} />;
+                                            })()}
                                             <div className="play-overlay-large">
                                                 {playingPodcast?._id === pod._id ? <Pause fill="white" size={40} /> : <Play fill="white" size={40} />}
                                             </div>

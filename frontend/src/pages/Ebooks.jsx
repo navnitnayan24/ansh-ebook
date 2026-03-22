@@ -145,7 +145,11 @@ const Ebooks = () => {
                                                 whileHover={{ y: -15, scale: 1.02 }}
                                             >
                                                 <div className="ebook-cover-wrapper">
-                                                    <img src={book.cover_url?.startsWith('/uploads') ? `${MEDIA_URL}${book.cover_url}` : (book.cover_url || book.thumbnail || '/default-ebook.png')} alt={`${book.title} - Ansh Ebook E-book`} />
+                                                    {(() => {
+                                                        const albumArt = book.cover_url || book.thumbnail || book.thumbnail_url;
+                                                        const imgSrc = albumArt?.startsWith('/uploads') ? `${MEDIA_URL}${albumArt}` : (albumArt || '/default-ebook.png');
+                                                        return <img src={imgSrc} alt={`${book.title} - Ansh Ebook E-book`} />;
+                                                    })()}
                                                 </div>
                                                 <div className="ebook-details-main">
                                                     <div className="ebook-meta-top">

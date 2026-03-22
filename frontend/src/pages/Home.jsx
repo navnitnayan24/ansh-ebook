@@ -298,7 +298,11 @@ const Home = () => {
                             {content?.latest_music?.map((track, idx) => (
                                 <motion.div key={track?._id || idx} className={`glass-card music-card-mini ${!user ? 'restricted-content' : ''}`} onClick={(e) => checkPremiumAccess(e, '/music')} variants={itemVariants} style={{ cursor: 'pointer' }}>
                                     <div className="music-thumb">
-                                        <img src={track?.thumbnail?.startsWith('/uploads') ? `${MEDIA_URL}${track.thumbnail}` : (track?.thumbnail || '/default-music.png')} alt={track?.title} loading="lazy" />
+                                        {(() => {
+                                            const albumArt = track?.thumbnail || track?.cover_url || track?.thumbnail_url;
+                                            const imgSrc = albumArt?.startsWith('/uploads') ? `${MEDIA_URL}${albumArt}` : (albumArt || '/default-music.png');
+                                            return <img src={imgSrc} alt={track?.title} loading="lazy" />;
+                                        })()}
                                         {!user && <div className="lock-overlay"><div className="lock-circle">🔒</div></div>}
                                     </div>
                                     <div className="music-info">
@@ -316,7 +320,11 @@ const Home = () => {
                             {content?.latest_podcasts?.map((pod, idx) => (
                                 <motion.div key={pod?._id || idx} className={`glass-card podcast-card-mini ${!user ? 'restricted-content' : ''}`} onClick={(e) => checkPremiumAccess(e, '/podcasts')} variants={itemVariants} style={{ cursor: 'pointer' }}>
                                         <div className="podcast-thumb">
-                                            <img src={pod?.thumbnail?.startsWith('/uploads') ? `${MEDIA_URL}${pod.thumbnail}` : (pod?.thumbnail || '/default-podcast.png')} alt={pod?.title} loading="lazy" />
+                                            {(() => {
+                                                const albumArt = pod?.thumbnail || pod?.cover_url || pod?.thumbnail_url;
+                                                const imgSrc = albumArt?.startsWith('/uploads') ? `${MEDIA_URL}${albumArt}` : (albumArt || '/default-podcast.png');
+                                                return <img src={imgSrc} alt={pod?.title} loading="lazy" />;
+                                            })()}
                                             {!user && <div className="lock-overlay"><div className="lock-circle">🔒</div></div>}
                                         </div>
                                     <div className="podcast-info">
@@ -335,7 +343,11 @@ const Home = () => {
                                 content.featured_ebooks.map((book, idx) => (
                                     <motion.div key={book?._id || idx} className={`glass-card ebook-card-mini ${!user ? 'restricted-content' : ''}`} onClick={(e) => checkPremiumAccess(e, '/ebooks')} variants={itemVariants} style={{ cursor: 'pointer' }}>
                                         <div className="ebook-cover">
-                                            <img src={book?.cover_url?.startsWith('/uploads') ? `${MEDIA_URL}${book.cover_url}` : (book?.cover_url || '/default-ebook.png')} alt={book?.title} loading="lazy" />
+                                            {(() => {
+                                                const albumArt = book?.cover_url || book?.thumbnail || book?.thumbnail_url;
+                                                const imgSrc = albumArt?.startsWith('/uploads') ? `${MEDIA_URL}${albumArt}` : (albumArt || '/default-ebook.png');
+                                                return <img src={imgSrc} alt={book?.title} loading="lazy" />;
+                                            })()}
                                             {!user && <div className="lock-overlay"><div className="lock-circle">🔒</div></div>}
                                         </div>
                                         <div className="ebook-info">
