@@ -69,8 +69,8 @@
 /* Ebook Grid */
 .ebook-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 2rem;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
 }
 
 .ebook-card-main {
@@ -170,5 +170,12 @@
 @media (max-width: 900px) {
     .ebooks-layout {
         grid-template-columns: minmax(0, 1fr);
+    }
+}
+@media (min-width: 901px) {
+    /* If there is only 1 ebook, prevent it from spanning the entire container width */
+    .ebook-grid {
+        grid-template-columns: repeat(auto-fill, 220px);
+        justify-content: start;
     }
 }

@@ -162,7 +162,7 @@ const Ebooks = () => {
                                                         <button 
                                                             className="btn btn-primary btn-sm btn-pill shadow-neon w-100"
                                                             onClick={() => {
-                                                                const target = book.file_url || book.link;
+                                                                const target = book.file_url || book.pdf_content_url || book.html_content_url || book.link;
                                                                 if (target) window.open(target.startsWith('/uploads') ? `${MEDIA_URL}${target}` : target, '_blank');
                                                                 else alert('Link coming soon! ✨');
                                                             }}
