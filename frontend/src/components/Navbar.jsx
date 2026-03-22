@@ -90,6 +90,10 @@ const Navbar = ({ isOpen, setIsOpen, closeMenu }) => {
                         className="mobile-side-drawer glass-drawer"
                     >
                         <div className="drawer-inner">
+                            <Link to="/" className="drawer-home-top" onClick={closeMenu}>
+                                <Home size={22} /> <span>BACK TO HOME</span>
+                            </Link>
+
                             <div className="drawer-branding">
                                 <h3 className="pink-gradient-text">ANSH-EBOOK</h3>
                                 <button className="drawer-close" onClick={closeMenu}><X size={28} /></button>

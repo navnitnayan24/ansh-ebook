@@ -17,7 +17,6 @@ const Music = () => {
     const [playingTrack, setPlayingTrack] = useState(null);
 
     useEffect(() => {
-        document.body.classList.add('has-top-bar');
         const loadCategories = async () => {
             try {
                 const { data } = await fetchCategories('music');
@@ -27,7 +26,7 @@ const Music = () => {
             }
         };
         loadCategories();
-        return () => document.body.classList.remove('has-top-bar');
+        return () => {};
     }, []);
 
     useEffect(() => {
@@ -80,11 +79,6 @@ const Music = () => {
             animate="visible"
             variants={containerVariants}
         >
-            <div className="top-back-bar">
-                <Link to="/" className="back-link-top">
-                    <ArrowLeft size={16}/> Back to Home
-                </Link>
-            </div>
             <SEO 
                 title="Soulful Music & Melodies" 
                 description="Experience premium original music and soundscapes. Soulful tunes for relaxation, meditation, and inspiration." 
@@ -92,6 +86,11 @@ const Music = () => {
 
             <section className="section-hero-v2">
                 <div className="section-header-centered animate-slide-in-top">
+                    <motion.div variants={itemVariants} style={{marginBottom: '1rem'}}>
+                        <Link to="/" className="back-link pink-text" style={{display: 'inline-flex', alignItems: 'center', gap: '5px', textDecoration: 'none', fontWeight: 'bold'}}>
+                            <ArrowLeft size={20} /> Back to Home
+                        </Link>
+                    </motion.div>
                     <motion.h1 className="centered-title" variants={itemVariants}>
                         Music <span className="pink-gradient-text">Library</span>
                     </motion.h1>

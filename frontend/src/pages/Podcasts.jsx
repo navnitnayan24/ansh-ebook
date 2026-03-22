@@ -17,7 +17,6 @@ const Podcasts = () => {
     const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
-        document.body.classList.add('has-top-bar');
         const fetchData = async () => {
             try {
                 const [podRes, catRes] = await Promise.all([
@@ -33,7 +32,7 @@ const Podcasts = () => {
             }
         };
         fetchData();
-        return () => document.body.classList.remove('has-top-bar');
+        return () => {};
     }, []);
 
     const toggleLike = async (id) => {
@@ -78,16 +77,14 @@ const Podcasts = () => {
 
     return (
         <motion.div className="podcasts-page" initial="hidden" animate="visible" variants={containerVariants}>
-            <div className="top-back-bar">
-                <Link to="/" className="back-link-top">
-                    <ArrowLeft size={16}/> Back to Home
-                </Link>
-            </div>
             <SEO title="Original Podcasts | Ansh Ebook" description="Listen to soulful and inspiring podcasts by Ansh Sharma on Ansh Ebook." />
             
             <div className="podcasts-hero">
                 <div className="hero-content container">
                     <motion.div variants={itemVariants}>
+                        <Link to="/" className="back-link pink-text" style={{display: 'inline-flex', alignItems: 'center', gap: '5px', marginBottom: '1rem', textDecoration: 'none', fontWeight: 'bold'}}>
+                            <ArrowLeft size={20} /> Back to Home
+                        </Link>
                         <h1 className="hero-title mt-3">Soulful <span className="text-gradient">Podcasts</span></h1>
                         <p className="hero-subtitle">Kalam Se Dil Tak - Original voices, authentic stories.</p>
                     </motion.div>

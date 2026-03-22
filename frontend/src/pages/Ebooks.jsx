@@ -16,7 +16,7 @@ const Ebooks = () => {
     const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
-        document.body.classList.add('has-top-bar');
+        // No top back bar logic
         const fetchData = async () => {
             try {
                 const [ebRes, catRes] = await Promise.all([
@@ -32,7 +32,7 @@ const Ebooks = () => {
             }
         };
         fetchData();
-        return () => document.body.classList.remove('has-top-bar');
+        return () => {}; // No cleanup needed for has-top-bar
     }, []);
 
     const categories = ['All', ...allCategories.map(c => c.name)];
@@ -61,17 +61,15 @@ const Ebooks = () => {
             animate="visible"
             variants={containerVariants}
         >
-            <div className="top-back-bar">
-                <Link to="/" className="back-link-top">
-                    <ArrowLeft size={16}/> Back to Home
-                </Link>
-            </div>
             <SEO 
                 title="Premium E-Books Collection" 
                 description="Build your digital library with premium original e-books, poetry collections, and creative guides." 
             />
 
             <motion.div className="main-title-area text-center mb-5" variants={itemVariants}>
+                <Link to="/" className="back-link pink-text" style={{display: 'inline-flex', alignItems: 'center', gap: '5px', marginBottom: '1rem', textDecoration: 'none', fontWeight: 'bold'}}>
+                    <ArrowLeft size={20} /> Back to Home
+                </Link>
                 <h1 className="main-title display-4">E-Book <span className="pink-gradient-text">Library</span></h1>
                 <p className="sub-title muted-text">Downloadable literature and comprehensive guides by Ansh Sharma.</p>
             </motion.div>

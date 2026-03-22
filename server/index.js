@@ -85,9 +85,10 @@ app.use((req, res, next) => {
 
 // Serve uploads
 const uploadsPath = path.join(__dirname, '../uploads');
-if (fs.existsSync(uploadsPath)) {
-    app.use('/uploads', express.static(uploadsPath));
+if (!fs.existsSync(uploadsPath)) {
+    fs.mkdirSync(uploadsPath, { recursive: true });
 }
+app.use('/uploads', express.static(uploadsPath));
 
 // API Routes - Order matters: Specific to General
 app.use('/api/auth', authRoutes);
