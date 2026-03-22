@@ -126,8 +126,8 @@ async function startServer() {
         console.log('⏳ Connecting to MongoDB...');
         await connectDB();
         
-        const server = app.listen(PORT, '0.0.0.0', () => {
-            console.log(`🚀 Premium MERN Server live on: http://localhost:${PORT}`);
+        const server = app.listen(PORT, () => {
+            console.log(`🚀 Premium MERN Server live on port ${PORT}`);
             console.log(`📱 Access on your network at: http://${getIPAddress()}:${PORT}`);
         });
 
