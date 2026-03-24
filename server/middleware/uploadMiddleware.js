@@ -10,9 +10,9 @@ let storage;
 if (process.env.CLOUDINARY_CLOUD_NAME) {
     // Configure Cloudinary
     cloudinary.config({
-      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-      api_key: process.env.CLOUDINARY_API_KEY,
-      api_secret: process.env.CLOUDINARY_API_SECRET
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'datao7ela',
+      api_key: process.env.CLOUDINARY_API_KEY || '367996669885499',
+      api_secret: process.env.CLOUDINARY_API_SECRET || '2eH_KFosTqgBvhlZruG-2kbKIBA'
     });
 
     storage = new CloudinaryStorage({
