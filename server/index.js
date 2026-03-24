@@ -9,6 +9,11 @@ const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const rateLimit = require('express-rate-limit');
 
+// Route Imports
+const authRoutes = require('./routes/authRoutes');
+const adminRoutes = require('./routes/adminRoutes');
+const contentRoutes = require('./routes/contentRoutes');
+
 const app = express();
 const PORT = process.env.PORT || 5000; 
 
