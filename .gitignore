@@ -8,3 +8,6 @@ backend/node_modules/
 *.log
 uploads/*
 !uploads/.gitkeep
+
+# Private Docs (College Report)
+college_docs_private/
