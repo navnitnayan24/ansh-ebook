@@ -165,12 +165,17 @@ exports.changePassword = async (req, res) => {
 // Update Profile Picture
 exports.updateProfile = async (req, res) => {
     try {
+        const { remove, avatarUrl } = req.body;
         const AccountModel = req.user.role === 'admin' ? Admin : User;
         const account = await AccountModel.findById(req.user.id);
         
         if (!account) return res.status(404).json({ error: 'User not found' });
 
-        if (req.file) {
+        if (remove === 'true' || remove === true) {
+            account.profile_pic = null;
+        } else if (avatarUrl) {
+            account.profile_pic = avatarUrl;
+        } else if (req.file) {
             // Cloudinary path or local upload path
             account.profile_pic = req.file.path || `/uploads/${req.file.filename}`;
         }
@@ -185,7 +190,8 @@ exports.updateProfile = async (req, res) => {
                 email: account.email,
                 role: req.user.role,
                 profile_pic: account.profile_pic,
-                profile_name: account.profile_name
+                profile_name: account.profile_name,
+                createdAt: account.createdAt
             }
         });
     } catch (err) {
