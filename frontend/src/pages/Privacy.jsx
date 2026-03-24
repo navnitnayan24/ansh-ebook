@@ -5,14 +5,14 @@ import '../styles/Legal.css';
 const Privacy = () => {
     return (
         <div className="legal-page container">
-            <SEO title="Privacy Policy" description="Privacy Policy outlining data protection on Ansh-Ebook." />
+            <SEO title="Privacy Policy - Ansh Ebook" description="Privacy Policy outlining data protection and privacy standards on Ansh Ebook." />
             <div className="glass-card legal-card">
                 <h1>Privacy <span className="text-gradient">Policy</span></h1>
                 <p className="last-updated">Last Updated: March 2026</p>
                 
                 <section>
                     <h3>1. Information We Collect</h3>
-                    <p>We collect information you provide directly to Ansh-Ebook when you register for an account, subscribe to our newsletter, or contact us. This may include your username, email address, and any messages you send.</p>
+                    <p>We collect information you provide directly to Ansh Ebook when you register for an account, subscribe to our newsletter, or contact us. This may include your username, email address, and any messages you send.</p>
                 </section>
 
                 <section>
@@ -32,7 +32,7 @@ const Privacy = () => {
 
                 <section>
                     <h3>5. Your Rights</h3>
-                    <p>You have the right to request access to, correction of, or deletion of your personal data held by Ansh-Ebook.</p>
+                    <p>You have the right to request access to, correction of, or deletion of your personal data held by Ansh Ebook.</p>
                 </section>
             </div>
         </div>
