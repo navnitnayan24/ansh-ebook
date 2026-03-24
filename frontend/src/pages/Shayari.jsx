@@ -123,15 +123,15 @@ const Shayari = () => {
             variants={containerVariants}
         >
             <SEO 
-                title="Heartfelt Hindi Shayari" 
-                description="Read premium, original Hindi and Urdu Shayari. Explore poetry on love, life, sadness, and motivation." 
+                title="Ansh Ebook - Premium Hindi Shayari" 
+                description="Explore original premium Hindi Shayari on Ansh Ebook. Beautiful words for love, life, and motivation by Ansh Sharma." 
             />
 
             <motion.div className="main-title-area text-center mb-5" variants={itemVariants}>
                 <Link to="/" className="back-link pink-text" style={{display: 'inline-flex', alignItems: 'center', gap: '5px', marginBottom: '1rem', textDecoration: 'none', fontWeight: 'bold'}}>
                     <ArrowLeft size={20} /> Back to Home
                 </Link>
-                <h1 className="main-title display-4">Shayari <span className="pink-gradient-text">Collection</span></h1>
+                <h1 className="main-title display-4">Ansh Ebook <span className="pink-gradient-text">Shayari Collection</span></h1>
                 <p className="sub-title muted-text">Explore words that resonate with your soul.</p>
             </motion.div>
 

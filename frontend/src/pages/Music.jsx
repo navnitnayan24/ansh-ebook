@@ -134,8 +134,8 @@ const Music = () => {
             variants={containerVariants}
         >
             <SEO 
-                title="Soulful Music & Melodies" 
-                description="Experience premium original music and soundscapes. Soulful tunes for relaxation, meditation, and inspiration." 
+                title="Ansh Ebook - Soulful Music & Melodies" 
+                description="Experience soulful melodies and original tracks on Ansh Ebook. Premium soundscapes for relaxation, inspiration, and meditation." 
             />
 
             <section className="section-hero-v2">
@@ -146,7 +146,7 @@ const Music = () => {
                         </Link>
                     </motion.div>
                     <motion.h1 className="centered-title" variants={itemVariants}>
-                        Music <span className="pink-gradient-text">Library</span>
+                        Ansh Ebook <span className="pink-gradient-text">Music Library</span>
                     </motion.h1>
                     <motion.p className="centered-subtitle" variants={itemVariants}>
                         Original tracks and soulful melodies composed with passion.
