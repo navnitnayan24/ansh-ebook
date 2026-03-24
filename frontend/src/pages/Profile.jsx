@@ -1,19 +1,31 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { User, Mail, Shield, Calendar, LogOut, ArrowRight, Heart, BookOpen } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { User, Mail, Shield, Calendar, LogOut, ArrowRight, Heart, BookOpen, Trash2, CheckCircle2, Camera } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { API } from '../api';
 import { MEDIA_URL } from '../config';
 import '../styles/Profile.css';
 
+const PREDEFINED_AVATARS = [
+    'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix',
+    'https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka',
+    'https://api.dicebear.com/7.x/avataaars/svg?seed=Buster',
+    'https://api.dicebear.com/7.x/avataaars/svg?seed=Cricket',
+    'https://api.dicebear.com/7.x/avataaars/svg?seed=Coco',
+    'https://api.dicebear.com/7.x/avataaars/svg?seed=Milo',
+    'https://api.dicebear.com/7.x/avataaars/svg?seed=Toby',
+    'https://api.dicebear.com/7.x/avataaars/svg?seed=Lilly'
+];
+
 const Profile = () => {
     const [user, setUser] = useState(null);
     const [uploading, setUploading] = useState(false);
+    const [showAvatarPicker, setShowAvatarPicker] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
         const savedUser = localStorage.getItem('user');
-        if (!savedUser) {
+        if (!savedUser || savedUser === 'undefined') {
             navigate('/login');
         } else {
             setUser(JSON.parse(savedUser));
@@ -26,38 +38,57 @@ const Profile = () => {
         window.location.href = '/';
     };
 
-    const handleProfilePicUpload = async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-
+    const updateProfileOnServer = async (payload, isMultipart = false) => {
         setUploading(true);
-        const formData = new FormData();
-        formData.append('profile_pic', file);
-
         try {
-            const { data } = await API.put('auth/profile', formData, {
-                headers: { 'Content-Type': 'multipart/form-data' }
-            });
+            const config = isMultipart ? { headers: { 'Content-Type': 'multipart/form-data' } } : {};
+            const { data } = await API.put('auth/profile', payload, config);
             setUser(data.user);
             localStorage.setItem('user', JSON.stringify(data.user));
-            // Dispatch a custom event to update Navbar immediately
             window.dispatchEvent(new Event('storage'));
+            return true;
         } catch (err) {
-            alert('Failed to update profile picture: ' + (err.response?.data?.error || err.message));
+            alert('Update failed: ' + (err.response?.data?.error || err.message));
+            return false;
         } finally {
             setUploading(false);
         }
     };
 
-    if (!user) return <div className="loader">Loading Profile...</div>;
+    const handleProfilePicUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const formData = new FormData();
+        formData.append('profile_pic', file);
+        await updateProfileOnServer(formData, true);
+    };
+
+    const handleSelectAvatar = async (url) => {
+        await updateProfileOnServer({ avatarUrl: url });
+        setShowAvatarPicker(false);
+    };
+
+    const handleRemovePhoto = async () => {
+        if (window.confirm('Remove profile picture?')) {
+            await updateProfileOnServer({ remove: true });
+        }
+    };
+
+    if (!user) return <div className="loader-container"><div className="loader"></div></div>;
 
     const containerVariants = {
         hidden: { opacity: 0, y: 30 },
-        visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
+        visible: { opacity: 1, y: 0, transition: { duration: 0.6, staggerChildren: 0.1 } }
+    };
+
+    const itemVariants = {
+        hidden: { opacity: 0, y: 20 },
+        visible: { opacity: 1, y: 0 }
     };
 
     const getAvatarUrl = (pic) => {
         if (!pic) return null;
+        if (pic.startsWith('http')) return pic;
         let rawPic = pic;
         if (rawPic.includes('\\uploads\\')) rawPic = '/uploads/' + rawPic.split('\\uploads\\').pop();
         else if (rawPic.includes('/uploads/')) rawPic = '/uploads/' + rawPic.split('/uploads/').pop();
@@ -66,85 +97,132 @@ const Profile = () => {
 
     return (
         <motion.div 
-            className="profile-page container"
+            className="profile-page container py-5"
             initial="hidden"
             animate="visible"
             variants={containerVariants}
         >
-            <div className="profile-header-card glass-card">
-                <div className="profile-hero-area">
+            <div className="profile-header-card glass-card p-4 p-md-5 mb-5">
+                <div className="profile-hero-area d-flex flex-column flex-md-row align-items-center gap-4">
                     <div className="profile-avatar-wrapper" style={{ position: 'relative' }}>
                         <div className="avatar-glow"></div>
-                        {user.profile_pic ? (
-                            <img src={getAvatarUrl(user.profile_pic)} alt="Profile Avatar" className="avatar-icon" style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover' }} />
-                        ) : (
-                            <User size={60} className="avatar-icon" />
-                        )}
-                        <input type="file" id="profile-upload" accept="image/*" style={{ display: 'none' }} onChange={handleProfilePicUpload} />
-                        <label htmlFor="profile-upload" className="edit-avatar-badge" style={{ position: 'absolute', bottom: '-5px', right: '-5px', background: 'var(--pink-primary)', borderRadius: '50%', width: '30px', height: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 10 }}>
-                            {uploading ? <span className="loader" style={{ width: '15px', height: '15px' }}></span> : <span style={{ fontSize: '1rem' }}>+</span>}
-                        </label>
+                        <div className="main-avatar-container shadow-neon">
+                            {user.profile_pic ? (
+                                <img src={getAvatarUrl(user.profile_pic)} alt="Profile Avatar" className="avatar-icon-large" />
+                            ) : (
+                                <User size={80} className="avatar-placeholder" />
+                            )}
+                            {uploading && <div className="upload-overlay"><div className="loader-mini"></div></div>}
+                        </div>
+                        
+                        <div className="avatar-controls-pill glass-card shadow-sm">
+                            <input type="file" id="profile-upload" accept="image/*" style={{ display: 'none' }} onChange={handleProfilePicUpload} />
+                            <label htmlFor="profile-upload" title="Upload from Device" className="control-btn"><Camera size={16} /></label>
+                            <button title="Choose Avatar" className="control-btn" onClick={() => setShowAvatarPicker(!showAvatarPicker)}><CheckCircle2 size={16} /></button>
+                            {user.profile_pic && (
+                                <button title="Remove Photo" className="control-btn delete" onClick={handleRemovePhoto}><Trash2 size={16} /></button>
+                            )}
+                        </div>
                     </div>
-                    <div className="profile-main-info">
-                        <h1 className="username-display">{user?.username} <span className="role-badge">{user?.role}</span></h1>
-                        <p className="email-display"><Mail size={16} /> {user?.email}</p>
+
+                    <div className="profile-main-info flex-grow-1 text-center text-md-start">
+                        <motion.h1 className="username-display mb-2" variants={itemVariants}>
+                            {user?.username} <span className="role-badge">{user?.role}</span>
+                        </motion.h1>
+                        <motion.p className="email-display muted-text mb-0" variants={itemVariants}>
+                            <Mail size={16} className="me-2" /> {user?.email}
+                        </motion.p>
                     </div>
-                    <button onClick={handleLogout} className="btn-logout-floating">
-                        <LogOut size={18} /> Exit
-                    </button>
+
+                    <motion.button onClick={handleLogout} className="btn btn-dark-outline btn-pill mt-3 mt-md-0" variants={itemVariants}>
+                        <LogOut size={18} className="me-2" /> Logout
+                    </motion.button>
                 </div>
+
+                <AnimatePresence>
+                    {showAvatarPicker && (
+                        <motion.div 
+                            className="avatar-picker-panel mt-4 pt-4 border-top"
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                        >
+                            <h4 className="mb-3 pink-text" style={{fontSize: '1rem'}}>Pick a <span className="text-gradient">Bitmoji Avatar</span></h4>
+                            <div className="avatar-grid">
+                                {PREDEFINED_AVATARS.map((url, idx) => (
+                                    <motion.img 
+                                        key={idx}
+                                        src={url}
+                                        className={`picker-avatar ${user.profile_pic === url ? 'active' : ''}`}
+                                        whileHover={{ scale: 1.1 }}
+                                        onClick={() => handleSelectAvatar(url)}
+                                    />
+                                ))}
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
 
             <div className="profile-grid">
-                <div className="profile-stats glass-card shadow-neon">
-                    <h3>Account <span className="pink-text">Overview</span></h3>
-                    <div className="stats-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '1.5rem' }}>
-                        <div className="stat-item">
-                            <Shield className="pink-text" />
-                            <div>
-                                <span className="stat-label">Member Since</span>
-                                <span className="stat-value">{user?.createdAt ? new Date(user.createdAt).toLocaleDateString(undefined, { month: 'long', year: 'numeric' }) : 'March 2026'}</span>
+                <motion.div className="profile-stats glass-card p-4" variants={itemVariants}>
+                    <h3 className="section-title mb-4">Account <span className="pink-text">Analytics</span></h3>
+                    <div className="stats-list">
+                        <div className="stat-entry">
+                            <div className="stat-icon-box"><Shield size={20} /></div>
+                            <div className="stat-text">
+                                <span className="label">Member Status</span>
+                                <span className="value">Verified {user?.role}</span>
                             </div>
                         </div>
-                        <div className="stat-item">
-                            <Calendar className="pink-text" />
-                            <div>
-                                <span className="stat-label">Last Login</span>
-                                <span className="stat-value">Today</span>
+                        <div className="stat-entry">
+                            <div className="stat-icon-box"><Calendar size={20} /></div>
+                            <div className="stat-text">
+                                <span className="label">Joined Date</span>
+                                <span className="value">{user?.createdAt ? new Date(user.createdAt).toLocaleDateString(undefined, { month: 'long', year: 'numeric', day: 'numeric' }) : 'March 2026'}</span>
                             </div>
                         </div>
-                        <div className="stat-item">
-                            <Heart className="pink-text" />
-                            <div>
-                                <span className="stat-label">Favorites</span>
-                                <span className="stat-value">12+ Items</span>
+                        <div className="stat-entry">
+                            <div className="stat-icon-box pink"><Heart size={20} /></div>
+                            <div className="stat-text">
+                                <span className="label">Interests</span>
+                                <span className="value">Music & Shayari</span>
                             </div>
                         </div>
                     </div>
-                </div>
+                </motion.div>
 
-                <div className="profile-actions glass-card">
-                    <h3>Quick <span className="text-gradient">Links</span></h3>
-                    <div className="action-links">
-                        <Link to="/#shayari" className="action-card">
-                            <Heart size={20} />
-                            <span>Saved Shayari</span>
-                            <ArrowRight size={16} className="arrow" />
+                <motion.div className="profile-actions glass-card p-4" variants={itemVariants}>
+                    <h3 className="section-title mb-4">Quick <span className="text-gradient">Navigation</span></h3>
+                    <div className="quick-links-grid">
+                        <Link to="/#shayari" className="nav-action-card">
+                            <div className="card-icon"><Heart size={22} /></div>
+                            <div className="card-content">
+                                <h5>Saved Shayari</h5>
+                                <p>View your favorites</p>
+                            </div>
+                            <ArrowRight size={18} className="arrow" />
                         </Link>
-                        <Link to="/music" className="action-card">
-                            <BookOpen size={20} />
-                            <span>Music Library</span>
-                            <ArrowRight size={16} className="arrow" />
+                        <Link to="/music" className="nav-action-card">
+                            <div className="card-icon"><BookOpen size={22} /></div>
+                            <div className="card-content">
+                                <h5>My Library</h5>
+                                <p>Your melodies</p>
+                            </div>
+                            <ArrowRight size={18} className="arrow" />
                         </Link>
                         {user.role === 'admin' && (
-                            <Link to="/admin" className="action-card admin-highlight">
-                                <Shield size={20} />
-                                <span>Admin Dashboard</span>
-                                <ArrowRight size={16} className="arrow" />
+                            <Link to="/admin" className="nav-action-card admin-special">
+                                <div className="card-icon"><Shield size={22} /></div>
+                                <div className="card-content">
+                                    <h5>Admin Panel</h5>
+                                    <p>Manage platform</p>
+                                </div>
+                                <ArrowRight size={18} className="arrow" />
                             </Link>
                         )}
                     </div>
-                </div>
+                </motion.div>
             </div>
         </motion.div>
     );
