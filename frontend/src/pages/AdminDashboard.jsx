@@ -195,8 +195,10 @@ const AdminDashboard = () => {
             
             if (errorMsg.toLowerCase().includes('network error') || !err.response) {
                 alert(`Upload Failed: Network Error.\n\nPossible causes:\n1. File is too large.\n2. Internet connection was interrupted.\n3. Server timed out.\n\nPlease try again with a smaller file or a faster connection.`);
+            } else if (errorMsg.toLowerCase().includes('auth server misconfigured')) {
+                alert(`Security Error: JWT Secret Missing.\n\nPlease add 'JWT_SECRET' to your Render environment variables to fix this permanently.`);
             } else {
-                alert(`Database Error: ${errorMsg}\n\nPlease check your input and try again.`);
+                alert(`Server/Validation Error: ${errorMsg}\n\nPlease check your input and try again.`);
             }
         } finally {
             setLoading(false);
@@ -268,10 +270,21 @@ const AdminDashboard = () => {
                         </Link>
                         <h1 className="admin-title">Admin <span className="text-gradient">Panel</span></h1>
                         <span className="badge ml-2" style={{fontSize: '0.8rem'}}>{Array.isArray(items) ? items.length : 0} Items</span>
-                        <div className="storage-status ml-3" style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '0.75rem', padding: '4px 10px', borderRadius: '15px', background: MEDIA_URL.includes('cloudinary') ? 'rgba(76, 175, 80, 0.1)' : 'rgba(244, 67, 54, 0.1)', color: MEDIA_URL.includes('cloudinary') ? '#4caf50' : '#f44336', border: `1px solid ${MEDIA_URL.includes('cloudinary') ? '#4caf5055' : '#f4433655'}` }}>
-                            <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: MEDIA_URL.includes('cloudinary') ? '#4caf50' : '#f44336' }}></div>
-                            {MEDIA_URL.includes('cloudinary') ? 'Storage: Cloudinary (Permanent)' : 'Storage: Local (Temporary - Files will be deleted on redeploy)'}
-                        </div>
+                        {/* Storage Status Indicator */}
+                        {/* Assuming MEDIA_URL is defined and indicates the storage type */}
+                        {/* For example, if MEDIA_URL contains 'cloudinary', it's Cloudinary, otherwise local */}
+                        {(() => {
+                            const isCloudinaryConfigured = MEDIA_URL.includes('cloudinary');
+                            return (
+                                <div className="storage-status ml-3">
+                                    <div className={`storage-indicator ${isCloudinaryConfigured ? 'safe' : 'warning'}`} onClick={() => alert("Storage Configuration Guide:\n\n1. To save files PERMANENTLY, set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET in Render Dashboard.\n2. Currently using 'Local' storage which DELETES files every time the server restarts or code is updated.")}>
+                                        <div className="dot"></div>
+                                        <span>Storage: {isCloudinaryConfigured ? 'Cloudinary (Permanent)' : 'Local (Temporary - Files will be deleted on redeploy)'}</span>
+                                        {!isCloudinaryConfigured && <span style={{marginLeft: '10px', textDecoration: 'underline', cursor: 'pointer', fontSize: '0.8rem'}}>How to fix?</span>}
+                                    </div>
+                                </div>
+                            );
+                        })()}
                     </div>
                     <div className="welcome-txt" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                         {user?.profile_pic ? (
