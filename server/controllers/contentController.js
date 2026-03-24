@@ -9,16 +9,30 @@ const User = require('../models/User');
 
 exports.getHomeContent = async (req, res) => {
     try {
-        const latestShayari = await Shayari.find().sort({ createdAt: -1 }).limit(3).populate('category_id');
-        const latestMusic = await Music.find().sort({ createdAt: -1 }).limit(3).populate('category_id');
-        const latestPodcasts = await Podcast.find().sort({ createdAt: -1 }).limit(2).populate('category_id');
-        const featuredEbooks = await Ebook.find().sort({ createdAt: -1 }).limit(4).populate('category_id');
+        const latestShayari = await Shayari.find().sort({ createdAt: -1 }).limit(6).populate('category_id');
+        const latestMusic = await Music.find().sort({ createdAt: -1 }).limit(6).populate('category_id');
+        const latestPodcasts = await Podcast.find().sort({ createdAt: -1 }).limit(4).populate('category_id');
+        const featuredEbooks = await Ebook.find().sort({ createdAt: -1 }).limit(8).populate('category_id');
+
+        // Helper to ensure absolute URLs for mobile/APK
+        const ensureAbsolute = (item) => {
+            const baseUrl = process.env.VITE_API_URL ? process.env.VITE_API_URL.replace(/\/api\/?$/, '') : 'https://ansh-ebook.onrender.com';
+            const doc = item.toObject();
+            if (doc.file_url?.startsWith('/uploads')) doc.file_url = `${baseUrl}${doc.file_url}`;
+            if (doc.cover_url?.startsWith('/uploads')) doc.cover_url = `${baseUrl}${doc.cover_url}`;
+            if (doc.thumbnail?.startsWith('/uploads')) doc.thumbnail = `${baseUrl}${doc.thumbnail}`;
+            if (doc.thumbnail_url?.startsWith('/uploads')) doc.thumbnail_url = `${baseUrl}${doc.thumbnail_url}`;
+            return doc;
+        };
+
+        // Ensure no-cache for new updates
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
 
         res.json({
             latest_shayari: latestShayari,
-            latest_music: latestMusic,
-            latest_podcasts: latestPodcasts,
-            featured_ebooks: featuredEbooks
+            latest_music: latestMusic.map(ensureAbsolute),
+            latest_podcasts: latestPodcasts.map(ensureAbsolute),
+            featured_ebooks: featuredEbooks.map(ensureAbsolute)
         });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -52,7 +66,19 @@ exports.getContentByType = async (req, res) => {
             .limit(parseInt(limit))
             .skip(parseInt(offset));
             
-        res.json(items);
+        // Helper to ensure absolute URLs for mobile/APK
+        const baseUrl = process.env.VITE_API_URL ? process.env.VITE_API_URL.replace(/\/api\/?$/, '') : 'https://ansh-ebook.onrender.com';
+        const processedItems = items.map(item => {
+            const doc = item.toObject();
+            if (doc.file_url?.startsWith('/uploads')) doc.file_url = `${baseUrl}${doc.file_url}`;
+            if (doc.cover_url?.startsWith('/uploads')) doc.cover_url = `${baseUrl}${doc.cover_url}`;
+            if (doc.thumbnail?.startsWith('/uploads')) doc.thumbnail = `${baseUrl}${doc.thumbnail}`;
+            if (doc.thumbnail_url?.startsWith('/uploads')) doc.thumbnail_url = `${baseUrl}${doc.thumbnail_url}`;
+            return doc;
+        });
+
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        res.json(processedItems);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
