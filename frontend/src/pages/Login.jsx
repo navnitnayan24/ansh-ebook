@@ -34,7 +34,9 @@ const Login = () => {
                 username: data.username,
                 email: data.email,
                 role: data.role,
-                profile_name: data.profile_name // for admin
+                profile_pic: data.profile_pic,
+                profile_name: data.profile_name, // for admin
+                createdAt: data.createdAt
             };
             localStorage.setItem('user', JSON.stringify(userObj));
             

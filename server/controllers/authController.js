@@ -27,14 +27,16 @@ exports.login = async (req, res) => {
         
         if (!user || !(await bcrypt.compare(password, user.password))) {
             return res.status(401).json({ error: 'Invalid credentials' });
-        }        const secret = process.env.JWT_SECRET || 'the_alfaz_e_diaries_secure_fallback_2026';
+        const secret = process.env.JWT_SECRET || 'the_alfaz_e_diaries_secure_fallback_2026';
         const token = jwt.sign({ id: user._id, role: 'user' }, secret, { expiresIn: '1d' });
         res.json({ 
             token, 
             _id: user._id, 
             username: user.username, 
             email: user.email, 
-            role: 'user' 
+            role: 'user',
+            profile_pic: user.profile_pic,
+            createdAt: user.createdAt
         });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -66,7 +68,9 @@ exports.adminLogin = async (req, res) => {
             _id: admin._id, 
             username: admin.username, 
             profile_name: admin.profile_name, 
-            role: 'admin' 
+            profile_pic: admin.profile_pic,
+            role: 'admin',
+            createdAt: admin.createdAt
         });
     } catch (err) {
         console.error('🔐 [ADMIN LOGIN CRITICAL ERROR]:', err);
