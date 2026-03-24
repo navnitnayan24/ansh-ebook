@@ -55,11 +55,11 @@
     border-color: transparent;
 }
 
-/* Tracks Grid */
+/* Tracks Grid - Denser, Spotify-style */
 .tracks-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 2.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1.5rem;
 }
 
 .music-card-main {
@@ -105,16 +105,16 @@
 }
 
 .play-trigger {
-    width: 65px;
-    height: 65px;
-    background: var(--accent);
+    width: 45px;
+    height: 45px;
+    background: var(--pink-primary);
     border: none;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    box-shadow: 0 0 25px var(--accent-glow);
+    box-shadow: 0 0 15px var(--accent-glow);
     transition: 0.3s;
 }
 
@@ -123,44 +123,53 @@
 }
 
 .track-details {
-    padding: 1.5rem;
-    text-align: center;
+    padding: 0.8rem 1rem;
+    text-align: left;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
 }
 
 .track-details h3 {
-    font-size: 1.25rem;
-    margin-bottom: 0.4rem;
+    font-size: 0.95rem;
+    margin-bottom: 0.2rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .artist-label {
     color: var(--text-muted);
-    font-size: 0.95rem;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .track-meta-bottom {
-    margin-top: auto;
+    margin-top: 0.5rem;
     display: flex;
-    flex-direction: column;
+    flex-direction: row !important;
+    justify-content: space-between;
+    align-items: center;
     gap: 0.4rem;
     border-top: 1px solid rgba(255, 255, 255, 0.05);
-    padding-top: 1rem;
+    padding-top: 0.5rem;
 }
 
 .date-tag-mini {
-    font-size: 0.75rem;
+    font-size: 0.65rem;
     color: var(--text-muted);
-    opacity: 0.5;
+    opacity: 0.4;
 }
 
-/* Audio Player */
+/* Audio Player - Ultra Compact */
 .compact-audio-player {
     width: 100%;
-    height: 35px;
+    height: 30px;
     filter: invert(1) hue-rotate(270deg) brightness(1.5);
-    border-radius: 50px;
+    border-radius: 4px;
+    margin-top: 5px;
 }
 
 @media (max-width: 600px) {
