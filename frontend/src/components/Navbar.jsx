@@ -131,6 +131,12 @@ const Navbar = ({ isOpen, setIsOpen, closeMenu }) => {
                                             </li>
                                         )}
                                         <li>
+                                            <Link to="/music" onClick={closeMenu} className="drawer-link" style={{ color: 'var(--pink-primary)' }}>
+                                                <span className="drawer-icon"><Music size={20} /></span>
+                                                <span className="drawer-label">MY PLAYLISTS</span>
+                                            </Link>
+                                        </li>
+                                        <li>
                                             <button onClick={handleLogout} className="drawer-link-btn logout-highlight w-100">
                                                 <span className="drawer-icon"><LogOut size={20} /></span>
                                                 <span className="drawer-label">LOGOUT</span>

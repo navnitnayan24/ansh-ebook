@@ -131,9 +131,9 @@ const Profile = () => {
                             <span>Saved Shayari</span>
                             <ArrowRight size={16} className="arrow" />
                         </Link>
-                        <Link to="/#premium" className="action-card">
+                        <Link to="/music" className="action-card">
                             <BookOpen size={20} />
-                            <span>My Library</span>
+                            <span>Music Library</span>
                             <ArrowRight size={16} className="arrow" />
                         </Link>
                         {user.role === 'admin' && (
