@@ -28,7 +28,11 @@ exports.login = async (req, res) => {
         if (!user || !(await bcrypt.compare(password, user.password))) {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
-        const secret = process.env.JWT_SECRET || 'the_alfaz_e_diaries_secure_fallback_2026';
+        const secret = process.env.JWT_SECRET;
+        if (!secret) {
+            console.error('❌ FATAL: JWT_SECRET is not defined in environment variables!');
+            return res.status(500).json({ error: 'Internal server configuration error' });
+        }
         const token = jwt.sign({ id: user._id, role: 'user' }, secret, { expiresIn: '1d' });
         res.json({ 
             token, 
@@ -62,7 +66,11 @@ exports.adminLogin = async (req, res) => {
             console.warn(`🔐 [ADMIN LOGIN DEBUG] Login failed for ${loginId}. Reason: ${!admin ? 'Record Not Found' : 'Incorrect Password'}`);
             return res.status(401).json({ error: 'Invalid credentials' });
         }
-        const secret = process.env.JWT_SECRET || 'the_alfaz_e_diaries_secure_fallback_2026';
+        const secret = process.env.JWT_SECRET;
+        if (!secret) {
+            console.error('❌ FATAL: JWT_SECRET is not defined in environment variables!');
+            return res.status(500).json({ error: 'Internal server configuration error' });
+        }
         const token = jwt.sign({ id: admin._id, role: 'admin' }, secret, { expiresIn: '1d' });
         res.json({ 
             token, 
@@ -97,17 +105,19 @@ exports.forgotPassword = async (req, res) => {
         }
 
         // Generate Token
-        const resetToken = crypto.randomBytes(20).toString('hex');
-        account.resetPasswordToken = resetToken;
+        const resetTokenRaw = crypto.randomBytes(20).toString('hex');
+        // Hash the token before saving it to the database
+        const resetTokenHashed = crypto.createHash('sha256').update(resetTokenRaw).digest('hex');
+        
+        account.resetPasswordToken = resetTokenHashed;
         account.resetPasswordExpires = Date.now() + 3600000; // 1 hour
         await account.save();
 
-        // LOG TOKEN (Since no SMTP)
-        console.log(`🔑 PASSWORD RESET TOKEN for ${email} (${type}): ${resetToken}`);
+        // LOG RAW TOKEN (Since no SMTP, useful for dev/admin)
+        console.log(`🔑 PASSWORD RESET TOKEN for ${email} (${type}): ${resetTokenRaw}`);
         
         res.json({ 
-            message: 'Check server console for reset token (SMTP not configured)', 
-            debugToken: resetToken // Returning it for the user to copy easily during tech session
+            message: 'An email with instructions has been sent (Mock: Check server logs for development).'
         });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -120,14 +130,16 @@ exports.resetPassword = async (req, res) => {
         const { token } = req.params;
         const { password } = req.body;
 
+        const resetTokenHashed = crypto.createHash('sha256').update(token).digest('hex');
+
         let account = await Admin.findOne({
-            resetPasswordToken: token,
+            resetPasswordToken: resetTokenHashed,
             resetPasswordExpires: { $gt: Date.now() }
         });
 
         if (!account) {
             account = await User.findOne({
-                resetPasswordToken: token,
+                resetPasswordToken: resetTokenHashed,
                 resetPasswordExpires: { $gt: Date.now() }
             });
         }

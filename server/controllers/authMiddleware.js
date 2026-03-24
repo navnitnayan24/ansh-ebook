@@ -6,7 +6,11 @@ exports.authenticate = (req, res, next) => {
     if (!token) return res.status(401).json({ error: 'Access denied. No token provided.' });
 
     try {
-        const secret = process.env.JWT_SECRET || 'the_alfaz_e_diaries_secure_fallback_2026';
+        const secret = process.env.JWT_SECRET;
+        if (!secret) {
+            console.error('❌ FATAL: JWT_SECRET is not defined!');
+            return res.status(500).json({ error: 'Auth server misconfigured' });
+        }
         const decoded = jwt.verify(token, secret);
         req.user = decoded;
         next();

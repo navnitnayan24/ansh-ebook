@@ -5,14 +5,28 @@ const { connectDB } = require('./db');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
-
-// Routes
-const contentRoutes = require('./routes/contentRoutes');
-const authRoutes = require('./routes/authRoutes');
-const adminRoutes = require('./routes/adminRoutes');
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 const PORT = process.env.PORT || 5000; 
+
+// Security Middleware
+app.use(helmet()); // Secure HTTP headers
+app.use(mongoSanitize()); // Prevent NoSQL Injection
+
+// Rate Limiter: Apply to auth and admin routes
+const apiLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // Limit each IP to 100 requests per window
+    message: { error: 'Too many requests from this IP, please try again after 15 minutes' },
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+
+app.use('/api/auth/login', apiLimiter);
+app.use('/api/auth/admin/login', apiLimiter);
 
 // Middleware
 app.use(cors());
@@ -43,45 +57,14 @@ app.get('/health', async (req, res) => {
     });
 });
 
-// Temporary Admin Audit (Safe)
-app.get('/api/admin-audit', async (req, res) => {
-    try {
-        const Admin = require('./models/Admin');
-        const admins = await Admin.find({}, { password: 0 }); // Hide passwords
-        res.json({ count: admins.length, admins });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
 
-// Force Admin Reset
-app.get('/api/force-admin-reset', async (req, res) => {
-    try {
-        const { connectDB } = require('./db');
-        const Admin = require('./models/Admin');
-        const bcrypt = require('bcryptjs');
-        
-        const adminUsername = 'anshsharma2026';
-        const adminEmail = 'anshbgmi24@gmail.com';
-        const adminPassword = await bcrypt.hash('ansh@sh2002', 10);
-
-        const admin = await Admin.findOneAndUpdate(
-            { $or: [{ username: adminUsername }, { email: adminEmail }] },
-            { username: adminUsername, password: adminPassword, email: adminEmail, profile_name: 'Ansh Sharma' },
-            { upsert: true, new: true }
-        );
-
-        res.json({ message: 'ADMIN ACCOUNT RESET SUCCESSFUL', admin: { username: admin.username, email: admin.email } });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// Request Logger
-app.use((req, res, next) => {
-    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
-    next();
-});
+// Request Logger (Only in DEV)
+if (process.env.NODE_ENV !== 'production') {
+    app.use((req, res, next) => {
+        console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+        next();
+    });
+}
 
 // Serve uploads
 const uploadsPath = path.join(__dirname, '../uploads');
