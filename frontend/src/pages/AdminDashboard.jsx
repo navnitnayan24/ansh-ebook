@@ -268,6 +268,10 @@ const AdminDashboard = () => {
                         </Link>
                         <h1 className="admin-title">Admin <span className="text-gradient">Panel</span></h1>
                         <span className="badge ml-2" style={{fontSize: '0.8rem'}}>{Array.isArray(items) ? items.length : 0} Items</span>
+                        <div className="storage-status ml-3" style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '0.75rem', padding: '4px 10px', borderRadius: '15px', background: MEDIA_URL.includes('cloudinary') ? 'rgba(76, 175, 80, 0.1)' : 'rgba(244, 67, 54, 0.1)', color: MEDIA_URL.includes('cloudinary') ? '#4caf50' : '#f44336', border: `1px solid ${MEDIA_URL.includes('cloudinary') ? '#4caf5055' : '#f4433655'}` }}>
+                            <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: MEDIA_URL.includes('cloudinary') ? '#4caf50' : '#f44336' }}></div>
+                            {MEDIA_URL.includes('cloudinary') ? 'Storage: Cloudinary (Permanent)' : 'Storage: Local (Temporary - Files will be deleted on redeploy)'}
+                        </div>
                     </div>
                     <div className="welcome-txt" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                         {user?.profile_pic ? (
