@@ -169,8 +169,9 @@ const Music = () => {
                                         <div className="card-cover-area">
                                             {(() => {
                                                 const albumArt = track.thumbnail || track.cover_url || track.thumbnail_url;
-                                                const imgSrc = albumArt?.startsWith('/uploads') ? `${MEDIA_URL}${albumArt}` : (albumArt || '/default-music.png');
-                                                return <img src={imgSrc} alt={`${track.title} - Music by Ansh Ebook`} />;
+                                                const rawUrl = track.imageUrl || albumArt;
+                                                const imageUrl = rawUrl?.startsWith('/uploads') ? `${MEDIA_URL}${rawUrl}` : (rawUrl || '/default-music.png');
+                                                return <img src={imageUrl} alt={`${track.title} - Music by Ansh Ebook`} />;
                                             })()}
                                             <div className="cover-overlay">
                                                 <button className="play-trigger" onClick={() => togglePlay(track)}>
@@ -206,7 +207,7 @@ const Music = () => {
                                                         autoPlay 
                                                         controls 
                                                         className="compact-audio-player"
-                                                        src={track.file_url?.startsWith('/uploads') ? `${MEDIA_URL}${track.file_url}` : track.file_url}
+                                                        src={track.audioUrl || (track.file_url?.startsWith('/uploads') ? `${MEDIA_URL}${track.file_url}` : track.file_url)}
                                                     >
                                                         Your browser does not support the audio element.
                                                     </audio>

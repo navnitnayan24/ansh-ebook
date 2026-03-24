@@ -23,18 +23,18 @@ if (process.env.CLOUDINARY_CLOUD_NAME) {
 
         if (file.mimetype.startsWith('image/')) {
             folder = 'ansh-ebook/images';
-            resource_type = 'image';
+            resource_type = 'auto';
         } else if (file.mimetype.startsWith('audio/')) {
             folder = 'ansh-ebook/audio';
-            resource_type = 'video'; // Cloudinary treats audio as video resource
+            resource_type = 'auto'; // Enforce auto
         } else if (file.mimetype === 'application/pdf') {
             folder = 'ansh-ebook/pdfs';
-            resource_type = 'raw'; // PDF can be raw or image but auto sometimes fails
+            resource_type = 'auto'; // Enforce auto
         }
 
         return {
           folder: folder,
-          resource_type: resource_type, 
+          resource_type: 'auto', // Always use auto
         };
       },
     });

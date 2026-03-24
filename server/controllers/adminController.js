@@ -116,7 +116,18 @@ exports.addContent = async (req, res) => {
         const count = await model.countDocuments();
         console.log(`[DB SAVE SUCCESS] ${type} saved. New total count: ${count}`);
         
-        res.status(201).json(item);
+        const audioUrl = item.file_url || '';
+        const imageUrl = item.thumbnail || item.cover_url || item.thumbnail_url || '';
+        const pdfUrl = item.file_url || '';
+        console.log(`[DB SAVE URLS] Audio: ${audioUrl}, Image: ${imageUrl}, PDF: ${pdfUrl}`);
+        
+        res.status(201).json({
+            ...item._doc,
+            title: item.title,
+            audioUrl: audioUrl,
+            imageUrl: imageUrl,
+            pdfUrl: pdfUrl
+        });
     } catch (err) {
         console.error(`[DB SAVE ERROR] ${type}:`, err);
         res.status(400).json({ error: err.message });
@@ -185,7 +196,19 @@ exports.updateContent = async (req, res) => {
         if (!item) return res.status(404).json({ error: 'Item not found' });
         
         console.log(`[DB UPDATE SUCCESS] ${type} updated: ${id}`);
-        res.json(item);
+        
+        const audioUrl = item.file_url || '';
+        const imageUrl = item.thumbnail || item.cover_url || item.thumbnail_url || '';
+        const pdfUrl = item.file_url || '';
+        console.log(`[DB UPDATE URLS] Audio: ${audioUrl}, Image: ${imageUrl}, PDF: ${pdfUrl}`);
+        
+        res.json({
+            ...item._doc,
+            title: item.title,
+            audioUrl: audioUrl,
+            imageUrl: imageUrl,
+            pdfUrl: pdfUrl
+        });
     } catch (err) {
         res.status(400).json({ error: err.message });
     }

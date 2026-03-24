@@ -14,6 +14,7 @@ const Ebooks = () => {
     const [loading, setLoading] = useState(true);
     const [selectedCategory, setSelectedCategory] = useState('All');
     const [searchTerm, setSearchTerm] = useState('');
+    const [selectedPdfUrl, setSelectedPdfUrl] = useState(null);
 
     useEffect(() => {
         // No top back bar logic
@@ -162,9 +163,13 @@ const Ebooks = () => {
                                                         <button 
                                                             className="btn btn-primary btn-sm btn-pill shadow-neon w-100"
                                                             onClick={() => {
-                                                                const target = book.file_url || book.pdf_content_url || book.html_content_url || book.link;
-                                                                if (target) window.open(target.startsWith('/uploads') ? `${MEDIA_URL}${target}` : target, '_blank');
-                                                                else alert('Link coming soon! ✨');
+                                                                const target = book.pdfUrl || book.file_url || book.pdf_content_url || book.html_content_url || book.link;
+                                                                const finalUrl = target?.startsWith('/uploads') ? `${MEDIA_URL}${target}` : target;
+                                                                if (finalUrl) {
+                                                                    setSelectedPdfUrl(finalUrl);
+                                                                } else {
+                                                                    alert('Link coming soon! ✨');
+                                                                }
                                                             }}
                                                         >
                                                             <BookOpen size={16}/> READ NOW
@@ -188,6 +193,24 @@ const Ebooks = () => {
                     )}
                 </main>
             </div>
+
+            <AnimatePresence>
+                {selectedPdfUrl && (
+                    <motion.div 
+                        initial={{ opacity: 0 }} 
+                        animate={{ opacity: 1 }} 
+                        exit={{ opacity: 0 }} 
+                        style={{position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.85)', zIndex: 9999, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px', backdropFilter: 'blur(5px)'}}
+                    >
+                        <div style={{width: '100%', maxWidth: '900px', display: 'flex', justifyContent: 'flex-end', marginBottom: '10px'}}>
+                            <button className="btn btn-primary btn-sm btn-pill" onClick={() => setSelectedPdfUrl(null)}>Close PDF</button>
+                        </div>
+                        <div style={{width: '100%', maxWidth: '900px', background: 'white', borderRadius: '10px', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.5)'}}>
+                            <iframe src={selectedPdfUrl} width="100%" height="600px" style={{border: 'none'}} title="PDF Viewer"></iframe>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </motion.div>
     );
 };
