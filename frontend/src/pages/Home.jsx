@@ -212,8 +212,7 @@ const Home = () => {
                 <div className="bg-blob blob-2"></div>
                 <div className="bg-blob blob-3"></div>
                 <motion.div className="hero-content" variants={itemVariants}>
-                    <motion.h1 className="hero-welcome-v2">Welcome to</motion.h1>
-                    <motion.h2 className="hero-main-branding"><span className="pink-gradient-text">Ansh-Ebook</span></motion.h2>
+                    <motion.h1 className="hero-main-branding">Welcome to <span className="pink-gradient-text">Ansh Ebook</span></motion.h1>
                     <motion.p className="hero-description-v2">A digital sanctuary where words find meaning, melodies touch the soul, and stories inspire greatness.</motion.p>
                     <div className="hero-actions-v2">
                         <Link to="/shayari" className="btn btn-primary btn-lg shadow-neon">READ SHAYARI</Link>
@@ -301,7 +300,7 @@ const Home = () => {
                                         {(() => {
                                             const albumArt = track?.thumbnail || track?.cover_url || track?.thumbnail_url;
                                             const imgSrc = albumArt?.startsWith('/uploads') ? `${MEDIA_URL}${albumArt}` : (albumArt || '/default-music.png');
-                                            return <img src={imgSrc} alt={track?.title} loading="lazy" />;
+                                            return <img src={imgSrc} alt={`${track?.title} - Ansh Ebook Music`} loading="lazy" />;
                                         })()}
                                         {!user && <div className="lock-overlay"><div className="lock-circle">🔒</div></div>}
                                     </div>
@@ -323,7 +322,7 @@ const Home = () => {
                                             {(() => {
                                                 const albumArt = pod?.thumbnail || pod?.cover_url || pod?.thumbnail_url;
                                                 const imgSrc = albumArt?.startsWith('/uploads') ? `${MEDIA_URL}${albumArt}` : (albumArt || '/default-podcast.png');
-                                                return <img src={imgSrc} alt={pod?.title} loading="lazy" />;
+                                                return <img src={imgSrc} alt={`${pod?.title} - Ansh Ebook Podcast`} loading="lazy" />;
                                             })()}
                                             {!user && <div className="lock-overlay"><div className="lock-circle">🔒</div></div>}
                                         </div>
@@ -346,7 +345,7 @@ const Home = () => {
                                             {(() => {
                                                 const albumArt = book?.cover_url || book?.thumbnail || book?.thumbnail_url;
                                                 const imgSrc = albumArt?.startsWith('/uploads') ? `${MEDIA_URL}${albumArt}` : (albumArt || '/default-ebook.png');
-                                                return <img src={imgSrc} alt={book?.title} loading="lazy" />;
+                                                return <img src={imgSrc} alt={`${book?.title} - Ansh Ebook`} loading="lazy" />;
                                             })()}
                                             {!user && <div className="lock-overlay"><div className="lock-circle">🔒</div></div>}
                                         </div>
