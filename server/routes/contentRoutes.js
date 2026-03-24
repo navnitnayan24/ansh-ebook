@@ -49,7 +49,15 @@ router.get('/ebooks', authenticate, (req, res) => {
     contentController.getContentByType(req, res);
 });
 
-router.post('/:type/:id/like', contentController.likeContent);
+// Auth-optional middleware for generic likes
+const authOptional = (req, res, next) => {
+    const authHeader = req.header('Authorization');
+    if (authHeader) return authenticate(req, res, next);
+    next();
+};
+
+router.post('/:type/:id/like', authOptional, contentController.likeContent);
+router.post('/:type/:id/comment', authenticate, contentController.addComment);
 router.post('/subscribe', contentController.subscribe);
 
 // Review System

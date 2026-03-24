@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Quote, Heart, Copy, Search, ArrowLeft, Share2, PenTool } from 'lucide-react';
+import { Quote, Heart, Copy, Search, ArrowLeft, Share2, PenTool, MessageCircle, Send } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fetchContentByType, fetchCategories } from '../api';
 import SEO from '../components/SEO';
@@ -13,6 +13,15 @@ const Shayari = () => {
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('All');
+    const [commentingOn, setCommentingOn] = useState(null);
+    const [commentText, setCommentText] = useState('');
+
+    const currentUser = (() => {
+        try {
+            const saved = localStorage.getItem('user');
+            return saved && saved !== 'undefined' ? JSON.parse(saved) : null;
+        } catch { return null; }
+    })();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -38,23 +47,57 @@ const Shayari = () => {
     };
 
     const toggleLike = async (id) => {
+        if (!currentUser) {
+            alert('Please login to like this Shayari!');
+            return;
+        }
         try {
             const { data } = await (await import('../api')).API.post(`shayari/${id}/like`);
             setShayaris(shayaris.map(s => 
-                s._id === id ? { ...s, likes_count: data.likes_count } : s
+                s._id === id ? { ...s, likes_count: data.likes_count, liked_by: data.liked_by } : s
             ));
         } catch (err) {
             console.error("Like error:", err);
-            // Fallback to local increment if API fails
-            setShayaris(shayaris.map(s => 
-                s._id === id ? { ...s, likes_count: s.likes_count + 1 } : s
-            ));
+            alert(err.response?.data?.error || 'Failed to like');
         }
     };
 
-    const copyToClipboard = (text) => {
-        navigator.clipboard.writeText(text);
-        alert('Shayari copied to clipboard!');
+    const submitComment = async (id) => {
+        if (!currentUser) {
+            alert('Please login to comment!');
+            return;
+        }
+        if (!commentText.trim()) return;
+        try {
+            const { data } = await (await import('../api')).API.post(`shayari/${id}/comment`, {
+                text: commentText,
+                username: currentUser.username
+            });
+            setShayaris(shayaris.map(s => 
+                s._id === id ? { ...s, comments: data.comments } : s
+            ));
+            setCommentText('');
+        } catch (err) {
+            console.error("Comment error:", err);
+            alert(err.response?.data?.error || 'Failed to post comment');
+        }
+    };
+
+    const handleShare = async (text) => {
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: 'Shayari by Ansh Ebook',
+                    text: text,
+                    url: window.location.href
+                });
+            } catch (err) {
+                console.log('Error sharing:', err);
+            }
+        } else {
+            navigator.clipboard.writeText(text);
+            alert('Shayari copied to clipboard!');
+        }
     };
 
     const containerVariants = {
@@ -152,10 +195,14 @@ const Shayari = () => {
                                                 <p className="shayari-content">{s.content}</p>
                                                 <div className="shayari-footer">
                                                     <button className="like-btn" onClick={() => toggleLike(s._id)}>
-                                                        <Heart size={18} fill={s.likes_count > 500 ? "#ff2e63" : "none"} />
+                                                        <Heart size={18} fill={(currentUser && s.liked_by?.includes(currentUser._id)) ? "#ff2e63" : "none"} color={(currentUser && s.liked_by?.includes(currentUser._id)) ? "#ff2e63" : "currentColor"} />
                                                         <span>{s.likes_count}</span>
                                                     </button>
-                                                    <button className="icon-btn-plain ml-2" onClick={() => copyToClipboard(s.content)}>
+                                                    <button className="icon-btn-plain ml-2" onClick={() => setCommentingOn(commentingOn === s._id ? null : s._id)}>
+                                                        <MessageCircle size={18} />
+                                                        <span style={{marginLeft: '5px', fontSize:'0.9rem'}}>{s.comments?.length || 0}</span>
+                                                    </button>
+                                                    <button className="icon-btn-plain ml-2" onClick={() => handleShare(s.content)}>
                                                         <Share2 size={16} />
                                                     </button>
                                                     <div className="shayari-meta ml-auto">
@@ -163,6 +210,41 @@ const Shayari = () => {
                                                         <span className="cat-tag">{s.category_id?.name || 'General'}</span>
                                                     </div>
                                                 </div>
+                                                
+                                                <AnimatePresence>
+                                                    {commentingOn === s._id && (
+                                                        <motion.div 
+                                                            initial={{ height: 0, opacity: 0 }} 
+                                                            animate={{ height: 'auto', opacity: 1 }} 
+                                                            exit={{ height: 0, opacity: 0 }}
+                                                            className="comments-section mt-3"
+                                                            style={{overflow: 'hidden', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '1rem'}}
+                                                        >
+                                                            <div className="comments-list mb-3" style={{maxHeight: '150px', overflowY: 'auto'}}>
+                                                                {s.comments && s.comments.length > 0 ? s.comments.map((c, i) => (
+                                                                    <div key={i} className="comment-item" style={{background: 'rgba(255,255,255,0.02)', padding: '0.6rem', borderRadius: '8px', marginBottom: '0.5rem'}}>
+                                                                        <strong style={{color: 'var(--pink-primary)', fontSize: '0.85rem'}}>{c.username}</strong>
+                                                                        <p style={{margin: '0.3rem 0 0', fontSize: '0.9rem', color: 'var(--text-primary)'}}>{c.text}</p>
+                                                                        <span style={{fontSize: '0.7rem', color: 'var(--text-muted)'}}>{new Date(c.createdAt).toLocaleDateString()}</span>
+                                                                    </div>
+                                                                )) : <p className="text-muted" style={{fontSize: '0.85rem'}}>No comments yet. Be the first!</p>}
+                                                            </div>
+                                                            <div className="comment-input-area" style={{display: 'flex', gap: '10px'}}>
+                                                                <input 
+                                                                    type="text" 
+                                                                    value={commentText} 
+                                                                    onChange={(e) => setCommentText(e.target.value)}
+                                                                    placeholder="Add a comment..."
+                                                                    style={{flex: 1, padding: '0.6rem 1rem', borderRadius: '8px', border: '1px solid var(--glass-border)', background: 'rgba(255,255,255,0.03)', color: 'white', outline: 'none'}}
+                                                                    onKeyPress={(e) => e.key === 'Enter' && submitComment(s._id)}
+                                                                />
+                                                                <button className="btn btn-primary" style={{padding: '0.5rem 1rem', borderRadius: '8px'}} onClick={() => submitComment(s._id)}>
+                                                                    <Send size={16} />
+                                                                </button>
+                                                            </div>
+                                                        </motion.div>
+                                                    )}
+                                                </AnimatePresence>
                                             </motion.div>
                                         ))}
                                     </div>

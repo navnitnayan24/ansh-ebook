@@ -68,6 +68,14 @@ const Navbar = ({ isOpen, setIsOpen, closeMenu }) => {
         }
     };
 
+    const getAvatarUrl = (pic) => {
+        if (!pic) return null;
+        let rawPic = pic;
+        if (rawPic.includes('\\uploads\\')) rawPic = '/uploads/' + rawPic.split('\\uploads\\').pop();
+        else if (rawPic.includes('/uploads/')) rawPic = '/uploads/' + rawPic.split('/uploads/').pop();
+        return rawPic.startsWith('/uploads') ? `${MEDIA_URL}${rawPic}` : rawPic;
+    };
+
     return (
         <AnimatePresence>
             {isOpen && (
@@ -106,7 +114,7 @@ const Navbar = ({ isOpen, setIsOpen, closeMenu }) => {
                                             <Link to="/profile" onClick={closeMenu} className="drawer-link profile-link-highlight">
                                                 <span className="drawer-icon">
                                                     {user.profile_pic ? (
-                                                        <img src={user.profile_pic.startsWith('/uploads') ? `${MEDIA_URL}${user.profile_pic}` : user.profile_pic} alt="Profile" style={{ width: '20px', height: '20px', borderRadius: '50%', objectFit: 'cover' }} />
+                                                        <img src={getAvatarUrl(user.profile_pic)} alt="Profile" style={{ width: '20px', height: '20px', borderRadius: '50%', objectFit: 'cover' }} />
                                                     ) : (
                                                         <User size={20} />
                                                     )}

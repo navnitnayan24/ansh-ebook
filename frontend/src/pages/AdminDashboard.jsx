@@ -245,6 +245,14 @@ const AdminDashboard = () => {
         );
     }) : [];
 
+    const getAvatarUrl = (pic) => {
+        if (!pic) return null;
+        let rawPic = pic;
+        if (rawPic.includes('\\uploads\\')) rawPic = '/uploads/' + rawPic.split('\\uploads\\').pop();
+        else if (rawPic.includes('/uploads/')) rawPic = '/uploads/' + rawPic.split('/uploads/').pop();
+        return rawPic.startsWith('/uploads') ? `${MEDIA_URL}${rawPic}` : rawPic;
+    };
+
     return (
         <div className="dashboard-page container">
             <div className="dashboard-header">
@@ -258,7 +266,7 @@ const AdminDashboard = () => {
                     </div>
                     <div className="welcome-txt" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                         {user?.profile_pic ? (
-                            <img src={user.profile_pic.startsWith('/uploads') ? `${MEDIA_URL}${user.profile_pic}` : user.profile_pic} alt="Admin" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} />
+                            <img src={getAvatarUrl(user.profile_pic)} alt="Admin" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} />
                         ) : (
                             <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--gradient-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                 <span style={{ color: 'white', fontWeight: 'bold' }}>{user?.username?.charAt(0).toUpperCase()}</span>

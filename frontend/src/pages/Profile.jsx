@@ -56,6 +56,14 @@ const Profile = () => {
         visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
     };
 
+    const getAvatarUrl = (pic) => {
+        if (!pic) return null;
+        let rawPic = pic;
+        if (rawPic.includes('\\uploads\\')) rawPic = '/uploads/' + rawPic.split('\\uploads\\').pop();
+        else if (rawPic.includes('/uploads/')) rawPic = '/uploads/' + rawPic.split('/uploads/').pop();
+        return rawPic.startsWith('/uploads') ? `${MEDIA_URL}${rawPic}` : rawPic;
+    };
+
     return (
         <motion.div 
             className="profile-page container"
@@ -68,7 +76,7 @@ const Profile = () => {
                     <div className="profile-avatar-wrapper" style={{ position: 'relative' }}>
                         <div className="avatar-glow"></div>
                         {user.profile_pic ? (
-                            <img src={user.profile_pic.startsWith('/uploads') ? `${MEDIA_URL}${user.profile_pic}` : user.profile_pic} alt="Profile Avatar" className="avatar-icon" style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover' }} />
+                            <img src={getAvatarUrl(user.profile_pic)} alt="Profile Avatar" className="avatar-icon" style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover' }} />
                         ) : (
                             <User size={60} className="avatar-icon" />
                         )}

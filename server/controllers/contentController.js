@@ -81,9 +81,60 @@ exports.likeContent = async (req, res) => {
     else return res.status(400).json({ error: 'Invalid content type' });
 
     try {
-        const item = await model.findByIdAndUpdate(id, { $inc: { likes_count: 1 } }, { new: true });
+        const item = await model.findById(id);
         if (!item) return res.status(404).json({ error: 'Item not found' });
-        res.json({ success: true, likes_count: item.likes_count });
+
+        if (normalizedType === 'shayari') {
+            const userId = req.user ? req.user.id : null;
+            if (!userId) return res.status(401).json({ error: 'Must be logged in to like Shayari' });
+
+            if (item.liked_by && item.liked_by.includes(userId)) {
+                item.liked_by = item.liked_by.filter(uId => uId.toString() !== userId.toString());
+                item.likes_count = Math.max(0, item.likes_count - 1);
+            } else {
+                if (!item.liked_by) item.liked_by = [];
+                item.liked_by.push(userId);
+                item.likes_count += 1;
+            }
+            await item.save();
+            return res.json({ success: true, likes_count: item.likes_count, liked_by: item.liked_by });
+        } else {
+            // Legacy generic +1 like for others
+            const updatedItem = await model.findByIdAndUpdate(id, { $inc: { likes_count: 1 } }, { new: true });
+            return res.json({ success: true, likes_count: updatedItem.likes_count });
+        }
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+exports.addComment = async (req, res) => {
+    const { type, id } = req.params;
+    const { text, username } = req.body;
+    const userId = req.user ? req.user.id : null;
+
+    if (!userId) return res.status(401).json({ error: 'Must be logged in to comment' });
+    if (!text) return res.status(400).json({ error: 'Comment text is required' });
+
+    const normalizedType = type.toLowerCase();
+    if (normalizedType !== 'shayari') return res.status(400).json({ error: 'Comments only supported on Shayari currently' });
+
+    try {
+        const item = await Shayari.findById(id);
+        if (!item) return res.status(404).json({ error: 'Item not found' });
+
+        if (!item.comments) item.comments = [];
+        const newComment = {
+            user_id: userId,
+            username: username || 'User',
+            text: text,
+            createdAt: new Date()
+        };
+        
+        item.comments.push(newComment);
+        await item.save();
+        
+        res.status(201).json({ success: true, comment: newComment, comments: item.comments });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
