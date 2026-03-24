@@ -547,6 +547,21 @@
 }
 
 /* Aggressive Navbar Hiding for Desktop */
+@media (min-width: 769px) {
+    .navbar, 
+    .nav-container, 
+    .nav-right-area, 
+    .nav-actions-pc, 
+    .mobile-menu-toggle,
+    .hide-on-pc {
+        display: none !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+        opacity: 0 !important;
+        height: 0 !important;
+        width: 0 !important;
+        position: absolute !important; 
+        left: -9999px !important;
     }
 }
 

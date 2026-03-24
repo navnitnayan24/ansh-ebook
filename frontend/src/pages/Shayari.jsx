@@ -25,9 +25,11 @@ const Shayari = () => {
 
     useEffect(() => {
         const fetchData = async () => {
+            setLoading(true);
             try {
+                const catParam = selectedCategory && selectedCategory !== 'All' ? selectedCategory : '';
                 const [shRes, catRes] = await Promise.all([
-                    fetchContentByType('shayari'),
+                    fetchContentByType('shayari', catParam, searchQuery),
                     fetchCategories('shayari')
                 ]);
                 setShayaris(shRes.data);
@@ -155,7 +157,7 @@ const Shayari = () => {
                         <h3 className="widget-title">Categories</h3>
                         <div className="category-list-sidebar">
                             <button 
-                                className={`cat-link-sidebar ${!selectedCategory ? 'active' : ''}`}
+                                className={`cat-link-sidebar ${!selectedCategory || selectedCategory === 'All' ? 'active' : ''}`}
                                 onClick={() => setSelectedCategory('')}
                             >
                                 All Shayari

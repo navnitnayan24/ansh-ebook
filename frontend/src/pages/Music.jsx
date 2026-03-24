@@ -13,7 +13,7 @@ const Music = () => {
     const [allCategories, setAllCategories] = useState([]);
     const [loading, setLoading] = useState(true);
     const [query, setQuery] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState('All');
+    const [selectedCategory, setSelectedCategory] = useState('');
     const [playingTrack, setPlayingTrack] = useState(null);
     const [userLibrary, setUserLibrary] = useState({ favorites: [], playlists: [] });
     const [showLibrary, setShowLibrary] = useState(false);
@@ -188,7 +188,7 @@ const Music = () => {
                 </div>
                 <div className="pill-container-centered">
                     <button 
-                        className={`music-pill-v2 ${!selectedCategory ? 'active' : ''}`} 
+                        className={`music-pill-v2 ${!selectedCategory || selectedCategory === '' ? 'active' : ''}`} 
                         onClick={() => setSelectedCategory('')}
                     >
                         All Music

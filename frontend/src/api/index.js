@@ -41,14 +41,18 @@ API.interceptors.response.use(
 // Home Dashboard Content (Mocking the previous aggregate fetch)
 export const fetchHomeContent = () => API.get('home');
 
-export const fetchContentByType = async (type, params = {}) => {
+export const fetchContentByType = async (type, category = '', query = '') => {
     try {
         // Map the existing frontend "types" to our new backend routes
         let route = `${type}`;
         if (type === 'podcasts' || type === 'PODCAST') route = 'podcast';
         if (type === 'ebooks' || type === 'EBOOK') route = 'ebook';
         
-        // Ensure query params are passed if present (e.g. ?q=search)
+        // Build query params — backend expects ?category=<id>&q=<search>
+        const params = {};
+        if (category) params.category = category;
+        if (query) params.q = query;
+
         const response = await API.get(`${route}`, { params });
         return { data: response.data };
     } catch (error) {
