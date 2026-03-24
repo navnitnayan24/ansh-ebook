@@ -205,7 +205,7 @@ const Music = () => {
                         <button 
                             className={`music-pill-v2 ${showLibrary ? 'active' : ''}`} 
                             onClick={() => setShowLibrary(!showLibrary)}
-                            style={{ background: showLibrary ? 'var(--gradient-primary)' : 'rgba(255, 46, 99, 0.1)', color: 'white', border: '1px solid var(--pink-primary)' }}
+                            style={{ background: showLibrary ? 'var(--gradient-primary)' : 'var(--bg-glass-light)', color: showLibrary ? 'white' : 'var(--text-primary)', border: '1px solid var(--pink-primary)' }}
                         >
                             <Bookmark size={14} style={{ marginRight: '5px' }} /> MY LIBRARY
                         </button>
@@ -336,7 +336,7 @@ const Music = () => {
                                             value={newPlaylistName} 
                                             onChange={(e) => setNewPlaylistName(e.target.value)}
                                             placeholder="My Hits..."
-                                            style={{ flex: 1, background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)', borderRadius: '8px', color: 'white', padding: '0.5rem' }}
+                                            style={{ flex: 1, background: 'var(--bg-glass-light)', border: '1px solid var(--glass-border)', borderRadius: '8px', color: 'var(--text-primary)', padding: '0.5rem' }}
                                         />
                                         <button className="btn btn-primary btn-sm" onClick={handleCreatePlaylist}>CREATE</button>
                                     </div>
@@ -348,9 +348,9 @@ const Music = () => {
                                             key={pl._id} 
                                             className="glass-card mb-2 w-100 text-left" 
                                             onClick={() => handleAddToPlaylist(pl._id)}
-                                            style={{ padding: '1rem', border: '1px solid var(--glass-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.02)' }}
+                                            style={{ padding: '1rem', border: '1px solid var(--glass-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-glass-light)' }}
                                         >
-                                            <span>{pl.name}</span>
+                                            <span style={{ color: 'var(--text-primary)' }}>{pl.name}</span>
                                             <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{pl.songs.length} tracks</span>
                                         </button>
                                     ))}
@@ -373,13 +373,13 @@ const Music = () => {
                     >
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
                             <h2 className="pink-gradient-text" style={{ fontSize: '1.5rem' }}>My Library</h2>
-                            <button onClick={() => setShowLibrary(false)} style={{ background: 'transparent', border: 'none', color: 'white' }}><ArrowLeft size={24} /></button>
+                            <button onClick={() => setShowLibrary(false)} style={{ background: 'transparent', border: 'none', color: 'var(--text-primary)' }}><ArrowLeft size={24} /></button>
                         </div>
 
                         <div className="lib-section mb-4">
                             <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem' }}><Heart size={18} fill="var(--pink-primary)" /> FAVORITES</h4>
                             {userLibrary.favorites.length > 0 ? userLibrary.favorites.map(track => (
-                                <div key={track._id} className="lib-track-item" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '0.8rem', background: 'rgba(255,255,255,0.02)', padding: '0.5rem', borderRadius: '8px' }}>
+                                <div key={track._id} className="lib-track-item" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '0.8rem', background: 'var(--bg-glass-light)', padding: '0.5rem', borderRadius: '8px' }}>
                                     <img src={(track.imageUrl || track.cover_url)?.startsWith('/uploads') ? `${MEDIA_URL}${track.imageUrl || track.cover_url}` : (track.imageUrl || track.cover_url || '/default-music.png')} style={{ width: '40px', height: '40px', borderRadius: '4px' }} alt="" />
                                     <div style={{ flex: 1, overflow: 'hidden' }}>
                                         <p style={{ fontSize: '0.85rem', fontWeight: '600', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>{track.title}</p>
@@ -399,8 +399,8 @@ const Music = () => {
                                     <p style={{ fontSize: '0.9rem', fontWeight: 'bold', color: 'var(--text-primary)', marginBottom: '8px' }}>{pl.name}</p>
                                     {pl.songs.map(track => (
                                         <div key={track._id} className="lib-track-item" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '0.5rem', paddingLeft: '0.5rem' }}>
-                                            <p style={{ fontSize: '0.8rem', flex: 1 }}>{track.title}</p>
-                                            <button onClick={() => togglePlay(track)} style={{ background: 'transparent', border: 'none', color: 'white' }}>
+                                            <p style={{ fontSize: '0.8rem', flex: 1, color: 'var(--text-primary)' }}>{track.title}</p>
+                                            <button onClick={() => togglePlay(track)} style={{ background: 'transparent', border: 'none', color: 'var(--text-primary)' }}>
                                                 {playingTrack?._id === track._id ? <Pause size={14} /> : <Play size={14} />}
                                             </button>
                                         </div>

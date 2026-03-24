@@ -226,11 +226,11 @@ const Shayari = () => {
                                                             animate={{ height: 'auto', opacity: 1 }} 
                                                             exit={{ height: 0, opacity: 0 }}
                                                             className="comments-section mt-3"
-                                                            style={{overflow: 'hidden', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '1rem'}}
+                                                            style={{overflow: 'hidden', borderTop: '1px solid var(--glass-border)', paddingTop: '1rem'}}
                                                         >
                                                             <div className="comments-list mb-3" style={{maxHeight: '150px', overflowY: 'auto'}}>
                                                                 {s.comments && s.comments.length > 0 ? s.comments.map((c, i) => (
-                                                                    <div key={i} className="comment-item" style={{background: 'rgba(255,255,255,0.02)', padding: '0.6rem', borderRadius: '8px', marginBottom: '0.5rem'}}>
+                                                                    <div key={i} className="comment-item" style={{background: 'var(--bg-glass-light)', padding: '0.6rem', borderRadius: '8px', marginBottom: '0.5rem'}}>
                                                                         <strong style={{color: 'var(--pink-primary)', fontSize: '0.85rem'}}>{c.username}</strong>
                                                                         <p style={{margin: '0.3rem 0 0', fontSize: '0.9rem', color: 'var(--text-primary)'}}>{c.text}</p>
                                                                         <span style={{fontSize: '0.7rem', color: 'var(--text-muted)'}}>{new Date(c.createdAt).toLocaleDateString()}</span>
@@ -243,7 +243,7 @@ const Shayari = () => {
                                                                     value={commentText} 
                                                                     onChange={(e) => setCommentText(e.target.value)}
                                                                     placeholder="Add a comment..."
-                                                                    style={{flex: 1, padding: '0.6rem 1rem', borderRadius: '8px', border: '1px solid var(--glass-border)', background: 'rgba(255,255,255,0.03)', color: 'white', outline: 'none'}}
+                                                                    style={{flex: 1, padding: '0.6rem 1rem', borderRadius: '8px', border: '1px solid var(--glass-border)', background: 'var(--bg-glass-light)', color: 'var(--text-primary)', outline: 'none'}}
                                                                     onKeyPress={(e) => e.key === 'Enter' && submitComment(s._id)}
                                                                 />
                                                                 <button className="btn btn-primary" style={{padding: '0.5rem 1rem', borderRadius: '8px'}} onClick={() => submitComment(s._id)}>

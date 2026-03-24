@@ -30,6 +30,8 @@
     
     --color-pink: #ff1493;
     --star-unselected: #8e8095;
+    --bg-glass-light: rgba(255, 255, 255, 0.05);
+    --bg-glass-heavy: rgba(255, 255, 255, 0.1);
 }
 
 [data-theme='light'] {
@@ -55,6 +57,8 @@
     
     --color-pink: #d81b60;
     --star-unselected: #adb5bd;
+    --bg-glass-light: rgba(0, 0, 0, 0.02);
+    --bg-glass-heavy: rgba(0, 0, 0, 0.05);
 }
 
 * {
