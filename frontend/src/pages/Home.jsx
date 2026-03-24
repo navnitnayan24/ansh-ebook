@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Play, Book, Mic, Quote, ArrowRight, BookOpen, Instagram, Youtube, MessageCircle, PlayCircle, Music, Star, ThumbsUp, ThumbsDown, User } from 'lucide-react';
+import { Play, Book, Mic, Quote, ArrowRight, BookOpen, Instagram, Youtube, MessageCircle, PlayCircle, Music, Star, ThumbsUp, ThumbsDown, User, Share2, MessageSquare, Send, Clock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fetchHomeContent, fetchReviews, addReview, updateReviewReaction, API } from '../api';
 import { MEDIA_URL } from '../config';
@@ -131,6 +131,39 @@ const Home = () => {
         } catch (err) {
             setSubStatus({ message: err.response?.data?.message || 'Subscription failed.', success: false });
         }
+    };
+
+    const handleShayariShare = (item) => {
+        if (navigator.share) {
+            navigator.share({
+                title: 'Ansh Ebook Shayari',
+                text: `${item.content}\n\nRead more at Ansh Ebook:`,
+                url: window.location.href,
+            }).catch(console.error);
+        } else {
+            const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(item.content)} - Read at ${window.location.href}`;
+            window.open(shareUrl, '_blank');
+        }
+    };
+
+    const handleShayariWhatsApp = (item) => {
+        const text = `*Ansh Ebook Original Shayari*\n\n"${item.content}"\n\nRead more at: ${window.location.origin}/shayari`;
+        const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+        window.open(whatsappUrl, '_blank');
+    };
+
+    const formatTimeAgo = (dateString) => {
+        const now = new Date();
+        const past = new Date(dateString);
+        const diffInMs = now - past;
+        const diffInMin = Math.floor(diffInMs / (1000 * 60));
+        const diffInHrs = Math.floor(diffInMin / 60);
+        const diffInDays = Math.floor(diffInHrs / 24);
+
+        if (diffInDays > 0) return `${diffInDays}d ago`;
+        if (diffInHrs > 0) return `${diffInHrs}h ago`;
+        if (diffInMin > 0) return `${diffInMin}m ago`;
+        return 'Just now';
     };
 
     // Only lock Music, Podcast, Ebook — NOT Shayari
@@ -272,12 +305,29 @@ const Home = () => {
                 </motion.div>
                 <div className="grid-3">
                     {content?.latest_shayari?.slice(0, 6).map((item, idx) => (
-                        <motion.div key={item?._id || idx} className="glass-card shayari-card hover-tilt" variants={itemVariants}>
-                            <Quote className="quote-icon pink-text" size={32} />
+                        <motion.div key={item?._id || idx} className="glass-card shayari-card-premium hover-tilt" variants={itemVariants}>
+                            <div className="shayari-header">
+                                <Quote className="quote-icon" size={28} />
+                                <span className="card-timestamp"><Clock size={12} className="mr-1"/> {formatTimeAgo(item.createdAt)}</span>
+                            </div>
                             <p className="shayari-text">{item?.content}</p>
-                            <div className="card-footer">
-                                <span className="cat-badge-mini">{item?.category_id?.name || 'SHAYARI'}</span>
-                                <button className="like-btn" onClick={() => handleShayariLike(item._id)}>❤️ {item?.likes_count || 0}</button>
+                            <div className="shayari-action-bar">
+                                <div className="action-group">
+                                    <button className="action-btn like" onClick={() => handleShayariLike(item._id)}>
+                                        <ThumbsUp size={18} /> <span>{item?.likes_count || 0}</span>
+                                    </button>
+                                    <button className="action-btn comment" onClick={() => navigate('/shayari')}>
+                                        <MessageSquare size={18} /> <span>{item?.comments?.length || 0}</span>
+                                    </button>
+                                </div>
+                                <div className="action-group">
+                                    <button className="action-btn share" onClick={() => handleShayariShare(item)}>
+                                        <Share2 size={18} />
+                                    </button>
+                                    <button className="action-btn whatsapp" onClick={() => handleShayariWhatsApp(item)}>
+                                        <MessageCircle size={18} />
+                                    </button>
+                                </div>
                             </div>
                         </motion.div>
                     ))}

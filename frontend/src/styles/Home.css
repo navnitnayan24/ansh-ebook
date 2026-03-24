@@ -167,6 +167,111 @@
 }
 
 /* =============================================
+   SHAYARI CARD PREMIUM (NEW)
+   ============================================= */
+.shayari-card-premium {
+    padding: 2.5rem 1.8rem !important;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 280px;
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 20, 147, 0.1) !important;
+    backdrop-filter: blur(15px) !important;
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.shayari-card-premium:hover {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-color: rgba(255, 20, 147, 0.4) !important;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 20, 147, 0.15);
+}
+
+.shayari-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.shayari-header .quote-icon {
+    color: var(--accent);
+    opacity: 0.6;
+}
+
+.card-timestamp {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    opacity: 0.6;
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+}
+
+.shayari-text {
+    font-size: 1.15rem;
+    line-height: 1.8;
+    color: var(--text-primary);
+    margin-bottom: 2rem;
+    flex: 1;
+    font-family: inherit;
+    font-weight: 500;
+}
+
+.shayari-action-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 1.2rem;
+    margin-top: auto;
+}
+
+.action-group {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.action-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 6px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.action-btn:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.action-btn.like:hover {
+    color: var(--accent);
+}
+
+.action-btn.whatsapp:hover {
+    color: #25D366;
+}
+
+.action-btn.share:hover {
+    color: #4facfe;
+}
+
+.action-btn span {
+    font-size: 0.8rem;
+    opacity: 0.8;
+}
+
+/* =============================================
    EXPLORE SECTION
    ============================================= */
 .explore-grid {
