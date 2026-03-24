@@ -38,7 +38,10 @@ const BrandHeader = ({ isMobile, toggleMenu, isOpen }) => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6 }}
                     >
-                        <h1 className="brand-name-main center-text">ANSH EBOOK</h1>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+                            <img src="/logo-ansh.png" alt="Ansh Ebook Logo" style={{ width: '40px', height: '40px', objectFit: 'contain' }} />
+                            <h1 className="brand-name-main center-text">ANSH EBOOK</h1>
+                        </div>
                         <div className="brand-subtitle-line">
                             <span className="line"></span>
                             <span className="subtitle-text">PREMIUM CREATIVE HUB</span>
