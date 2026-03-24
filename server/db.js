@@ -1,20 +1,17 @@
 const mongoose = require('mongoose');
-const path = require('path');
-const fs = require('fs');
 
 async function connectDB() {
     try {
         const uri = process.env.MONGODB_URI;
 
         if (!uri) {
-            console.error('❌ FATAL ERROR: MONGODB_URI is not defined in environment variables!');
-            console.error('⚠️ The server will likely crash if you don\'t set MONGODB_URI on Render.');
+            console.error('❌ FATAL ERROR: MONGODB_URI is not defined!');
             throw new Error('MONGODB_URI is missing. Set it in Render dashboard.');
         }
 
-        console.log('🔗 Connecting mongoose to cloud/local database...');
+        console.log('🔗 Connecting to MongoDB...');
         await mongoose.connect(uri, {
-            serverSelectionTimeoutMS: 30000 // 30 second timeout for cloud stability
+            serverSelectionTimeoutMS: 30000 
         });
         console.log('💎 MongoDB Connected Successfully');
         await autoSeed();
@@ -34,7 +31,6 @@ async function autoSeed() {
     const bcrypt = require('bcryptjs');
 
     try {
-        // Check if data already exists to avoid wiping on every restart
         const adminCount = await Admin.countDocuments();
         const forceSeed = process.env.SEED_FORCE === 'true';
 
@@ -44,7 +40,7 @@ async function autoSeed() {
         }
 
         if (forceSeed) {
-            console.log('🧹 FORCE_SEED detected. Purging existing data...');
+            console.log('🧹 FORCE_SEED detected. Purging data...');
             await Promise.all([
                 Category.deleteMany({}),
                 Admin.deleteMany({}),
@@ -54,8 +50,6 @@ async function autoSeed() {
                 Podcast.deleteMany({}),
                 Ebook.deleteMany({})
             ]);
-        } else {
-            console.log('🌱 Database is empty. Starting initial seed...');
         }
 
         // 1. Settings
@@ -64,12 +58,11 @@ async function autoSeed() {
             { key: 'meta_tags', value: '<meta name="description" content="THE ALFAZ-E-DIARIES - Premium Shayari & E-books">', description: 'SEO Meta Tags' }
         ]);
 
-        // 2. Admin - Explicitly Upsert the specific admin account
+        // 2. Admin
         const adminUsername = 'anshsharma2026';
         const adminEmail = 'anshbgmi24@gmail.com';
         const adminPassword = await bcrypt.hash('ansh@sh2002', 10);
         
-        console.log(`🔐 Ensuring admin account: ${adminUsername}...`);
         await Admin.findOneAndUpdate(
             { $or: [{ username: adminUsername }, { email: adminEmail }] },
             { 
@@ -80,9 +73,8 @@ async function autoSeed() {
             },
             { upsert: true, new: true, setDefaultsOnInsert: true }
         );
-        console.log('✅ Admin account synced.');
 
-        // 3. Categories (Meticulously synced with screenshots)
+        // 3. Categories
         const categories = await Category.insertMany([
             { section: 'shayari', name: 'Love' },
             { section: 'shayari', name: 'Sad' },
@@ -93,7 +85,6 @@ async function autoSeed() {
             { section: 'shayari', name: 'Friendship' },
             { section: 'shayari', name: 'Funny' },
             { section: 'shayari', name: 'Heartbreak' },
-            
             { section: 'music', name: 'Pop' },
             { section: 'music', name: 'Classical' },
             { section: 'music', name: 'Lo-Fi' },
@@ -103,7 +94,6 @@ async function autoSeed() {
             { section: 'music', name: 'Hip-Hop' },
             { section: 'music', name: 'Folk' },
             { section: 'music', name: 'Cinematic' },
-
             { section: 'podcasts', name: 'Stories' },
             { section: 'podcasts', name: 'Interviews' },
             { section: 'podcasts', name: 'Growth' },
@@ -113,7 +103,6 @@ async function autoSeed() {
             { section: 'podcasts', name: 'Mythology' },
             { section: 'podcasts', name: 'Poetry' },
             { section: 'podcasts', name: 'Reflection' },
-
             { section: 'ebooks', name: 'Poetry' },
             { section: 'ebooks', name: 'Self-help' },
             { section: 'ebooks', name: 'Fiction' },
@@ -128,23 +117,14 @@ async function autoSeed() {
         const catMap = {};
         categories.forEach(c => catMap[`${c.section}_${c.name}`] = c._id);
 
-        // 4. Sample Content (High Quality)
+        // 4. Sample Content
         await Shayari.create({
             content: 'Zindagi mein koshish karte raho,\nManzil mile ya na mile,\nRaaste ki haseen yaadein\nZindagi sanwar deti hai.',
             likes_count: 524,
             category_id: catMap['shayari_Life']
         });
 
-        await Music.create({
-            title: 'Whispering Heart',
-            artist: 'Ansh Sharma',
-            cover_url: 'https://images.unsplash.com/photo-1514525253361-bee8d48700df?w=500&q=80',
-            file_url: '#',
-            duration: '3:20',
-            category_id: catMap['music_Lo-Fi']
-        });
-
-        console.log('🚀 Clean premium data seeded successfully!');
+        console.log('🚀 Seeded successfully!');
     } catch (err) {
         console.error('⚠️ Seed failed:', err.message);
     }
@@ -152,7 +132,6 @@ async function autoSeed() {
 
 async function closeDB() {
     await mongoose.disconnect();
-    if (mongod) await mongod.stop();
 }
 
 module.exports = { connectDB, closeDB };

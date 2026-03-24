@@ -18,15 +18,15 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
     try {
-        const { email, password } = req.body; // Changed to only destructure email and password
-        const secret = process.env.JWT_SECRET || 'ansh_ebook_internal_fallback_secure_2026_@#$'; // Added fallback secret
+        const { email, password } = req.body;
+        const secret = process.env.JWT_SECRET || 'ansh_ebook_internal_fallback_secure_2026_@#$';
         
-        const user = await User.findOne({ email }); // Changed to find by email only
+        const user = await User.findOne({ email });
         
         if (!user || !(await bcrypt.compare(password, user.password))) {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
-        // Removed the redundant secret check and error handling as a fallback is now provided
+        
         const token = jwt.sign({ id: user._id, role: 'user' }, secret, { expiresIn: '1d' });
         res.json({ 
             token, 
@@ -53,14 +53,11 @@ exports.adminLogin = async (req, res) => {
         });
         
         console.log(`🔐 [ADMIN LOGIN DEBUG] Attempt for: ${loginId}. Found in DB: ${admin ? 'YES' : 'NO'}`);
-        if (admin) {
-            console.log(`🔐 [ADMIN LOGIN DEBUG] DB Username: ${admin.username}. Email: ${admin.email}`);
-        }
 
         if (!admin || !(await bcrypt.compare(password, admin.password))) {
-            console.warn(`🔐 [ADMIN LOGIN DEBUG] Login failed for ${loginId}. Reason: ${!admin ? 'Record Not Found' : 'Incorrect Password'}`);
             return res.status(401).json({ error: 'Invalid credentials' });
         }
+
         const token = jwt.sign({ id: admin._id, role: 'admin' }, secret, { expiresIn: '1d' });
         res.json({ 
             token, 
@@ -81,7 +78,6 @@ exports.adminLogin = async (req, res) => {
 exports.forgotPassword = async (req, res) => {
     try {
         const { email } = req.body;
-        // Search in both collections
         let account = await Admin.findOne({ email });
         let type = 'admin';
         
@@ -94,16 +90,13 @@ exports.forgotPassword = async (req, res) => {
             return res.status(404).json({ error: 'User not found with this email' });
         }
 
-        // Generate Token
         const resetTokenRaw = crypto.randomBytes(20).toString('hex');
-        // Hash the token before saving it to the database
         const resetTokenHashed = crypto.createHash('sha256').update(resetTokenRaw).digest('hex');
         
         account.resetPasswordToken = resetTokenHashed;
-        account.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+        account.resetPasswordExpires = Date.now() + 3600000;
         await account.save();
 
-        // LOG RAW TOKEN (Since no SMTP, useful for dev/admin)
         console.log(`🔑 PASSWORD RESET TOKEN for ${email} (${type}): ${resetTokenRaw}`);
         
         res.json({ 
@@ -149,7 +142,7 @@ exports.resetPassword = async (req, res) => {
     }
 };
 
-// Change Password (ID strictly from Auth Middleware)
+// Change Password
 exports.changePassword = async (req, res) => {
     try {
         const { oldPassword, newPassword } = req.body;
@@ -183,7 +176,6 @@ exports.updateProfile = async (req, res) => {
         } else if (avatarUrl) {
             account.profile_pic = avatarUrl;
         } else if (req.file) {
-            // Cloudinary path or local upload path
             account.profile_pic = req.file.path || `/uploads/${req.file.filename}`;
         }
         
