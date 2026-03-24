@@ -27,6 +27,7 @@ exports.login = async (req, res) => {
         
         if (!user || !(await bcrypt.compare(password, user.password))) {
             return res.status(401).json({ error: 'Invalid credentials' });
+        }
         const secret = process.env.JWT_SECRET || 'the_alfaz_e_diaries_secure_fallback_2026';
         const token = jwt.sign({ id: user._id, role: 'user' }, secret, { expiresIn: '1d' });
         res.json({ 
