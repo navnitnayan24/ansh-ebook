@@ -184,8 +184,8 @@ const Podcasts = () => {
                                                         </audio>
                                                     </motion.div>
                                                 )}
-                                                <button className="btn btn-primary btn-pill shadow-neon w-100" onClick={() => togglePlay(pod)}>
-                                                    {playingPodcast?._id === pod._id ? 'PAUSE EPISODE' : 'LISTEN ON WEB'}
+                                                <button className="btn btn-primary btn-xs btn-pill shadow-neon w-100" onClick={() => togglePlay(pod)} style={{ fontSize: '0.7rem', padding: '0.4rem' }}>
+                                                    {playingPodcast?._id === pod._id ? 'PAUSE' : 'LISTEN'}
                                                 </button>
                                             </div>
                                         </div>

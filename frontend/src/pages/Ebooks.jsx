@@ -154,11 +154,11 @@ const Ebooks = () => {
                                                 </div>
                                                 <div className="ebook-details-main">
                                                     <div className="ebook-meta-top">
-                                                        <span className="category-tag-plain">{book.category_id?.name || 'General'}</span>
-                                                        <span className="date-tag-mini">{new Date(book.createdAt).toLocaleDateString()}</span>
+                                                        <span className="category-tag-plain" style={{ fontSize: '0.6rem' }}>{book.category_id?.name || 'General'}</span>
+                                                        <span className="date-tag-mini" style={{ fontSize: '0.6rem' }}>{new Date(book.createdAt).toLocaleDateString()}</span>
                                                     </div>
                                                     <h2>{book.title}</h2>
-                                                    <p className="ebook-desc-short">{book.description?.substring(0, 100)}...</p>
+                                                    <p className="ebook-desc-short">{book.description}</p>
                                                     <div className="ebook-footer-actions">
                                                         <button 
                                                             className="btn btn-primary btn-sm btn-pill shadow-neon w-100"
