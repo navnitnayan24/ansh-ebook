@@ -66,16 +66,19 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
+    gap: 8px; /* Reduced gap to bring it closer to 'Ansh' */
     margin-bottom: 2px;
 }
 
 .header-logo-icon {
     width: 42px;
     height: 42px;
-    object-fit: contain;
+    object-fit: cover; /* Changed from contain to cover for circular look */
+    border-radius: 50%; /* CIRCULAR LOGO */
+    border: 1px solid rgba(255, 20, 147, 0.3); /* Subtle border for circularity */
     filter: drop-shadow(0 0 10px rgba(255, 20, 147, 0.3));
     transition: transform 0.3s ease;
+    overflow: hidden;
 }
 
 .brand-link:hover .header-logo-icon {
@@ -143,7 +146,7 @@
     }
 
     .header-logo-container {
-        gap: 8px;
+        gap: 6px; /* Even tighter on mobile */
     }
     
     .subtitle-text {

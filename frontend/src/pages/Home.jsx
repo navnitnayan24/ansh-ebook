@@ -26,6 +26,11 @@ const Home = () => {
         rating: 5 
     });
     const [isReviewing, setIsReviewing] = useState(false);
+    
+    // Comment States
+    const [activeCommentsId, setActiveCommentsId] = useState(null);
+    const [commentText, setCommentText] = useState('');
+    const [editingComment, setEditingComment] = useState(null); // { id, text }
 
     // Hash Scroll Handling
     useEffect(() => {
@@ -131,6 +136,46 @@ const Home = () => {
         } catch (err) {
             setSubStatus({ message: err.response?.data?.message || 'Subscription failed.', success: false });
         }
+    };
+
+    // --- SHAYARI COMMENT HANDLERS ---
+    const handleAddComment = async (shayariId) => {
+        if (!user) { navigate('/login'); return; }
+        if (!commentText.trim()) return;
+        try {
+            const { data } = await API.post(`shayari/${shayariId}/comment`, { 
+                text: commentText, 
+                username: user.username || 'User' 
+            });
+            setContent(prev => ({
+                ...prev,
+                latest_shayari: prev.latest_shayari.map(s => s._id === shayariId ? { ...s, comments: data.comments } : s)
+            }));
+            setCommentText('');
+        } catch (err) { alert('Comment failed'); }
+    };
+
+    const handleDeleteComment = async (shayariId, commentId) => {
+        if (!window.confirm('Delete this comment?')) return;
+        try {
+            const { data } = await API.delete(`shayari/${shayariId}/comment/${commentId}`);
+            setContent(prev => ({
+                ...prev,
+                latest_shayari: prev.latest_shayari.map(s => s._id === shayariId ? { ...s, comments: data.comments } : s)
+            }));
+        } catch (err) { alert('Delete failed'); }
+    };
+
+    const handleUpdateComment = async (shayariId) => {
+        if (!editingComment || !editingComment.text.trim()) return;
+        try {
+            const { data } = await API.put(`shayari/${shayariId}/comment/${editingComment.id}`, { text: editingComment.text });
+            setContent(prev => ({
+                ...prev,
+                latest_shayari: prev.latest_shayari.map(s => s._id === shayariId ? { ...s, comments: data.comments } : s)
+            }));
+            setEditingComment(null);
+        } catch (err) { alert('Update failed'); }
     };
 
     const handleShayariShare = (item) => {
@@ -316,7 +361,7 @@ const Home = () => {
                                     <button className="action-btn like" onClick={() => handleShayariLike(item._id)}>
                                         <ThumbsUp size={18} /> <span>{item?.likes_count || 0}</span>
                                     </button>
-                                    <button className="action-btn comment" onClick={() => navigate('/shayari')}>
+                                    <button className="action-btn comment" onClick={() => setActiveCommentsId(activeCommentsId === item._id ? null : item._id)}>
                                         <MessageSquare size={18} /> <span>{item?.comments?.length || 0}</span>
                                     </button>
                                 </div>
@@ -329,6 +374,59 @@ const Home = () => {
                                     </button>
                                 </div>
                             </div>
+
+                            {/* PERSISTENT COMMENT SECTION */}
+                            <AnimatePresence>
+                                {activeCommentsId === item._id && (
+                                    <motion.div 
+                                        className="shayari-comments-section"
+                                        initial={{ height: 0, opacity: 0 }}
+                                        animate={{ height: 'auto', opacity: 1 }}
+                                        exit={{ height: 0, opacity: 0 }}
+                                    >
+                                        <div className="comments-list-mini">
+                                            {item.comments?.map(c => (
+                                                <div key={c._id} className="comment-item-mini">
+                                                    <div className="comment-meta">
+                                                        <span className="comment-user">{c.username}</span>
+                                                        <span className="comment-time">{formatTimeAgo(c.createdAt)}</span>
+                                                    </div>
+                                                    {editingComment?.id === c._id ? (
+                                                        <div className="edit-box-mini">
+                                                            <textarea 
+                                                                value={editingComment.text} 
+                                                                onChange={(e) => setEditingComment({ ...editingComment, text: e.target.value })}
+                                                                className="glass-input-sidebar"
+                                                            />
+                                                            <div className="edit-actions">
+                                                                <button onClick={() => handleUpdateComment(item._id)} className="save-btn">SAVE</button>
+                                                                <button onClick={() => setEditingComment(null)} className="cancel-btn">CANCEL</button>
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <p className="comment-text-mini">{c.text}</p>
+                                                    )}
+                                                    {user && (user.id === c.user_id || user._id === c.user_id) && !editingComment && (
+                                                        <div className="comment-controls-mini">
+                                                            <button onClick={() => setEditingComment({ id: c._id, text: c.text })}>Edit</button>
+                                                            <button onClick={() => handleDeleteComment(item._id, c._id)}>Delete</button>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <div className="add-comment-mini">
+                                            <textarea 
+                                                placeholder="Write a comment..." 
+                                                value={commentText}
+                                                onChange={(e) => setCommentText(e.target.value)}
+                                                className="glass-input-sidebar"
+                                            />
+                                            <button onClick={() => handleAddComment(item._id)} className="btn btn-primary btn-sm">POST</button>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </motion.div>
                     ))}
                 </div>

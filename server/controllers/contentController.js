@@ -141,6 +141,60 @@ exports.addComment = async (req, res) => {
     }
 };
 
+exports.updateComment = async (req, res) => {
+    const { type, id, commentId } = req.params;
+    const { text } = req.body;
+    const userId = req.user.id;
+
+    if (!text) return res.status(400).json({ error: 'Updated text is required' });
+
+    try {
+        const item = await Shayari.findById(id);
+        if (!item) return res.status(404).json({ error: 'Item not found' });
+
+        const comment = item.comments.id(commentId);
+        if (!comment) return res.status(404).json({ error: 'Comment not found' });
+
+        // Only allow user to update their own comment
+        if (comment.user_id.toString() !== userId.toString()) {
+            return res.status(403).json({ error: 'Unauthorized to update this comment' });
+        }
+
+        comment.text = text;
+        comment.updatedAt = new Date();
+        await item.save();
+
+        res.json({ success: true, comments: item.comments });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+exports.deleteComment = async (req, res) => {
+    const { type, id, commentId } = req.params;
+    const userId = req.user.id;
+
+    try {
+        const item = await Shayari.findById(id);
+        if (!item) return res.status(404).json({ error: 'Item not found' });
+
+        const comment = item.comments.id(commentId);
+        if (!comment) return res.status(404).json({ error: 'Comment not found' });
+
+        // Only allow user to delete their own comment
+        if (comment.user_id.toString() !== userId.toString()) {
+            return res.status(403).json({ error: 'Unauthorized to delete this comment' });
+        }
+
+        item.comments.pull(commentId);
+        await item.save();
+
+        res.json({ success: true, message: 'Comment deleted', comments: item.comments });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
 exports.subscribe = async (req, res) => {
     const { email } = req.body;
     if (!email) return res.status(400).json({ error: 'Email is required' });

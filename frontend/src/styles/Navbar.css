@@ -413,9 +413,12 @@
 }
 
 .drawer-logo {
-    width: 35px;
-    height: 35px;
-    object-fit: contain;
+    width: 32px;
+    height: 32px;
+    object-fit: cover;
+    border-radius: 50%; /* CIRCULAR LOGO */
+    border: 1px solid rgba(255, 20, 147, 0.2);
+    box-shadow: 0 0 10px rgba(255, 20, 147, 0.2);
     filter: drop-shadow(0 0 8px rgba(255, 20, 147, 0.2));
 }
 

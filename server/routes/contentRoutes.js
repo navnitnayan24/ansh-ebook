@@ -58,6 +58,8 @@ const authOptional = (req, res, next) => {
 
 router.post('/:type/:id/like', authOptional, contentController.likeContent);
 router.post('/:type/:id/comment', authenticate, contentController.addComment);
+router.put('/:type/:id/comment/:commentId', authenticate, contentController.updateComment);
+router.delete('/:type/:id/comment/:commentId', authenticate, contentController.deleteComment);
 router.post('/subscribe', contentController.subscribe);
 
 // Music Interactions & Library
