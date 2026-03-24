@@ -111,7 +111,7 @@ exports.likeContent = async (req, res) => {
 
 exports.addComment = async (req, res) => {
     const { type, id } = req.params;
-    const { text, username } = req.body;
+    const { text } = req.body;
     const userId = req.user ? req.user.id : null;
 
     if (!userId) return res.status(401).json({ error: 'Must be logged in to comment' });
@@ -121,13 +121,17 @@ exports.addComment = async (req, res) => {
     if (normalizedType !== 'shayari') return res.status(400).json({ error: 'Comments only supported on Shayari currently' });
 
     try {
+        // Always fetch the real username from the DB to prevent ObjectID display
+        const userRecord = await User.findById(userId).select('username');
+        const resolvedUsername = userRecord?.username || req.body.username || 'User';
+
         const item = await Shayari.findById(id);
         if (!item) return res.status(404).json({ error: 'Item not found' });
 
         if (!item.comments) item.comments = [];
         const newComment = {
             user_id: userId,
-            username: username || 'User',
+            username: resolvedUsername,
             text: text,
             createdAt: new Date()
         };

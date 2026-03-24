@@ -85,13 +85,14 @@ exports.addContent = async (req, res) => {
         // Handle File Upload or Manual URL Mapping
         if (req.files && req.files.length > 0) {
             for (let file of req.files) {
-                // Explicitly prioritize Cloudinary secure_url or http path. If local, strictly enforce /uploads/ path.
-                let uploadedUrl = file.secure_url;
-                if (!uploadedUrl && file.path && file.path.startsWith('http')) {
-                    uploadedUrl = file.path;
-                } else if (!uploadedUrl) {
+                // multer-storage-cloudinary sets the URL in file.path (Cloudinary URL)
+                // file.secure_url may be undefined in some versions, so fallback to file.path
+                let uploadedUrl = file.path || file.secure_url;
+                if (!uploadedUrl || !uploadedUrl.startsWith('http')) {
+                    // Local fallback
                     uploadedUrl = `/uploads/${file.filename}`;
                 }
+                console.log(`[FILE UPLOAD] field=${file.fieldname}, url=${uploadedUrl}`);
                 if (file.fieldname === 'thumbnail') {
                     data.thumbnail = uploadedUrl;
                     if (['music', 'ebook', 'ebooks'].includes(type.toLowerCase())) {
@@ -173,13 +174,14 @@ exports.updateContent = async (req, res) => {
         // Handle File Upload or Manual URL Mapping
         if (req.files && req.files.length > 0) {
             for (let file of req.files) {
-                // Explicitly prioritize Cloudinary secure_url or http path. If local, strictly enforce /uploads/ path formatting to prevent absolute file path routing errors on the frontend.
-                let uploadedUrl = file.secure_url;
-                if (!uploadedUrl && file.path && file.path.startsWith('http')) {
-                    uploadedUrl = file.path;
-                } else if (!uploadedUrl) {
+                // multer-storage-cloudinary sets the URL in file.path (Cloudinary URL)
+                // file.secure_url may be undefined in some versions, so fallback to file.path
+                let uploadedUrl = file.path || file.secure_url;
+                if (!uploadedUrl || !uploadedUrl.startsWith('http')) {
+                    // Local fallback
                     uploadedUrl = `/uploads/${file.filename}`;
                 }
+                console.log(`[FILE UPDATE] field=${file.fieldname}, url=${uploadedUrl}`);
                 if (file.fieldname === 'thumbnail') {
                     data.thumbnail = uploadedUrl;
                     if (['music', 'ebook', 'ebooks'].includes(type.toLowerCase())) {
