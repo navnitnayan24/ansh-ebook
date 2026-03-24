@@ -26,10 +26,10 @@
     --font-heading: 'Playfair Display', serif;
     --font-body: 'Poppins', sans-serif;
     
-    --radius-sm: 10px;
-    --radius-md: 20px;
-    --radius-lg: 30px;
     --radius-full: 50px;
+    
+    --color-pink: #ff1493;
+    --star-unselected: #8e8095;
 }
 
 [data-theme='light'] {
@@ -52,6 +52,9 @@
     
     --gradient-primary: linear-gradient(90deg, #d81b60 0%, #ff1493 100%);
     --shadow-soft: 0 10px 30px rgba(0,0,0,0.1);
+    
+    --color-pink: #d81b60;
+    --star-unselected: #adb5bd;
 }
 
 * {

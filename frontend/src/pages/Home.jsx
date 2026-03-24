@@ -427,8 +427,8 @@ const Home = () => {
             {/* REVIEWS SECTION */}
             <section id="reviews" className="featured-section container mb-5">
                 <div className="section-header text-center mb-5">
-                    <h2 className="pink-gradient-text">Community <span className="text-white">Voices</span></h2>
-                    <p className="opacity-70">See what our premium circle members are saying.</p>
+                    <h2 className="pink-gradient-text">Community <span style={{ color: 'var(--text-primary)' }}>Voices</span></h2>
+                    <p className="opacity-70" style={{ color: 'var(--text-secondary)' }}>See what our premium circle members are saying.</p>
                 </div>
 
                 <div className="grid-2">
@@ -437,14 +437,14 @@ const Home = () => {
                         <h3 className="pink-text mb-4">Share Your Experience</h3>
                         <form onSubmit={handleReviewSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
                             <div className="form-group">
-                                <label className="text-white opacity-70 mb-2 block">Rating</label>
+                                <label className="mb-2 block" style={{ color: 'var(--text-secondary)', opacity: 0.8 }}>Rating</label>
                                 <div style={{ display: 'flex', gap: '8px' }}>
                                     {[1, 2, 3, 4, 5].map(star => (
                                         <Star 
                                             key={star}
                                             size={24}
                                             fill={star <= reviewForm.rating ? "var(--color-pink)" : "none"}
-                                            stroke={star <= reviewForm.rating ? "var(--color-pink)" : "white"}
+                                            stroke={star <= reviewForm.rating ? "var(--color-pink)" : "var(--star-unselected)"}
                                             style={{ cursor: 'pointer' }}
                                             onClick={() => setReviewForm({ ...reviewForm, rating: star })}
                                         />
@@ -489,18 +489,18 @@ const Home = () => {
                                 >
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.8rem' }}>
                                         <div>
-                                            <h4 className="text-white mb-1" style={{ fontSize: '1.1rem' }}>{rev.username}</h4>
+                                            <h4 className="mb-1" style={{ fontSize: '1.1rem', color: 'var(--text-primary)' }}>{rev.username}</h4>
                                             <div style={{ display: 'flex', gap: '4px' }}>
                                                 {[...Array(5)].map((_, i) => (
                                                     <Star key={i} size={14} fill={i < rev.rating ? "var(--color-pink)" : "none"} stroke="var(--color-pink)" />
                                                 ))}
                                             </div>
                                         </div>
-                                        <span className="text-white opacity-40" style={{ fontSize: '0.8rem' }}>
+                                        <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', opacity: 0.7 }}>
                                             {new Date(rev.createdAt).toLocaleDateString()}
                                         </span>
                                     </div>
-                                    <p className="text-white opacity-80 mb-3" style={{ fontSize: '0.95rem', lineHeight: '1.6' }}>
+                                    <p className="mb-3" style={{ fontSize: '0.95rem', lineHeight: '1.6', color: 'var(--text-secondary)', opacity: 0.9 }}>
                                         "{rev.content}"
                                     </p>
                                     <div style={{ display: 'flex', gap: '15px' }}>
@@ -510,7 +510,7 @@ const Home = () => {
                                             style={{ 
                                                 background: 'none', 
                                                 border: 'none', 
-                                                color: user && rev.likedBy?.includes(user.id || user._id) ? 'var(--color-pink)' : 'white', 
+                                                color: user && rev.likedBy?.includes(user.id || user._id) ? 'var(--color-pink)' : 'var(--text-primary)', 
                                                 display: 'flex', 
                                                 alignItems: 'center', 
                                                 gap: '5px', 
@@ -526,7 +526,7 @@ const Home = () => {
                                             style={{ 
                                                 background: 'none', 
                                                 border: 'none', 
-                                                color: user && rev.dislikedBy?.includes(user.id || user._id) ? '#ff4b2b' : 'white', 
+                                                color: user && rev.dislikedBy?.includes(user.id || user._id) ? '#ff4b2b' : 'var(--text-primary)', 
                                                 display: 'flex', 
                                                 alignItems: 'center', 
                                                 gap: '5px', 

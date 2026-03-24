@@ -103,7 +103,7 @@ const Navbar = ({ isOpen, setIsOpen, closeMenu }) => {
                                 <button className="drawer-close" onClick={closeMenu}><X size={28} /></button>
                             </div>
 
-                            <Link to="/" className="drawer-home-top" onClick={closeMenu} style={{ marginBottom: '1.5rem' }}>
+                            <Link to="/" className="drawer-home-top" onClick={closeMenu} style={{ marginBottom: '1.5rem', color: 'var(--text-primary)' }}>
                                 <Home size={22} /> <span>BACK TO HOME</span>
                             </Link>
 
@@ -131,7 +131,7 @@ const Navbar = ({ isOpen, setIsOpen, closeMenu }) => {
                                             </li>
                                         )}
                                         <li>
-                                            <Link to="/music" onClick={closeMenu} className="drawer-link" style={{ color: 'var(--pink-primary)' }}>
+                                            <Link to="/music" onClick={closeMenu} className="drawer-link">
                                                 <span className="drawer-icon"><Music size={20} /></span>
                                                 <span className="drawer-label">MY PLAYLISTS</span>
                                             </Link>
