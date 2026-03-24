@@ -89,15 +89,20 @@ const Shayari = () => {
                 await navigator.share({
                     title: 'Shayari by Ansh Ebook',
                     text: text,
-                    url: window.location.href
+                    url: window.location.origin
                 });
             } catch (err) {
                 console.log('Error sharing:', err);
             }
         } else {
-            navigator.clipboard.writeText(text);
+            navigator.clipboard.writeText(text + " \n\nRead more at: " + window.location.origin);
             alert('Shayari copied to clipboard!');
         }
+    };
+
+    const shareToWhatsApp = (text) => {
+        const message = encodeURIComponent(text + " \n\n📍 Read more soulful Shayari at: " + window.location.origin);
+        window.open(`https://wa.me/?text=${message}`, '_blank');
     };
 
     const containerVariants = {
@@ -202,8 +207,11 @@ const Shayari = () => {
                                                         <MessageCircle size={18} />
                                                         <span style={{marginLeft: '5px', fontSize:'0.9rem'}}>{s.comments?.length || 0}</span>
                                                     </button>
-                                                    <button className="icon-btn-plain ml-2" onClick={() => handleShare(s.content)}>
+                                                    <button className="icon-btn-plain ml-2" onClick={() => handleShare(s.content)} title="Share">
                                                         <Share2 size={16} />
+                                                    </button>
+                                                    <button className="icon-btn-plain ml-2" onClick={() => shareToWhatsApp(s.content)} title="Share to WhatsApp" style={{ color: '#25D366' }}>
+                                                        <MessageCircle size={16} fill="#25D366" />
                                                     </button>
                                                     <div className="shayari-meta ml-auto">
                                                         <span className="date-tag mr-2">{new Date(s.createdAt).toLocaleDateString()}</span>
