@@ -89,6 +89,9 @@ if (!fs.existsSync(uploadsPath)) {
     fs.mkdirSync(uploadsPath, { recursive: true });
 }
 app.use('/uploads', express.static(uploadsPath));
+app.use('/uploads', (req, res) => {
+    res.status(404).json({ error: 'Media file not found. Ensure Cloudinary is properly configured or file exists on disk.' });
+});
 
 // API Routes - Order matters: Specific to General
 app.use('/api/auth', authRoutes);

@@ -163,7 +163,12 @@ const Ebooks = () => {
                                                         <button 
                                                             className="btn btn-primary btn-sm btn-pill shadow-neon w-100"
                                                             onClick={() => {
-                                                                const target = book.pdfUrl || book.file_url || book.pdf_content_url || book.html_content_url || book.link;
+                                                                let target = book.pdfUrl || book.file_url || book.pdf_content_url || book.html_content_url || book.link;
+                                                                if (target && target.includes('\\uploads\\')) {
+                                                                    target = '/uploads/' + target.split('\\uploads\\').pop();
+                                                                } else if (target && target.includes('/uploads/')) {
+                                                                    target = '/uploads/' + target.split('/uploads/').pop();
+                                                                }
                                                                 const finalUrl = target?.startsWith('/uploads') ? `${MEDIA_URL}${target}` : target;
                                                                 if (finalUrl) {
                                                                     setSelectedPdfUrl(finalUrl);

@@ -169,7 +169,10 @@ const Music = () => {
                                         <div className="card-cover-area">
                                             {(() => {
                                                 const albumArt = track.thumbnail || track.cover_url || track.thumbnail_url;
-                                                const rawUrl = track.imageUrl || albumArt;
+                                                let rawUrl = track.imageUrl || albumArt;
+                                                if (rawUrl && rawUrl.includes('\\uploads\\')) rawUrl = '/uploads/' + rawUrl.split('\\uploads\\').pop();
+                                                else if (rawUrl && rawUrl.includes('/uploads/')) rawUrl = '/uploads/' + rawUrl.split('/uploads/').pop();
+                                                
                                                 const imageUrl = rawUrl?.startsWith('/uploads') ? `${MEDIA_URL}${rawUrl}` : (rawUrl || '/default-music.png');
                                                 return <img src={imageUrl} alt={`${track.title} - Music by Ansh Ebook`} />;
                                             })()}
@@ -202,15 +205,24 @@ const Music = () => {
                                                     animate={{ height: 'auto', opacity: 1 }}
                                                     className="player-mount mt-3"
                                                 >
-                                                    <audio 
-                                                        key={track.file_url}
-                                                        autoPlay 
-                                                        controls 
-                                                        className="compact-audio-player"
-                                                        src={track.audioUrl || (track.file_url?.startsWith('/uploads') ? `${MEDIA_URL}${track.file_url}` : track.file_url)}
-                                                    >
-                                                        Your browser does not support the audio element.
-                                                    </audio>
+                                                    {(() => {
+                                                        let rawAudio = track.audioUrl || track.file_url;
+                                                        if (rawAudio && rawAudio.includes('\\uploads\\')) rawAudio = '/uploads/' + rawAudio.split('\\uploads\\').pop();
+                                                        else if (rawAudio && rawAudio.includes('/uploads/')) rawAudio = '/uploads/' + rawAudio.split('/uploads/').pop();
+                                                        
+                                                        const finalAudioSrc = rawAudio?.startsWith('/uploads') ? `${MEDIA_URL}${rawAudio}` : rawAudio;
+                                                        return (
+                                                            <audio 
+                                                                key={track.file_url}
+                                                                autoPlay 
+                                                                controls 
+                                                                className="compact-audio-player"
+                                                                src={finalAudioSrc}
+                                                            >
+                                                                Your browser does not support the audio element.
+                                                            </audio>
+                                                        );
+                                                    })()}
                                                 </motion.div>
                                             )}
                                         </div>

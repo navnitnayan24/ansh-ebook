@@ -85,8 +85,13 @@ exports.addContent = async (req, res) => {
         // Handle File Upload or Manual URL Mapping
         if (req.files && req.files.length > 0) {
             for (let file of req.files) {
-                // If cloudinary is used, file.path contains the full URL. Otherwise fallback to local.
-                const uploadedUrl = file.path || `/uploads/${file.filename}`;
+                // Explicitly prioritize Cloudinary secure_url or http path. If local, strictly enforce /uploads/ path.
+                let uploadedUrl = file.secure_url;
+                if (!uploadedUrl && file.path && file.path.startsWith('http')) {
+                    uploadedUrl = file.path;
+                } else if (!uploadedUrl) {
+                    uploadedUrl = `/uploads/${file.filename}`;
+                }
                 if (file.fieldname === 'thumbnail') {
                     data.thumbnail = uploadedUrl;
                     if (['music', 'ebook', 'ebooks'].includes(type.toLowerCase())) {
@@ -168,8 +173,13 @@ exports.updateContent = async (req, res) => {
         // Handle File Upload or Manual URL Mapping
         if (req.files && req.files.length > 0) {
             for (let file of req.files) {
-                // If cloudinary is used, file.path contains the full URL. Otherwise fallback to local.
-                const uploadedUrl = file.path || `/uploads/${file.filename}`;
+                // Explicitly prioritize Cloudinary secure_url or http path. If local, strictly enforce /uploads/ path formatting to prevent absolute file path routing errors on the frontend.
+                let uploadedUrl = file.secure_url;
+                if (!uploadedUrl && file.path && file.path.startsWith('http')) {
+                    uploadedUrl = file.path;
+                } else if (!uploadedUrl) {
+                    uploadedUrl = `/uploads/${file.filename}`;
+                }
                 if (file.fieldname === 'thumbnail') {
                     data.thumbnail = uploadedUrl;
                     if (['music', 'ebook', 'ebooks'].includes(type.toLowerCase())) {
