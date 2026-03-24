@@ -235,16 +235,20 @@ exports.toggleFavorite = async (req, res) => {
         const user = await User.findById(userId);
         if (!user) return res.status(404).json({ error: 'User not found' });
         
-        const index = user.favorites.indexOf(id);
-        if (index > -1) {
-            user.favorites.splice(index, 1);
+        // Use string comparison for ObjectIDs
+        const isFav = user.favorites.some(fav => fav.toString() === id);
+        
+        if (isFav) {
+            user.favorites = user.favorites.filter(fav => fav.toString() !== id);
             await user.save();
-            return res.json({ success: true, message: 'Removed from favorites', favorites: user.favorites });
         } else {
             user.favorites.push(id);
             await user.save();
-            return res.json({ success: true, message: 'Added to favorites', favorites: user.favorites });
         }
+
+        // Return populated favorites to keep frontend in sync
+        const updatedUser = await User.findById(userId).populate('favorites');
+        res.json({ success: true, favorites: updatedUser.favorites });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -272,11 +276,16 @@ exports.addToPlaylist = async (req, res) => {
         const playlist = user.playlists.id(playlistId);
         if (!playlist) return res.status(404).json({ error: 'Playlist not found' });
         
-        if (!playlist.songs.includes(songId)) {
+        // Use string comparison for ObjectIDs
+        const alreadyExists = playlist.songs.some(s => s.toString() === songId);
+        
+        if (!alreadyExists) {
             playlist.songs.push(songId);
             await user.save();
         }
-        res.json({ success: true, playlists: user.playlists });
+
+        const updatedUser = await User.findById(userId).populate('playlists.songs');
+        res.json({ success: true, playlists: updatedUser.playlists });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
