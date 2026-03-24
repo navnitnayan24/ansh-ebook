@@ -1,0 +1,16 @@
+{
+  "short_name": "AnshEbook",
+  "name": "Ansh Ebook - Premium Shayari & Content",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/svg+xml"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#ff1493",
+  "background_color": "#0a0a0c",
+  "description": "Ansh Ebook is a premium digital platform for original Hindi Shayari, Music, Podcasts and E-books."
+}

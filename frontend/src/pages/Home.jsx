@@ -224,7 +224,7 @@ const Home = () => {
             {/* EXPLORE SECTION */}
             <section id="explore" className="featured-section container">
                 <motion.div className="section-header text-center" variants={itemVariants}>
-                    <h2 className="w-100">Explore our <span className="text-gradient">World</span></h2>
+                    <h2 className="w-100">Explore the <span className="text-gradient">Ansh Ebook World</span></h2>
                 </motion.div>
                 <div className="explore-grid">
                     {/* Shayari — FREE, no login needed */}
@@ -267,7 +267,7 @@ const Home = () => {
             {/* SHAYARI SECTION — FREE for everyone, no login required */}
             <section id="shayari" className="featured-section container">
                 <motion.div className="section-header" variants={itemVariants}>
-                    <h2>Heartfelt <span className="text-gradient">Shayari</span> <span className="access-label free ml-3">🔓 FREE</span></h2>
+                    <h2>Ansh Ebook <span className="text-gradient">Original Shayari</span> <span className="access-label free ml-3">🔓 FREE</span></h2>
                     <Link to="/shayari" className="view-all-link">View All <ArrowRight size={16} /></Link>
                 </motion.div>
                 <div className="grid-3">
@@ -287,7 +287,7 @@ const Home = () => {
             {/* PREMIUM SECTION — Music, Podcast, E-Books (Login Required) */}
             <section id="premium" className="featured-section container">
                 <motion.div className="section-header" variants={itemVariants}>
-                    <h2>Premium <span className="text-gradient">Collection</span> <span className="access-label locked ml-3">🔒 LOGIN</span></h2>
+                    <h2>Ansh Ebook <span className="text-gradient">Premium Collection</span> <span className="access-label locked ml-3">🔒 LOGIN</span></h2>
                 </motion.div>
                 
                 <div className="premium-tabs-v2">
@@ -373,7 +373,7 @@ const Home = () => {
             <section id="about" className="featured-section container">
                 <div className="grid-2">
                     <div className="glass-card" style={{ padding: '3rem' }}>
-                        <h2 className="pink-gradient-text mb-4">Our Story</h2>
+                        <h2 className="pink-gradient-text mb-4">The Ansh Ebook Story</h2>
                         <p style={{ lineHeight: '1.8', opacity: 0.9 }}>
                             Ansh-Ebook is a digital sanctuary dedicated to the beauty of words and the profound impact of melodies. Founded by <strong>Ansh Sharma</strong>, we bring together high-quality original Shayari, soulful Music, and inspiring Podcasts.
                         </p>
@@ -427,8 +427,8 @@ const Home = () => {
             {/* REVIEWS SECTION */}
             <section id="reviews" className="featured-section container mb-5">
                 <div className="section-header text-center mb-5">
-                    <h2 className="pink-gradient-text">Community <span style={{ color: 'var(--text-primary)' }}>Voices</span></h2>
-                    <p className="opacity-70" style={{ color: 'var(--text-secondary)' }}>See what our premium circle members are saying.</p>
+                    <h2 className="pink-gradient-text">Ansh Ebook <span style={{ color: 'var(--text-primary)' }}>Community Voices</span></h2>
+                    <p className="opacity-70" style={{ color: 'var(--text-secondary)' }}>See what our premium circle members are saying about their experience.</p>
                 </div>
 
                 <div className="grid-2">
