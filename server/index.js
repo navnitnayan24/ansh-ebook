@@ -43,21 +43,27 @@ let lastDbError = null;
 // Health Check
 app.get('/health', async (req, res) => {
     const dbStatus = mongoose.connection.readyState === 1 ? 'CONNECTED' : 'DISCONNECTED';
-    let adminInfo = 'N/A';
+    let stats = { admins: 0, users: 0, subscribers: 0 };
     try {
         if (dbStatus === 'CONNECTED') {
             const Admin = require('./models/Admin');
-            const count = await Admin.countDocuments();
-            adminInfo = `Connected. Found ${count} admins.`;
+            const User = require('./models/User');
+            // Assuming Subscriber model exists, if not we skip
+            let Subscriber;
+            try { Subscriber = require('./models/Subscriber'); } catch(e) {}
+            
+            stats.admins = await Admin.countDocuments();
+            stats.users = await User.countDocuments();
+            if (Subscriber) stats.subscribers = await Subscriber.countDocuments();
         }
     } catch (err) {
-        adminInfo = `Error: ${err.message}`;
+        console.error('Health Check Error:', err);
     }
     
     res.json({ 
         status: 'OK', 
         database: dbStatus, 
-        adminInfo,
+        stats,
         lastError: lastDbError ? lastDbError.message : null,
         timestamp: new Date() 
     });
