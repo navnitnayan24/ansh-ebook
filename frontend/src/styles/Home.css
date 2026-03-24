@@ -720,3 +720,56 @@ section {
         padding: 1.5rem 0.75rem;
     }
 }
+
+/* --- HOME PAGE NEW MINI PLAY BUTTON --- */
+.play-overlay-mini {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    z-index: 5;
+}
+
+.play-mini-btn {
+    background: var(--gradient-primary);
+    color: white !important;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+    transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.play-mini-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
+}
+
+.audio-player-container-v2 {
+    background: var(--bg-glass-light);
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid var(--glass-border);
+    margin-top: 1rem;
+}
+
+.compact-audio-player {
+    width: 100%;
+    height: 40px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+.debug-url {
+    margin-top: 8px;
+    color: var(--text-muted);
+    word-break: break-all;
+    font-size: 10px;
+    opacity: 0.4;
+    text-align: center;
+}
+
