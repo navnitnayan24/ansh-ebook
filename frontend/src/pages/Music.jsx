@@ -76,7 +76,8 @@ const Music = () => {
         try {
             const { data } = await toggleMusicFavorite(id);
             setUserLibrary(prev => ({ ...prev, favorites: data.favorites }));
-            // Also update likes_count in tracks if needed, but favorite is personal
+            // Also update likes_count in the tracks list for real-time feedback
+            setTracks(prev => prev.map(t => t._id === id ? { ...t, likes_count: data.likes_count } : t));
         } catch (err) {
             console.error(err);
         }
@@ -256,10 +257,11 @@ const Music = () => {
                                                     <span className="date-tag-mini">{new Date(track.createdAt).toLocaleDateString()}</span>
                                                     <button 
                                                         onClick={() => toggleFavorite(track._id)}
-                                                        style={{ background: 'transparent', border: 'none', color: isFavorite(track._id) ? 'var(--pink-primary)' : 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', transition: '0.3s' }}
+                                                        style={{ background: 'transparent', border: 'none', color: isFavorite(track._id) ? 'var(--pink-primary)' : 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', transition: '0.3s' }}
                                                         title="Favorite"
                                                     >
                                                         <Heart size={16} fill={isFavorite(track._id) ? "var(--pink-primary)" : "transparent"} />
+                                                        {track.likes_count > 0 && <span style={{ fontSize: '0.75rem', opacity: 0.8 }}>{track.likes_count}</span>}
                                                     </button>
                                                     <button 
                                                         onClick={() => { setSelectedSongForPlaylist(track._id); setShowPlaylistModal(true); }}

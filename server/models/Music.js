@@ -7,6 +7,8 @@ const musicSchema = new mongoose.Schema({
     file_url: { type: String, required: true },
     cover_url: { type: String },
     duration: { type: String },
+    likes_count: { type: Number, default: 0 },
+    likedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
 }, { timestamps: true });
 
 module.exports = mongoose.model('Music', musicSchema);

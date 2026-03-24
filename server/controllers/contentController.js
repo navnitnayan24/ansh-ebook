@@ -289,20 +289,33 @@ exports.toggleFavorite = async (req, res) => {
         const user = await User.findById(userId);
         if (!user) return res.status(404).json({ error: 'User not found' });
         
-        // Use string comparison for ObjectIDs
+        const music = await Music.findById(id);
+        if (!music) return res.status(404).json({ error: 'Music not found' });
+
         const isFav = user.favorites.some(fav => fav.toString() === id);
         
         if (isFav) {
+            // Remove from user favorites
             user.favorites = user.favorites.filter(fav => fav.toString() !== id);
-            await user.save();
+            // Remove from music likes
+            if (music.likedBy) {
+                music.likedBy = music.likedBy.filter(uId => uId.toString() !== userId.toString());
+                music.likes_count = Math.max(0, music.likes_count - 1);
+            }
         } else {
+            // Add to user favorites
             user.favorites.push(id);
-            await user.save();
+            // Add to music likes
+            if (!music.likedBy) music.likedBy = [];
+            music.likedBy.push(userId);
+            music.likes_count += 1;
         }
 
-        // Return populated favorites to keep frontend in sync
+        await user.save();
+        await music.save();
+
         const updatedUser = await User.findById(userId).populate('favorites');
-        res.json({ success: true, favorites: updatedUser.favorites });
+        res.json({ success: true, favorites: updatedUser.favorites, likes_count: music.likes_count });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
