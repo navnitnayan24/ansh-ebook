@@ -3,6 +3,7 @@ import { Link, NavLink, useLocation } from 'react-router-dom';
 import { Menu, X, LogOut, Settings, Sun, Moon, Home, Book, Music, Mic, BookOpen, Quote, User, MessageCircle, Youtube, Instagram, Facebook, Linkedin, DownloadCloud } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
+import { MEDIA_URL } from '../config';
 import '../styles/Navbar.css';
 
 const Navbar = ({ isOpen, setIsOpen, closeMenu }) => {
