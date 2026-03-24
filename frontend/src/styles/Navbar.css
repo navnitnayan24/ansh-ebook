@@ -547,20 +547,135 @@
 }
 
 /* Aggressive Navbar Hiding for Desktop */
-@media (min-width: 769px) {
-    .navbar, 
-    .nav-container, 
-    .nav-right-area, 
-    .nav-actions-pc, 
-    .mobile-menu-toggle,
-    .hide-on-pc {
-        display: none !important;
-        visibility: hidden !important;
-        pointer-events: none !important;
-        opacity: 0 !important;
-        height: 0 !important;
-        width: 0 !important;
-        position: absolute !important; 
-        left: -9999px !important;
     }
+}
+
+/* --- Premium Install Modal --- */
+.install-modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5000;
+    padding: 2rem;
+}
+
+.install-modal-card {
+    width: 100%;
+    max-width: 400px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(25px);
+    border-radius: 24px;
+    padding: 2rem;
+    color: white;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+    position: relative;
+    z-index: 5001;
+}
+
+.install-modal-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 2rem;
+}
+
+.modal-app-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(255, 20, 147, 0.3);
+}
+
+.install-modal-header h3 {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--pink-primary);
+}
+
+.install-modal-header p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.modal-close-btn {
+    position: absolute;
+    top: 15px; right: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border: none;
+    color: white;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.modal-close-btn:hover {
+    background: rgba(255, 20, 147, 0.2);
+    color: var(--pink-primary);
+    transform: rotate(90deg);
+}
+
+.install-modal-body {
+    margin-bottom: 2rem;
+}
+
+.install-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.step-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.step-num {
+    width: 28px; height: 28px;
+    background: var(--gradient-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 800;
+    flex-shrink: 0;
+    color: white;
+}
+
+.step-item p {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.btn-modal-primary {
+    width: 100%;
+    padding: 1rem;
+    background: var(--gradient-primary);
+    border: none;
+    border-radius: 15px;
+    color: white;
+    font-weight: 800;
+    letter-spacing: 1px;
+    cursor: pointer;
+    box-shadow: 0 10px 20px rgba(255, 20, 147, 0.3);
+    transition: 0.3s;
+}
+
+.btn-modal-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 30px rgba(255, 20, 147, 0.5);
 }
