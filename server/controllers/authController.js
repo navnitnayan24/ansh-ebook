@@ -61,11 +61,6 @@ exports.adminLogin = async (req, res) => {
             console.warn(`🔐 [ADMIN LOGIN DEBUG] Login failed for ${loginId}. Reason: ${!admin ? 'Record Not Found' : 'Incorrect Password'}`);
             return res.status(401).json({ error: 'Invalid credentials' });
         }
-        const secret = process.env.JWT_SECRET;
-        if (!secret) {
-            console.error('❌ FATAL: JWT_SECRET is not defined in environment variables!');
-            return res.status(500).json({ error: 'Internal server configuration error' });
-        }
         const token = jwt.sign({ id: admin._id, role: 'admin' }, secret, { expiresIn: '1d' });
         res.json({ 
             token, 
