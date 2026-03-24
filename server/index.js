@@ -30,7 +30,8 @@ app.use('/api/auth/admin/login', apiLimiter);
 
 // Middleware
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 let lastDbError = null;
 
@@ -116,6 +117,9 @@ async function startServer() {
             console.log(`🚀 Premium MERN Server live on port ${PORT}`);
             console.log(`📱 Access on your network at: http://${getIPAddress()}:${PORT}`);
         });
+
+        // Set higher timeout for large file uploads (10 minutes)
+        server.timeout = 600000;
 
         server.on('error', (e) => {
             if (e.code === 'EADDRINUSE') {

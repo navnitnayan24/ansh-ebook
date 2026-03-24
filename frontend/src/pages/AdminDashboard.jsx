@@ -192,7 +192,12 @@ const AdminDashboard = () => {
             console.error('Submit Error:', err);
             const errorData = err.response?.data;
             const errorMsg = errorData?.error || errorData?.message || err.message;
-            alert(`Database Error: ${errorMsg}\nPlease ensure your MongoDB connection is active.`);
+            
+            if (errorMsg.toLowerCase().includes('network error') || !err.response) {
+                alert(`Upload Failed: Network Error.\n\nPossible causes:\n1. File is too large.\n2. Internet connection was interrupted.\n3. Server timed out.\n\nPlease try again with a smaller file or a faster connection.`);
+            } else {
+                alert(`Database Error: ${errorMsg}\n\nPlease check your input and try again.`);
+            }
         } finally {
             setLoading(false);
         }
