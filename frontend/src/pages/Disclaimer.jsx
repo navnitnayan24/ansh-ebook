@@ -10,7 +10,7 @@ const Disclaimer = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
         >
-            <SEO title="Disclaimer" description="Official Disclaimer for the Ansh-Ebook platform." />
+            <SEO title="Disclaimer - Ansh Ebook" description="Official Disclaimer for the Ansh Ebook platform. All content is original and authentic." />
             <div className="glass-card legal-card">
                 <h1><span className="text-gradient">Disclaimer</span></h1>
                 <p className="last-updated">Last Updated: March 2026</p>
