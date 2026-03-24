@@ -74,10 +74,10 @@ const Footer = () => {
                             <a href="https://www.instagram.com/_.unknown_shadow?igsh=MXczMmZ2a3N2cGs0Mw==" target="_blank" rel="noopener noreferrer" className="social-icon-v2" title="Instagram Main"><Instagram size={20} /></a>
                             <a href="https://www.instagram.com/gumnaam_shayar__24" target="_blank" rel="noopener noreferrer" className="social-icon-v2" title="Instagram Poetry"><Instagram size={20} /></a>
                             <a href="https://whatsapp.com/channel/0029VaFlezo3QxSA5zNTQF0b" target="_blank" rel="noopener noreferrer" className="social-icon-v2" title="WhatsApp Channel"><MessageCircle size={20} /></a>
-                            <a href="https://youtube.com/@vibexmusicx?si=-h93up_MiovLiyS8" target="_blank" rel="noopener noreferrer" className="social-icon-v2" title="YouTube Channel 1"><Youtube size={20} /></a>
-                            <a href="https://youtube.com/@vibexmusicx2.0?si=ayi0mTYKrqq1WhKO" target="_blank" rel="noopener noreferrer" className="social-icon-v2" title="YouTube Channel 2"><MonitorPlay size={20} /></a>
-                            <a href="https://youtube.com/@vibexmusicx3.0?si=ayi0mTYKrqq1WhKO" target="_blank" rel="noopener noreferrer" className="social-icon-v2" title="YouTube Channel 3"><PlayCircle size={20} /></a>
-                            <a href="https://youtube.com/@ToonXIndia-24?si=ayi0mTYKrqq1WhKO" target="_blank" rel="noopener noreferrer" className="social-icon-v2" title="ToonX India"><Tv size={20} /></a>
+                            <a href="https://youtube.com/@vibexmusicx?si=-h93up_MiovLiyS8" target="_blank" rel="noopener noreferrer" className="social-icon-v2" title="VIBEX MUSICX"><Youtube size={20} /></a>
+                            <a href="https://youtube.com/@vibexmusicx2.0?si=ayi0mTYKrqq1WhKO" target="_blank" rel="noopener noreferrer" className="social-icon-v2" title="VIBEX MUSICX 2.0"><MonitorPlay size={20} /></a>
+                            <a href="https://youtube.com/@vibexmusicx3.0?si=ayi0mTYKrqq1WhKO" target="_blank" rel="noopener noreferrer" className="social-icon-v2" title="VIBEX MUSICX 3.0"><PlayCircle size={20} /></a>
+                            <a href="https://youtube.com/@ToonXIndia-24?si=ayi0mTYKrqq1WhKO" target="_blank" rel="noopener noreferrer" className="social-icon-v2" title="TOONXINDIA-24"><Tv size={20} /></a>
                             <a href="https://www.linkedin.com/in/navnit-nayan-14b4b9278?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank" rel="noopener noreferrer" className="social-icon-v2" title="LinkedIn"><Linkedin size={20} /></a>
                         </div>
                     </div>

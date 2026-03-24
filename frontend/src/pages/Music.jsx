@@ -157,16 +157,16 @@ const Music = () => {
                         style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}
                     >
                         <a href="https://youtube.com/@vibexmusicx?si=-h93up_MiovLiyS8" target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-sm btn-pill shadow-neon d-flex align-items-center" style={{ gap: '8px', padding: '0.8rem 1.5rem', textDecoration: 'none' }}>
-                            <Youtube size={18} /> VIBEX MUSIC
+                            <Youtube size={18} /> VIBEX MUSICX
                         </a>
                         <a href="https://youtube.com/@vibexmusicx2.0?si=ayi0mTYKrqq1WhKO" target="_blank" rel="noopener noreferrer" className="btn btn-dark-outline btn-sm btn-pill d-flex align-items-center" style={{ gap: '8px', padding: '0.8rem 1.5rem', textDecoration: 'none' }}>
-                            <Youtube size={18} color="#FF0000" /> VIBEX 2.0
+                            <Youtube size={18} color="#FF0000" /> VIBEX MUSICX 2.0
                         </a>
                         <a href="https://youtube.com/@vibexmusicx3.0?si=ayi0mTYKrqq1WhKO" target="_blank" rel="noopener noreferrer" className="btn btn-dark-outline btn-sm btn-pill d-flex align-items-center" style={{ gap: '8px', padding: '0.8rem 1.5rem', textDecoration: 'none' }}>
-                            <Youtube size={18} color="#FF0000" /> VIBEX 3.0
+                            <Youtube size={18} color="#FF0000" /> VIBEX MUSICX 3.0
                         </a>
                         <a href="https://youtube.com/@ToonXIndia-24?si=ayi0mTYKrqq1WhKO" target="_blank" rel="noopener noreferrer" className="btn btn-dark-outline btn-sm btn-pill d-flex align-items-center" style={{ gap: '8px', padding: '0.8rem 1.5rem', textDecoration: 'none' }}>
-                            <Youtube size={18} color="#FF0000" /> TOONX INDIA
+                            <Youtube size={18} color="#FF0000" /> TOONXINDIA-24
                         </a>
                     </motion.div>
                 </div>
