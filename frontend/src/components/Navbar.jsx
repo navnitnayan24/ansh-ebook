@@ -9,6 +9,7 @@ const Navbar = ({ isOpen, setIsOpen, closeMenu }) => {
     const { theme, toggleTheme } = useTheme();
     const [isScrolled, setIsScrolled] = useState(false);
     const [user, setUser] = useState(null);
+    const [deferredPrompt, setDeferredPrompt] = useState(null);
 
     const location = useLocation();
 
@@ -31,8 +32,39 @@ const Navbar = ({ isOpen, setIsOpen, closeMenu }) => {
 
         syncUser();
 
-        return () => window.removeEventListener('scroll', handleScroll);
+        // PWA Install Prompt Handling
+        const handleBeforeInstall = (e) => {
+            e.preventDefault();
+            setDeferredPrompt(e);
+        };
+        window.addEventListener('beforeinstallprompt', handleBeforeInstall);
+
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+            window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
+        };
     }, [location]);
+
+    const handleInstallClick = async () => {
+        // If already in standalone mode (installed), go to dashboard
+        if (window.matchMedia('(display-mode: standalone)').matches) {
+            navigate('/music'); // or any dash
+            closeMenu();
+            return;
+        }
+
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                console.log('User installed the app');
+            }
+            setDeferredPrompt(null);
+        } else {
+            // Fallback for iOS or when prompt is not available
+            alert('To install: Press "Share" then "Add to Home Screen" on iOS, or use your browser menu on Android.');
+        }
+    };
 
     const handleLogout = () => {
         localStorage.removeItem('token');
@@ -181,9 +213,9 @@ const Navbar = ({ isOpen, setIsOpen, closeMenu }) => {
                                     </li>
                                 ))}
                                 <div className="drawer-get-app-wrapper">
-                                    <button onClick={() => window.open('https://ansh-ebook.onrender.com/logo-ansh.png', '_blank')} className="drawer-get-app-btn shadow-neon">
+                                    <button onClick={handleInstallClick} className="drawer-get-app-btn shadow-neon">
                                         <DownloadCloud size={20} />
-                                        <span>GET ANSH APP</span>
+                                        <span>{window.matchMedia('(display-mode: standalone)').matches ? 'OPEN APP' : 'GET ANSH APP'}</span>
                                     </button>
                                 </div>
                             </ul>
