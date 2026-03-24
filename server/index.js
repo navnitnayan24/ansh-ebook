@@ -43,12 +43,12 @@ let lastDbError = null;
 // Health Check
 app.get('/health', async (req, res) => {
     const dbStatus = mongoose.connection.readyState === 1 ? 'CONNECTED' : 'DISCONNECTED';
+    const storageType = (process.env.CLOUDINARY_CLOUD_NAME || 'datao7ela') ? 'cloudinary' : 'local';
     let stats = { admins: 0, users: 0, subscribers: 0 };
     try {
         if (dbStatus === 'CONNECTED') {
             const Admin = require('./models/Admin');
             const User = require('./models/User');
-            // Assuming Subscriber model exists, if not we skip
             let Subscriber;
             try { Subscriber = require('./models/Subscriber'); } catch(e) {}
             
@@ -63,6 +63,7 @@ app.get('/health', async (req, res) => {
     res.json({ 
         status: 'OK', 
         database: dbStatus, 
+        storageType,
         stats,
         lastError: lastDbError ? lastDbError.message : null,
         timestamp: new Date() 

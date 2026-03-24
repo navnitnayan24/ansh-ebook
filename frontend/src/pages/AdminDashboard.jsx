@@ -14,6 +14,7 @@ import '../styles/Dashboard.css';
 
 const AdminDashboard = () => {
     const [activeTab, setActiveTab] = useState('shayari');
+    const [storageStatus, setStorageStatus] = useState('local'); 
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(false);
     const [categories, setCategories] = useState([]);
@@ -62,6 +63,13 @@ const AdminDashboard = () => {
     const loadItems = async () => {
         setLoading(true);
         try {
+            // Check storage status
+            try {
+                const healthRes = await fetch(`${MEDIA_URL}/health`);
+                const healthData = await healthRes.json();
+                if (healthData.storageType) setStorageStatus(healthData.storageType);
+            } catch (e) {}
+
             if (activeTab === 'settings' || activeTab === 'advertisements') {
                 const { data } = await fetchSettings();
                 setItems(data);
@@ -274,7 +282,7 @@ const AdminDashboard = () => {
                         {/* Assuming MEDIA_URL is defined and indicates the storage type */}
                         {/* For example, if MEDIA_URL contains 'cloudinary', it's Cloudinary, otherwise local */}
                         {(() => {
-                            const isCloudinaryConfigured = MEDIA_URL.includes('cloudinary');
+                            const isCloudinaryConfigured = storageStatus === 'cloudinary';
                             return (
                                 <div className="storage-status ml-3">
                                     <div className={`storage-indicator ${isCloudinaryConfigured ? 'safe' : 'warning'}`} onClick={() => alert("Storage Configuration Guide:\n\n1. To save files PERMANENTLY, set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET in Render Dashboard.\n2. Currently using 'Local' storage which DELETES files every time the server restarts or code is updated.")}>
