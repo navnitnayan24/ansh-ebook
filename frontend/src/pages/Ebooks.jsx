@@ -63,15 +63,15 @@ const Ebooks = () => {
             variants={containerVariants}
         >
             <SEO 
-                title="Premium E-Books Collection" 
-                description="Build your digital library with premium original e-books, poetry collections, and creative guides." 
+                title="Ansh Ebook - Premium E-Books" 
+                description="Build your digital library with premium original e-books, poetry collections, and creative guides by Ansh Sharma on Ansh Ebook." 
             />
 
             <motion.div className="main-title-area text-center mb-5" variants={itemVariants}>
                 <Link to="/" className="back-link pink-text" style={{display: 'inline-flex', alignItems: 'center', gap: '5px', marginBottom: '1rem', textDecoration: 'none', fontWeight: 'bold'}}>
                     <ArrowLeft size={20} /> Back to Home
                 </Link>
-                <h1 className="main-title display-4">E-Book <span className="pink-gradient-text">Library</span></h1>
+                <h1 className="main-title display-4">Ansh Ebook <span className="pink-gradient-text">Library</span></h1>
                 <p className="sub-title muted-text">Downloadable literature and comprehensive guides by Ansh Sharma.</p>
             </motion.div>
 
@@ -103,7 +103,7 @@ const Ebooks = () => {
                                                     borderRadius: '8px',
                                                     border: 'none',
                                                     background: selectedCategory === cat ? 'rgba(255,20,147,0.15)' : 'transparent',
-                                                    color: selectedCategory === cat ? 'var(--pink-primary)' : 'white',
+                                                    color: selectedCategory === cat ? 'var(--pink-primary)' : 'var(--text-primary)',
                                                     fontSize: '0.9rem',
                                                     cursor: 'pointer',
                                                     transition: 'all 0.2s ease'

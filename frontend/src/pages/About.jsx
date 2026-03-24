@@ -9,10 +9,10 @@ const About = () => {
             animate={{ opacity: 1 }}
         >
             <SEO 
-                title="About Us" 
-                description="Learn more about Ansh-Ebook - a premium sanctuary for poetry, music, and art." 
+                title="About Ansh Ebook" 
+                description="Learn more about Ansh Ebook - a premium sanctuary for poetry, music, and art by Ansh Sharma." 
             />
-            <h1 className="pink-gradient-text" style={{ fontSize: '3rem', marginBottom: '2rem', textAlign: 'center' }}>About Us</h1>
+            <h1 className="pink-gradient-text" style={{ fontSize: '3rem', marginBottom: '2rem', textAlign: 'center' }}>About Ansh Ebook</h1>
             <div className="glass-card page-content-box" style={{ padding: '3rem', lineHeight: '1.8', fontSize: '1.1rem', maxWidth: '800px', margin: '0 auto' }}>
                 <p>Welcome to <strong>Ansh-Ebook</strong>.</p>
                 <p className="mt-4">
@@ -27,8 +27,8 @@ const About = () => {
                     To inspire, heal, and connect hearts globally through original literary and musical masterpieces. We strongly believe in authenticity and the power of original content.
                 </p>
 
-                <div className="faq-section mt-5 pt-5" style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-                    <h3 className="text-center mb-4">Frequently Asked <span className="pink-gradient-text">Questions</span></h3>
+                <div className="faq-section mt-5 pt-5" style={{ borderTop: '1px solid var(--glass-border)' }}>
+                    <h3 className="text-center mb-4" style={{ color: 'var(--text-primary)' }}>Frequently Asked <span className="pink-gradient-text">Questions</span></h3>
                     
                     <div className="faq-grid" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1.5rem' }}>
                         <div className="faq-item glass-card" style={{ padding: '1.5rem' }}>

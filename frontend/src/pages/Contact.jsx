@@ -36,13 +36,13 @@ const Contact = () => {
             animate={{ opacity: 1, y: 0 }}
         >
             <SEO 
-                title="Contact Us" 
-                description="Get in touch with us. Direct inquiries for collaborations, feedback, or support for Ansh-Ebook." 
+                title="Contact Ansh Ebook" 
+                description="Get in touch with Ansh Ebook. Direct inquiries for collaborations, feedback, or support for Ansh Sharma's Ansh Ebook." 
             />
-            <h1 className="pink-gradient-text" style={{ fontSize: '3rem', marginBottom: '2rem', textAlign: 'center' }}>Contact Us</h1>
+            <h1 className="pink-gradient-text" style={{ fontSize: '3rem', marginBottom: '2rem', textAlign: 'center' }}>Contact Ansh Ebook</h1>
             
             <div className="glass-card page-content-box contact-card-main">
-                <h2 className="mb-4">Get In Touch</h2>
+                <h2 className="mb-4" style={{ color: 'var(--text-primary)' }}>Get In Touch</h2>
                 <p className="mb-5 text-muted" style={{ fontSize: '1.1rem', lineHeight: '1.6' }}>
                     We would love to hear from you! Whether you have questions regarding our content, need support, or simply want to share your feedback about our Shayari, Music, or Podcasts, feel free to reach out.
                 </p>
@@ -100,7 +100,7 @@ const Contact = () => {
                     </div>
                 </div>
 
-                <div className="mt-5 pt-4" style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+                <div className="mt-5 pt-4" style={{ borderTop: '1px solid var(--glass-border)' }}>
                     <p className="text-muted" style={{ fontSize: '0.9rem' }}>We typically respond to all correspondence within 24-48 hours. Thank you for your interest in Ansh-Ebook.</p>
                 </div>
             </div>

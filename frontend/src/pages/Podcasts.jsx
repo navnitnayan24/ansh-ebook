@@ -77,7 +77,7 @@ const Podcasts = () => {
 
     return (
         <motion.div className="podcasts-page" initial="hidden" animate="visible" variants={containerVariants}>
-            <SEO title="Original Podcasts | Ansh Ebook" description="Listen to soulful and inspiring podcasts by Ansh Sharma on Ansh Ebook." />
+            <SEO title="Ansh Ebook - Soulful Podcasts" description="Listen to soulful and inspiring podcasts by Ansh Sharma on Ansh Ebook. Kalam Se Dil Tak - Original voices, authentic stories." />
             
             <div className="podcasts-hero">
                 <div className="hero-content container">
@@ -113,8 +113,8 @@ const Podcasts = () => {
                             style={{
                                 padding: '0.6rem 1.5rem',
                                 borderRadius: '30px',
-                                border: '1px solid rgba(255,255,255,0.1)',
-                                background: activeCategory === cat ? 'var(--pink-primary)' : 'rgba(255,255,255,0.05)',
+                                border: '1px solid var(--glass-border)',
+                                background: activeCategory === cat ? 'var(--pink-primary)' : 'var(--bg-glass-light)',
                                 color: 'var(--text-primary)',
                                 cursor: 'pointer',
                                 transition: 'all 0.3s ease',
