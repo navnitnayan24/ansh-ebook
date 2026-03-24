@@ -98,9 +98,11 @@ const Navbar = ({ isOpen, setIsOpen, closeMenu }) => {
                         className="mobile-side-drawer glass-drawer"
                     >
                         <div className="drawer-inner">
-                            <div className="drawer-branding" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <img src="/logo-ansh.png" alt="Logo" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
-                                <h3 className="pink-gradient-text">ANSH EBOOK</h3>
+                            <div className="drawer-branding">
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                    <img src="/logo-ansh.png" alt="Logo" className="drawer-logo" />
+                                    <h3 className="pink-gradient-text">ANSH EBOOK</h3>
+                                </div>
                                 <button className="drawer-close" onClick={closeMenu}><X size={28} /></button>
                             </div>
 
