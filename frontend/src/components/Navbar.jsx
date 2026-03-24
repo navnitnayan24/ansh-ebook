@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { Menu, X, LogOut, Settings, Sun, Moon, Home, Book, Music, Mic, BookOpen, Quote, User, MessageCircle, Youtube, Instagram, Facebook, Linkedin } from 'lucide-react';
+import { Menu, X, LogOut, Settings, Sun, Moon, Home, Book, Music, Mic, BookOpen, Quote, User, MessageCircle, Youtube, Instagram, Facebook, Linkedin, DownloadCloud } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
 import '../styles/Navbar.css';
@@ -180,6 +180,12 @@ const Navbar = ({ isOpen, setIsOpen, closeMenu }) => {
                                         )}
                                     </li>
                                 ))}
+                                <div className="drawer-get-app-wrapper">
+                                    <button onClick={() => window.open('https://ansh-ebook.onrender.com/logo-ansh.png', '_blank')} className="drawer-get-app-btn shadow-neon">
+                                        <DownloadCloud size={20} />
+                                        <span>GET ANSH APP</span>
+                                    </button>
+                                </div>
                             </ul>
 
                                 <div className="drawer-socials">
