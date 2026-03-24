@@ -60,9 +60,11 @@ router.post('/:type/:id/like', authOptional, contentController.likeContent);
 router.post('/:type/:id/comment', authenticate, contentController.addComment);
 router.post('/subscribe', contentController.subscribe);
 
-// Review System
-router.get('/reviews', contentController.getReviews);
-router.post('/reviews', contentController.addReview);
-router.post('/reviews/:id/reaction', authenticate, contentController.updateReviewReaction);
+// Music Interactions & Library
+router.get('/user/library', authenticate, contentController.getUserLibrary);
+router.post('/music/:id/favorite', authenticate, contentController.toggleFavorite);
+router.post('/music/playlist', authenticate, contentController.createPlaylist);
+router.post('/music/playlist/:playlistId/add/:songId', authenticate, contentController.addToPlaylist);
+router.delete('/music/playlist/:playlistId/remove/:songId', authenticate, contentController.removeFromPlaylist);
 
 module.exports = router;

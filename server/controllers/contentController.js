@@ -5,6 +5,7 @@ const Ebook = require('../models/Ebook');
 const Category = require('../models/Category');
 const Subscriber = require('../models/Subscriber');
 const Review = require('../models/Review');
+const User = require('../models/User');
 
 exports.getHomeContent = async (req, res) => {
     try {
@@ -223,6 +224,91 @@ exports.updateReviewReaction = async (req, res) => {
 
         await review.save();
         res.json(review);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+exports.toggleFavorite = async (req, res) => {
+    const { id } = req.params;
+    const userId = req.user.id;
+    try {
+        const user = await User.findById(userId);
+        if (!user) return res.status(404).json({ error: 'User not found' });
+        
+        const index = user.favorites.indexOf(id);
+        if (index > -1) {
+            user.favorites.splice(index, 1);
+            await user.save();
+            return res.json({ success: true, message: 'Removed from favorites', favorites: user.favorites });
+        } else {
+            user.favorites.push(id);
+            await user.save();
+            return res.json({ success: true, message: 'Added to favorites', favorites: user.favorites });
+        }
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+exports.createPlaylist = async (req, res) => {
+    const { name } = req.body;
+    const userId = req.user.id;
+    if (!name) return res.status(400).json({ error: 'Playlist name is required' });
+    try {
+        const user = await User.findById(userId);
+        user.playlists.push({ name, songs: [] });
+        await user.save();
+        res.status(201).json({ success: true, playlists: user.playlists });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+exports.addToPlaylist = async (req, res) => {
+    const { playlistId, songId } = req.params;
+    const userId = req.user.id;
+    try {
+        const user = await User.findById(userId);
+        const playlist = user.playlists.id(playlistId);
+        if (!playlist) return res.status(404).json({ error: 'Playlist not found' });
+        
+        if (!playlist.songs.includes(songId)) {
+            playlist.songs.push(songId);
+            await user.save();
+        }
+        res.json({ success: true, playlists: user.playlists });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+exports.removeFromPlaylist = async (req, res) => {
+    const { playlistId, songId } = req.params;
+    const userId = req.user.id;
+    try {
+        const user = await User.findById(userId);
+        const playlist = user.playlists.id(playlistId);
+        if (!playlist) return res.status(404).json({ error: 'Playlist not found' });
+        
+        playlist.songs = playlist.songs.filter(s => s.toString() !== songId);
+        await user.save();
+        res.json({ success: true, playlists: user.playlists });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+exports.getUserLibrary = async (req, res) => {
+    const userId = req.user.id;
+    try {
+        const user = await User.findById(userId)
+            .populate('favorites')
+            .populate('playlists.songs');
+        if (!user) return res.status(404).json({ error: 'User not found' });
+        res.json({
+            favorites: user.favorites,
+            playlists: user.playlists
+        });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

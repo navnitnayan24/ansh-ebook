@@ -115,5 +115,12 @@ export const addReview = (data) => API.post('reviews', data);
 export const deleteReview = (id) => API.delete(`admin/reviews/${id}`);
 export const updateReviewReaction = (id, type) => API.post(`reviews/${id}/reaction`, { type });
 
+// User Music Library & Playlists
+export const fetchUserLibrary = () => API.get('user/library');
+export const toggleMusicFavorite = (id) => API.post(`music/${id}/favorite`);
+export const createMusicPlaylist = (name) => API.post('music/playlist', { name });
+export const addToMusicPlaylist = (playlistId, songId) => API.post(`music/playlist/${playlistId}/add/${songId}`);
+export const removeFromMusicPlaylist = (playlistId, songId) => API.delete(`music/playlist/${playlistId}/remove/${songId}`);
+
 export { API };
 export default API;
