@@ -4,5 +4,8 @@ if (import.meta.env.DEV) {
     parsedMediaUrl = 'http://localhost:5000';
 } else if (import.meta.env.VITE_API_URL && import.meta.env.VITE_API_URL.startsWith('http')) {
     parsedMediaUrl = import.meta.env.VITE_API_URL.replace(/\/api\/?$/, '');
+} else {
+    // Permanent fallback for APK and Production if env is missing
+    parsedMediaUrl = 'https://ansh-ebook.onrender.com';
 }
 export const MEDIA_URL = parsedMediaUrl;

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">AnshEbook</string>
+    <string name="title_activity_main">AnshEbook</string>
+    <string name="package_name">com.anshebook.app</string>
+    <string name="custom_url_scheme">com.anshebook.app</string>
+</resources>
