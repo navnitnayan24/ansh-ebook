@@ -38,7 +38,7 @@ const BrandHeader = ({ isMobile, toggleMenu, isOpen }) => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6 }}
                     >
-                        <h1 className="brand-name-main center-text">ANSH-EBOOK</h1>
+                        <h1 className="brand-name-main center-text">ANSH EBOOK</h1>
                         <div className="brand-subtitle-line">
                             <span className="line"></span>
                             <span className="subtitle-text">PREMIUM CREATIVE HUB</span>

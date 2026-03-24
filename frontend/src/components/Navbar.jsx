@@ -99,7 +99,7 @@ const Navbar = ({ isOpen, setIsOpen, closeMenu }) => {
                     >
                         <div className="drawer-inner">
                             <div className="drawer-branding">
-                                <h3 className="pink-gradient-text">ANSH-EBOOK</h3>
+                                <h3 className="pink-gradient-text">ANSH EBOOK</h3>
                                 <button className="drawer-close" onClick={closeMenu}><X size={28} /></button>
                             </div>
 

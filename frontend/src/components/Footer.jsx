@@ -84,7 +84,7 @@ const Footer = () => {
                 </div>
 
                 <div className="footer-credits-v2">
-                    <p>@2026 Ansh-Ebook All Rights Reserved.</p>
+                    <p>@2026 Ansh Ebook All Rights Reserved.</p>
                     <div className="legal-v2">
                         <Link to="/about">About Us</Link>
                         <Link to="/contact">Contact</Link>
