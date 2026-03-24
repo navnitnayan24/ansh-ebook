@@ -443,8 +443,8 @@ const Home = () => {
                         <h3 className="premium-sub-title mb-4"><PlayCircle size={20} className="mr-2"/> Music & Melodies</h3>
                         <div className="grid-3">
                             {content?.latest_music?.map((track, idx) => (
-                                <motion.div key={track?._id || idx} className={`glass-card music-card-mini ${!user ? 'restricted-content' : ''}`} onClick={(e) => checkPremiumAccess(e, '/music')} variants={itemVariants} style={{ cursor: 'pointer' }}>
-                                    <div className="music-thumb">
+                                <motion.div key={track?._id || idx} className={`glass-card music-card-mini ${!user ? 'restricted-content' : ''}`} variants={itemVariants} style={{ cursor: 'pointer' }}>
+                                    <div className="music-thumb" onClick={(e) => checkPremiumAccess(e, '/music')}>
                                         {(() => {
                                             const albumArt = track?.thumbnail || track?.cover_url || track?.thumbnail_url;
                                             const imgSrc = albumArt?.startsWith('/uploads') ? `${MEDIA_URL}${albumArt}` : (albumArt || '/default-music.png');
@@ -452,10 +452,17 @@ const Home = () => {
                                         })()}
                                         {!user && <div className="lock-overlay"><div className="lock-circle">🔒</div></div>}
                                     </div>
-                                    <div className="music-info">
+                                    <div className="music-info" onClick={(e) => checkPremiumAccess(e, '/music')}>
                                         <h3>{track?.title}</h3>
                                         <p>{track?.artist || 'Original Mix'}</p>
                                     </div>
+                                    {user && (
+                                        <div className="play-overlay-mini">
+                                            <button className="play-mini-btn" onClick={() => navigate('/music')}>
+                                                <Play size={16} fill="white" /> Play
+                                            </button>
+                                        </div>
+                                    )}
                                 </motion.div>
                             ))}
                         </div>

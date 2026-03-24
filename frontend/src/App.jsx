@@ -5,6 +5,8 @@ import { ThemeProvider } from './context/ThemeContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import MobileFooter from './components/MobileFooter';
+import { SplashScreen } from '@capacitor/splash-screen';
+
 
 // Lazy loaded pages for performance (Goal 6)
 const Home = lazy(() => import('./pages/Home'));
@@ -131,6 +133,11 @@ const AnimatedRoutes = () => {
 };
 
 function App() {
+    React.useEffect(() => {
+        // Hide Splash Screen as soon as the app mounts
+        SplashScreen.hide().catch(err => console.warn('SplashScreen hide failed (Not on native device):', err));
+    }, []);
+
     return (
         <ThemeProvider>
             <Router>

@@ -283,17 +283,30 @@ const Music = () => {
                                                         if (rawAudio && rawAudio.includes('\\uploads\\')) rawAudio = '/uploads/' + rawAudio.split('\\uploads\\').pop();
                                                         else if (rawAudio && rawAudio.includes('/uploads/')) rawAudio = '/uploads/' + rawAudio.split('/uploads/').pop();
                                                         
-                                                        const finalAudioSrc = rawAudio?.startsWith('/uploads') ? `${MEDIA_URL}${rawAudio}` : rawAudio;
+                                                        let finalAudioSrc = rawAudio?.startsWith('/uploads') ? `${MEDIA_URL}${rawAudio}` : rawAudio;
+                                                        
+                                                        // Force HTTPS for Cloudinary/external links
+                                                        if (finalAudioSrc?.startsWith('http:')) {
+                                                            finalAudioSrc = finalAudioSrc.replace('http:', 'https:');
+                                                        }
+
                                                         return (
-                                                            <audio 
-                                                                key={track.file_url}
-                                                                autoPlay 
-                                                                controls 
-                                                                className="compact-audio-player"
-                                                                src={finalAudioSrc}
-                                                            >
-                                                                Your browser does not support the audio element.
-                                                            </audio>
+                                                            <div className="audio-player-container-v2">
+                                                                <audio 
+                                                                    key={track._id} // Changed key to ID for better re-mounting
+                                                                    autoPlay 
+                                                                    controls 
+                                                                    className="compact-audio-player"
+                                                                    src={finalAudioSrc}
+                                                                    onError={(e) => {
+                                                                        console.error("Audio playback error:", e);
+                                                                        alert("Audio file failed to load. Please check your internet or try refreshing.");
+                                                                    }}
+                                                                >
+                                                                    Your browser does not support the audio element.
+                                                                </audio>
+                                                                <p className="debug-url" style={{fontSize:'10px', opacity:0.3}}>{finalAudioSrc}</p>
+                                                            </div>
                                                         );
                                                     })()}
                                                 </motion.div>
