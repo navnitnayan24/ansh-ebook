@@ -1,6 +1,7 @@
 {
   "name": "ansh-ebook-root",
-  "version": "1.0.0",
+  "version": "1.0.1",
+  "comment": "Triggering fresh build due to previous timeout",
   "private": true,
   "scripts": {
     "postinstall": "npm install --prefix server && npm install --prefix frontend",
