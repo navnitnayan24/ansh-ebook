@@ -423,7 +423,7 @@ const AdminDashboard = () => {
                             </div>
                         ) : activeTab === 'settings' ? (
                             <div className="settings-grid">
-                                {Array.isArray(items) && items.map(setting => (
+                                {Array.isArray(items) && items.length > 0 ? items.map(setting => (
                                     <div key={setting._id} className="settings-item glass-card">
                                         <div className="setting-info">
                                             <h4>{setting.description || setting.key}</h4>
@@ -442,7 +442,11 @@ const AdminDashboard = () => {
                                             <Save size={16} /> Save
                                         </button>
                                     </div>
-                                ))}
+                                )) : (
+                                    <div className="empty-state glass-card" style={{gridColumn: '1 / -1', padding: '2rem'}}>
+                                        <p>No site settings found in database.</p>
+                                    </div>
+                                )}
                             </div>
                         ) : activeTab === 'subscribers' ? (
                             <table>
