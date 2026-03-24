@@ -18,10 +18,13 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { email, username, password } = req.body;
+        const loginId = email || username;
         const secret = process.env.JWT_SECRET || 'ansh_ebook_internal_fallback_secure_2026_@#$';
         
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ 
+            $or: [{ email: loginId }, { username: loginId }] 
+        });
         
         if (!user || !(await bcrypt.compare(password, user.password))) {
             return res.status(401).json({ error: 'Invalid credentials' });

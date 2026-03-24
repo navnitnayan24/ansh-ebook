@@ -59,7 +59,7 @@ async function autoSeed() {
         ]);
 
         // 2. Admin
-        const adminUsername = 'ansh24';
+        const adminUsername = 'anshsharma2026';
         const adminEmail = 'anshbgmi24@gmail.com';
         const adminPassword = await bcrypt.hash('ansh@sh2002', 10);
         
