@@ -259,14 +259,14 @@ const Music = () => {
                                                         style={{ background: 'transparent', border: 'none', color: isFavorite(track._id) ? 'var(--pink-primary)' : 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', transition: '0.3s' }}
                                                         title="Favorite"
                                                     >
-                                                        <Heart size={18} fill={isFavorite(track._id) ? "var(--pink-primary)" : "transparent"} />
+                                                        <Heart size={16} fill={isFavorite(track._id) ? "var(--pink-primary)" : "transparent"} />
                                                     </button>
                                                     <button 
                                                         onClick={() => { setSelectedSongForPlaylist(track._id); setShowPlaylistModal(true); }}
                                                         style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
                                                         title="Add to Playlist"
                                                     >
-                                                        <Plus size={18} />
+                                                        <Plus size={20} />
                                                     </button>
                                                 </div>
                                             </div>
