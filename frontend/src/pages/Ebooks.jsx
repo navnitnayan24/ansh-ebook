@@ -163,17 +163,26 @@ const Ebooks = () => {
                                                         <button 
                                                             className="btn btn-primary btn-sm btn-pill shadow-neon w-100"
                                                             onClick={() => {
-                                                                let target = book.pdfUrl || book.file_url || book.pdf_content_url || book.html_content_url || book.link;
+                                                                const rawUrl = book.pdfUrl || book.file_url || book.pdf_content_url || book.html_content_url || book.link;
+                                                                let target = rawUrl;
+                                                                
                                                                 if (target && target.includes('\\uploads\\')) {
                                                                     target = '/uploads/' + target.split('\\uploads\\').pop();
                                                                 } else if (target && target.includes('/uploads/')) {
                                                                     target = '/uploads/' + target.split('/uploads/').pop();
                                                                 }
-                                                                const finalUrl = target?.startsWith('/uploads') ? `${MEDIA_URL}${target}` : target;
+
+                                                                let finalUrl = target?.startsWith('/uploads') ? `${MEDIA_URL}${target}` : target;
+                                                                
+                                                                // Force HTTPS for Cloudinary/external links
+                                                                if (finalUrl?.startsWith('http:')) {
+                                                                    finalUrl = finalUrl.replace('http:', 'https:');
+                                                                }
+
                                                                 if (finalUrl) {
                                                                     setSelectedPdfUrl(finalUrl);
                                                                 } else {
-                                                                    alert('Link coming soon! ✨');
+                                                                    alert('PDF link is not available for this book yet. ✨');
                                                                 }
                                                             }}
                                                         >

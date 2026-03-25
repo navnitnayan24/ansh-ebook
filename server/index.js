@@ -8,6 +8,7 @@ const fs = require('fs');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const rateLimit = require('express-rate-limit');
+const compression = require('compression');
 
 // Route Imports
 const authRoutes = require('./routes/authRoutes');
@@ -18,10 +19,23 @@ const app = express();
 const PORT = process.env.PORT || 5000; 
 
 // Security Middleware
-app.use(helmet()); 
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+            "img-src": ["'self'", "data:", "https://res.cloudinary.com", "https://*.cloudinary.com"],
+            "media-src": ["'self'", "https://res.cloudinary.com", "https://*.cloudinary.com"],
+            "script-src": ["'self'", "'unsafe-inline'", "https://pagead2.googlesyndication.com", "https://*.googlesyndication.com"],
+            "frame-src": ["'self'", "https://googleads.g.doubleclick.net", "https://*.googlesyndication.com"],
+            "connect-src": ["'self'", "https://res.cloudinary.com", "https://*.cloudinary.com", "https://ansh-ebook.onrender.com"]
+        },
+    },
+    crossOriginEmbedderPolicy: false, 
+})); 
 app.use(mongoSanitize()); 
 
 // Rate Limiter
+app.use(compression()); 
 const apiLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 100,
@@ -43,7 +57,7 @@ let lastDbError = null;
 // Health Check
 app.get('/health', async (req, res) => {
     const dbStatus = mongoose.connection.readyState === 1 ? 'CONNECTED' : 'DISCONNECTED';
-    const storageType = (process.env.CLOUDINARY_CLOUD_NAME || 'datao7ela') ? 'cloudinary' : 'local';
+    const storageType = process.env.CLOUDINARY_CLOUD_NAME ? 'cloudinary' : 'local';
     let stats = { admins: 0, users: 0, subscribers: 0 };
     try {
         if (dbStatus === 'CONNECTED') {

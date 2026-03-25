@@ -179,6 +179,10 @@ const Podcasts = () => {
                                                             controls 
                                                             className="custom-audio w-100"
                                                             src={pod.file_url?.startsWith('/uploads') ? `${MEDIA_URL}${pod.file_url}` : pod.file_url}
+                                                            onError={(e) => {
+                                                                console.error("Podcast playback error:", e);
+                                                                // Silent error or small notification preferred over alert
+                                                            }}
                                                         >
                                                             Your browser does not support the audio element.
                                                         </audio>

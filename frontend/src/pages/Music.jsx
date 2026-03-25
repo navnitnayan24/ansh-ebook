@@ -61,6 +61,10 @@ const Music = () => {
                 setTracks(data);
             } catch (err) {
                 console.error(err);
+                if (err.message?.includes('timeout') || !err.response) {
+                    // Hint about Render cold start if it's a network/timeout error
+                    console.log("Service might be waking up...");
+                }
             } finally {
                 setLoading(false);
             }
@@ -300,12 +304,11 @@ const Music = () => {
                                                                     src={finalAudioSrc}
                                                                     onError={(e) => {
                                                                         console.error("Audio playback error:", e);
-                                                                        alert("Audio file failed to load. Please check your internet or try refreshing.");
                                                                     }}
                                                                 >
                                                                     Your browser does not support the audio element.
                                                                 </audio>
-                                                                <p className="debug-url" style={{fontSize:'10px', opacity:0.3}}>{finalAudioSrc}</p>
+                                                                {/* Debug URL removed for cleaner UI */}
                                                             </div>
                                                         );
                                                     })()}

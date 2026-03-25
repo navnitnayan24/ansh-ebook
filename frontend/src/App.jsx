@@ -149,7 +149,7 @@ function App() {
                                 animate={{ rotate: 360 }}
                                 transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
                             />
-                            <p className="loading-text">UNFOLDING CREATIVITY...</p>
+                            <p className="loading-text">UNFOLDING CREATIVITY... <br/><span style={{fontSize:'10px', opacity:0.6}}>(Service may take a moment to wake up)</span></p>
                         </div>
                     }>
                         <AnimatedRoutes />

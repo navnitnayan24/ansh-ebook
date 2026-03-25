@@ -8,11 +8,11 @@ require('dotenv').config();
 let storage;
 
 if (process.env.CLOUDINARY_CLOUD_NAME) {
-    // Configure Cloudinary
+    console.log('✅ Cloudinary Storage initialized (Production Mode)');
     cloudinary.config({
-      cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'datao7ela',
-      api_key: process.env.CLOUDINARY_API_KEY || '367996669885499',
-      api_secret: process.env.CLOUDINARY_API_SECRET || '2eH_KFosTqgBvhlZruG-2kbKIBA'
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET
     });
 
     storage = new CloudinaryStorage({
@@ -38,8 +38,12 @@ if (process.env.CLOUDINARY_CLOUD_NAME) {
         };
       },
     });
-} else {
-    // Fallback to local storage
+    // Fallback to local storage (WARNING: Files will be lost on Render restarts)
+    if (process.env.NODE_ENV === 'production') {
+        console.warn('⚠️  WARNING: CLOUDINARY_CLOUD_NAME is not set! Falling back to LOCAL storage. Files will be EPHEMERAL on Render.');
+    } else {
+        console.log('ℹ️  Using local storage for development fallback.');
+    }
     const uploadDir = path.join(__dirname, '../../uploads');
     if (!fs.existsSync(uploadDir)) {
         fs.mkdirSync(uploadDir, { recursive: true });
