@@ -23,7 +23,7 @@ app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-            "img-src": ["'self'", "data:", "https://res.cloudinary.com", "https://*.cloudinary.com"],
+            "img-src": ["'self'", "data:", "https://res.cloudinary.com", "https://*.cloudinary.com", "https://api.dicebear.com"],
             "media-src": ["'self'", "https://res.cloudinary.com", "https://*.cloudinary.com"],
             "script-src": ["'self'", "'unsafe-inline'", "https://pagead2.googlesyndication.com", "https://*.googlesyndication.com"],
             "frame-src": ["'self'", "https://googleads.g.doubleclick.net", "https://*.googlesyndication.com"],

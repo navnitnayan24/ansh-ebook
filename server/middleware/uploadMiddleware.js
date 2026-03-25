@@ -36,8 +36,8 @@ if (process.env.CLOUDINARY_CLOUD_NAME) {
           folder: folder,
           resource_type: 'auto', // Always use auto
         };
-      },
     });
+} else {
     // Fallback to local storage (WARNING: Files will be lost on Render restarts)
     if (process.env.NODE_ENV === 'production') {
         console.warn('⚠️  WARNING: CLOUDINARY_CLOUD_NAME is not set! Falling back to LOCAL storage. Files will be EPHEMERAL on Render.');
