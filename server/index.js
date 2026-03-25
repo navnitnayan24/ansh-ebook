@@ -1,4 +1,12 @@
 require('dotenv').config();
+
+// FORCED PERMANENT STORAGE FIX (Render strips .env files)
+if (!process.env.CLOUDINARY_CLOUD_NAME) {
+    process.env.CLOUDINARY_CLOUD_NAME = 'datao7ela';
+    process.env.CLOUDINARY_API_KEY = '367996669885499';
+    process.env.CLOUDINARY_API_SECRET = '2eH_KFosTqgBvhlZruG-2kbKIBA';
+}
+
 const express = require('express');
 const mongoose = require('mongoose');
 const { connectDB } = require('./db');
