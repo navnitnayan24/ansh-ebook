@@ -2,7 +2,7 @@
 // Strategy: Network-First for HTML/API, Cache-First for static assets
 // This prevents the blank screen issue caused by stale cache after new deployments.
 
-const CACHE_VERSION = 'ansh-ebook-v3';
+const CACHE_VERSION = 'ansh-ebook-v4';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const OFFLINE_URL = '/';
 
