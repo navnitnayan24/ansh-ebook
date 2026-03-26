@@ -7,7 +7,7 @@ import { fetchMessages } from '../../api';
 const ChatWindow = ({ chat }) => {
     const [messages, setMessages] = useState([]);
     const [isTyping, setIsTyping] = useState(false);
-    const { socket, callUser } = useSocket();
+    const { socket, callUser, onlineUsers } = useSocket();
     const scrollRef = useRef();
     const currentUser = JSON.parse(localStorage.getItem('user'));
     const currentId = currentUser?.id || currentUser?._id;
