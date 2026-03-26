@@ -43,44 +43,66 @@ export const SocketProvider = ({ children }) => {
         return () => newSocket.close();
     }, []);
 
-    const answerCall = () => {
-        setCallAccepted(true);
-        const peer = new Peer({ initiator: false, trickle: false, stream });
+    const answerCall = async () => {
+        try {
+            const currentStream = await navigator.mediaDevices.getUserMedia({ video: call.type === 'video', audio: true });
+            setStream(currentStream);
+            if (myVideoRef.current) myVideoRef.current.srcObject = currentStream;
 
-        peer.on('signal', (data) => {
-            socket.emit('accept-call', { signal: data, to: call.from });
-        });
+            setCallAccepted(true);
+            const peer = new Peer({ initiator: false, trickle: false, stream: currentStream });
 
-        peer.on('stream', (currentStream) => {
-            userVideoRef.current.srcObject = currentStream;
-        });
+            peer.on('signal', (data) => {
+                socket.emit('accept-call', { signal: data, to: call.from });
+            });
 
-        peer.signal(call.signal);
-        connectionRefCurrent.current = peer;
+            peer.on('stream', (remoteStream) => {
+                if (userVideoRef.current) userVideoRef.current.srcObject = remoteStream;
+            });
+
+            peer.signal(call.signal);
+            connectionRefCurrent.current = peer;
+        } catch (err) {
+            console.error("Failed to get media stream:", err);
+            alert("Please allow camera/mic access to answer the call.");
+        }
     };
 
-    const callUser = (id, type) => {
-        const peer = new Peer({ initiator: true, trickle: false, stream });
+    const callUser = async (id, type) => {
+        try {
+            const currentStream = await navigator.mediaDevices.getUserMedia({ video: type === 'video', audio: true });
+            setStream(currentStream);
+            if (myVideoRef.current) myVideoRef.current.srcObject = currentStream;
 
-        peer.on('signal', (data) => {
-            socket.emit('call-user', { userToCall: id, signalData: data, from: socket.id, name, type });
-        });
+            const peer = new Peer({ initiator: true, trickle: false, stream: currentStream });
 
-        peer.on('stream', (currentStream) => {
-            userVideoRef.current.srcObject = currentStream;
-        });
+            peer.on('signal', (data) => {
+                socket.emit('call-user', { userToCall: id, signalData: data, from: socket.id, name, type });
+            });
 
-        socket.on('call-accepted', (signal) => {
-            setCallAccepted(true);
-            peer.signal(signal);
-        });
+            peer.on('stream', (remoteStream) => {
+                if (userVideoRef.current) userVideoRef.current.srcObject = remoteStream;
+            });
 
-        connectionRefCurrent.current = peer;
+            socket.on('call-accepted', (signal) => {
+                setCallAccepted(true);
+                peer.signal(signal);
+            });
+
+            connectionRefCurrent.current = peer;
+            setCall({ isReceivingCall: false, from: id, type, isCalling: true }); // Mark as calling
+        } catch (err) {
+            console.error("Failed to get media stream:", err);
+            alert("Please allow camera/mic access to make a call.");
+        }
     };
 
     const leaveCall = () => {
         setCallEnded(true);
-        connectionRefCurrent.current.destroy();
+        if (connectionRefCurrent.current) connectionRefCurrent.current.destroy();
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+        }
         window.location.reload();
     };
 

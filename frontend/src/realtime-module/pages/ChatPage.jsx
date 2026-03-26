@@ -47,7 +47,7 @@ const ChatPage = () => {
             </div>
 
             {/* Global Modals */}
-            {call.isReceivingCall && !call.callAccepted && (
+            {(call.isReceivingCall || call.isCalling) && !call.callEnded && (
                 <CallModal />
             )}
         </div>

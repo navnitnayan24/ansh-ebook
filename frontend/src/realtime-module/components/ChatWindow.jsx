@@ -74,7 +74,26 @@ const ChatWindow = ({ chat }) => {
                         className={`message-bubble ${msg.sender === currentUser.id ? 'sent' : 'received'}`}
                     >
                         {msg.text && <p>{msg.text}</p>}
-                        {msg.mediaUrl && msg.mediaType === 'image' && <img src={msg.mediaUrl} alt="media" />}
+                        
+                        {msg.mediaUrl && (
+                            <div className="media-content">
+                                {msg.mediaType === 'image' && (
+                                    <img src={msg.mediaUrl} alt="shared" className="message-media" onClick={() => window.open(msg.mediaUrl)} />
+                                )}
+                                {msg.mediaType === 'video' && (
+                                    <video src={msg.mediaUrl} controls className="message-media" />
+                                )}
+                                {msg.mediaType === 'audio' && (
+                                    <audio src={msg.mediaUrl} controls className="message-media-audio" />
+                                )}
+                                {(msg.mediaType === 'application' || msg.mediaType === 'file') && (
+                                    <a href={msg.mediaUrl} target="_blank" rel="noreferrer" className="file-link">
+                                        📄 View Document
+                                    </a>
+                                )}
+                            </div>
+                        )}
+                        
                         <span className="timestamp">{new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                     </div>
                 ))}
