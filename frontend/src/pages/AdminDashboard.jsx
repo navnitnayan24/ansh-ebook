@@ -179,18 +179,19 @@ const AdminDashboard = () => {
                 const sigRes = await fetchCloudinarySignature();
                 const { signature, timestamp, cloudName, apiKey } = sigRes.data;
 
-                const fd = new FormData();
-                fd.append('file', file);
-                fd.append('api_key', apiKey);
-                fd.append('timestamp', timestamp);
-                fd.append('signature', signature);
-                
                 let resourceType = 'auto';
                 if (file.type.startsWith('audio/') || file.type.startsWith('video/')) {
                     resourceType = 'video';
                 } else if (file.type === 'application/pdf' || file.name?.toLowerCase().endsWith('.pdf')) {
                     resourceType = 'raw';
                 }
+
+                const fd = new FormData();
+                fd.append('file', file);
+                fd.append('api_key', apiKey);
+                fd.append('timestamp', timestamp);
+                fd.append('signature', signature);
+                fd.append('access_mode', 'public');
                 
                 const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`, {
                     method: 'POST',

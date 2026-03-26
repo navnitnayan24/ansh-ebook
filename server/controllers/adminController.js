@@ -22,8 +22,10 @@ exports.getCloudinarySignature = (req, res) => {
     try {
         const cloudinary = require('cloudinary').v2;
         const timestamp = Math.round((new Date()).getTime() / 1000);
-        // The timestamp must be signed
-        const signature = cloudinary.utils.api_sign_request({ timestamp: timestamp }, process.env.CLOUDINARY_API_SECRET);
+        const signature = cloudinary.utils.api_sign_request({ 
+            timestamp: timestamp,
+            access_mode: 'public'
+        }, process.env.CLOUDINARY_API_SECRET);
         
         res.json({ 
             signature, 
