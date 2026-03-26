@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Send, Image, Mic, Paperclip } from 'lucide-react';
 import { useSocket } from '../context/SocketContext';
-import { findOrCreateChat } from '../../api';
+import { findOrCreateChat, fetchCloudinarySignature } from '../../api';
 
 const MessageInput = ({ chatId, receiverId, setMessages }) => {
     const [text, setText] = useState('');

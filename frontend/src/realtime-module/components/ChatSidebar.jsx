@@ -7,7 +7,7 @@ const ChatSidebar = ({ users, setSelectedChat, selectedChat }) => {
     const { onlineUsers } = useSocket();
 
     const filteredUsers = users.filter(user => 
-        user.name?.toLowerCase().includes(search.toLowerCase()) || 
+        user.username?.toLowerCase().includes(search.toLowerCase()) || 
         user._id?.toLowerCase().includes(search.toLowerCase())
     );
 
@@ -41,11 +41,11 @@ const ChatSidebar = ({ users, setSelectedChat, selectedChat }) => {
                             })}
                         >
                             <div className="user-avatar-wrapper">
-                                <img src={user.profilePic || '/default-avatar.png'} alt={user.name} />
+                                <img src={user.profile_pic || '/default-avatar.png'} alt={user.username} />
                                 <span className={`status-dot ${onlineUsers[user._id] === 'online' ? 'online' : 'offline'}`}></span>
                             </div>
                             <div className="user-info">
-                                <span className="user-name">{user.name}</span>
+                                <span className="user-name">{user.username}</span>
                                 {onlineUsers[user._id] === 'online' && <span className="user-status-online">Online</span>}
                             </div>
                         </div>

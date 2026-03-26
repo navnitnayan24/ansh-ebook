@@ -6,7 +6,7 @@ const User = require('../../models/User'); // Reusing existing user model
 exports.getChats = async (req, res) => {
     try {
         const chats = await Chat.find({ participants: req.user.id })
-            .populate('participants', 'name profilePic')
+            .populate('participants', 'username profile_pic')
             .populate('lastMessage')
             .sort({ updatedAt: -1 });
         res.json(chats);
@@ -49,7 +49,7 @@ exports.findOrCreateChat = async (req, res) => {
 // Get all users for chat discovery
 exports.getUsers = async (req, res) => {
     try {
-        const users = await User.find({}, 'name profilePic email _id')
+        const users = await User.find({}, 'username profile_pic email _id')
             .limit(100); // Sensible limit
         res.json(users);
     } catch (err) {

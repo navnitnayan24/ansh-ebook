@@ -10,7 +10,8 @@ const ChatWindow = ({ chat }) => {
     const { socket, callUser } = useSocket();
     const scrollRef = useRef();
     const currentUser = JSON.parse(localStorage.getItem('user'));
-    const otherUser = chat.participants.find(p => p._id !== currentUser.id);
+    const currentId = currentUser?.id || currentUser?._id;
+    const otherUser = chat.participants.find(p => p._id !== currentId) || {};
 
     useEffect(() => {
         // Fetch message history
@@ -54,10 +55,16 @@ const ChatWindow = ({ chat }) => {
         <div className="chat-window glass-card">
             <div className="chat-header">
                 <div className="other-user-info">
-                    <img src={otherUser.profilePic || '/default-avatar.png'} alt={otherUser.name} />
+                    <img src={otherUser.profile_pic || '/default-avatar.png'} alt={otherUser.username} />
                     <div className="text-info">
-                        <h4>{otherUser.name}</h4>
-                        {isTyping && <span className="typing-pulse">typing...</span>}
+                        <h4>{otherUser.username}</h4>
+                        {isTyping ? (
+                            <span className="typing-pulse">typing...</span>
+                        ) : (
+                            <span className="user-status-text">
+                                {onlineUsers[otherUser._id] === 'online' ? 'Online' : 'Offline'}
+                            </span>
+                        )}
                     </div>
                 </div>
                 <div className="chat-actions">
@@ -71,7 +78,7 @@ const ChatWindow = ({ chat }) => {
                 {messages.map((msg, idx) => (
                     <div 
                         key={idx} 
-                        className={`message-bubble ${msg.sender === currentUser.id ? 'sent' : 'received'}`}
+                        className={`message-bubble ${msg.sender === currentId ? 'sent' : 'received'}`} 
                     >
                         {msg.text && <p>{msg.text}</p>}
                         
