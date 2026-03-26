@@ -84,6 +84,7 @@ const Navbar = ({ isOpen, setIsOpen, closeMenu }) => {
         { path: '/shayari', label: 'SHAYARI', icon: <Book size={20} /> },
         { path: '/ebooks', label: 'E-BOOK', icon: <BookOpen size={20} /> },
         { path: '/podcasts', label: 'PODCASTS', icon: <Mic size={20} /> },
+        { path: '/chat', label: 'CHAT', icon: <MessageCircle size={20} /> },
         { path: '/#about', label: 'ABOUT', icon: <User size={20} /> },
     ];
 

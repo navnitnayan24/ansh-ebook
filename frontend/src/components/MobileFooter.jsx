@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { NavLink, Link } from 'react-router-dom';
-import { Menu, X, Home, Book, Music, Mic, BookOpen, User, Settings } from 'lucide-react';
+import { Menu, X, Home, Book, Music, Mic, BookOpen, User, Settings, MessageCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import '../styles/MobileFooter.css';
 
 const MobileFooter = () => {
     const navItems = [
         { path: '/', label: 'Home', icon: <Home size={22} /> },
-        { path: '/shayari', label: 'Shayari', icon: <Book size={22} /> },
         { path: '/music', label: 'Music', icon: <Music size={22} /> },
         { path: '/podcasts', label: 'Podcast', icon: <Mic size={22} /> },
+        { path: '/chat', label: 'Chat', icon: <MessageCircle size={22} /> },
         { path: '/ebooks', label: 'E-Books', icon: <BookOpen size={22} /> },
     ];
 
