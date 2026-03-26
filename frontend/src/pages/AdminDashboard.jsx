@@ -176,6 +176,9 @@ const AdminDashboard = () => {
             const MAX_SIZE = 15 * 1024 * 1024; // 15MB
             
             const uploadDirectlyToCloudinary = async (file) => {
+                const fd = new FormData();
+                fd.append('file', file);
+                fd.append('upload_preset', 'ml_default');
                 const cloudName = 'datao7ela'; // Hardcoded fallback for bypass
                 let resourceType = 'auto';
                 if (file.type.startsWith('audio/') || file.type.startsWith('video/')) {
@@ -184,39 +187,17 @@ const AdminDashboard = () => {
                     resourceType = 'raw';
                 }
                 
-                const uniqueUploadId = Math.random().toString(36).substring(2) + Date.now();
-                const chunkSize = 10 * 1024 * 1024; // 10MB chunks
-                const totalChunks = Math.ceil(file.size / chunkSize);
-                let uploadedUrl = '';
+                const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`, {
+                    method: 'POST',
+                    body: fd
+                });
 
-                for (let i = 0; i < totalChunks; i++) {
-                    const startByte = i * chunkSize;
-                    const endByte = Math.min(startByte + chunkSize, file.size);
-                    const chunk = file.slice(startByte, endByte);
-
-                    const fd = new FormData();
-                    fd.append('file', chunk);
-                    fd.append('upload_preset', 'ml_default');
-                    
-                    const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`, {
-                        method: 'POST',
-                        headers: {
-                            'X-Unique-Upload-Id': uniqueUploadId,
-                            'Content-Range': `bytes ${startByte}-${endByte - 1}/${file.size}`
-                        },
-                        body: fd
-                    });
-
-                    if (!res.ok) {
-                        const errorObj = await res.json();
-                        throw new Error(errorObj.error?.message || 'Bypass upload failed. Check upload_preset or size limit.');
-                    }
-                    const resData = await res.json();
-                    if (resData.secure_url) {
-                        uploadedUrl = resData.secure_url;
-                    }
+                if (!res.ok) {
+                    const errorObj = await res.json();
+                    throw new Error(errorObj.error?.message || 'Bypass upload failed. Check upload_preset or size limit.');
                 }
-                return uploadedUrl;
+                const resData = await res.json();
+                return resData.secure_url;
             };
 
             let bypassThumb = thumbnailFile && thumbnailFile.size > MAX_SIZE;
