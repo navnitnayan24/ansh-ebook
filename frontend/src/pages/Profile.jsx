@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { User, Mail, Shield, Calendar, LogOut, ArrowRight, Heart, BookOpen, Trash2, CheckCircle2, Camera } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { API } from '../api';
-import { MEDIA_URL } from '../config';
+import { MEDIA_URL, getAvatarUrl } from '../config';
 import '../styles/Profile.css';
 
 const PREDEFINED_AVATARS = [
@@ -84,15 +84,6 @@ const Profile = () => {
     const itemVariants = {
         hidden: { opacity: 0, y: 20 },
         visible: { opacity: 1, y: 0 }
-    };
-
-    const getAvatarUrl = (pic) => {
-        if (!pic) return null;
-        if (pic.startsWith('http')) return pic;
-        let rawPic = pic;
-        if (rawPic.includes('\\uploads\\')) rawPic = '/uploads/' + rawPic.split('\\uploads\\').pop();
-        else if (rawPic.includes('/uploads/')) rawPic = '/uploads/' + rawPic.split('/uploads/').pop();
-        return rawPic.startsWith('/uploads') ? `${MEDIA_URL}${rawPic}` : rawPic;
     };
 
     return (

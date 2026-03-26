@@ -9,7 +9,7 @@ import {
     fetchReviews, deleteReview
 } from '../api';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MEDIA_URL } from '../config';
+import { MEDIA_URL, getAvatarUrl } from '../config';
 import '../styles/Dashboard.css';
 
 const AdminDashboard = () => {
@@ -317,14 +317,6 @@ const AdminDashboard = () => {
             (item.username || '').toLowerCase().includes(searchStr)
         );
     }) : [];
-
-    const getAvatarUrl = (pic) => {
-        if (!pic) return null;
-        let rawPic = pic;
-        if (rawPic.includes('\\uploads\\')) rawPic = '/uploads/' + rawPic.split('\\uploads\\').pop();
-        else if (rawPic.includes('/uploads/')) rawPic = '/uploads/' + rawPic.split('/uploads/').pop();
-        return rawPic.startsWith('/uploads') ? `${MEDIA_URL}${rawPic}` : rawPic;
-    };
 
     return (
         <div className="dashboard-page container">

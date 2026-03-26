@@ -9,3 +9,16 @@ if (import.meta.env.DEV) {
     parsedMediaUrl = 'https://ansh-ebook.onrender.com';
 }
 export const MEDIA_URL = parsedMediaUrl;
+
+export const getAvatarUrl = (pic, username = 'U') => {
+    const fallback = `https://ui-avatars.com/api/?name=${username || 'U'}&background=random&color=fff`;
+    if (!pic) return fallback;
+    
+    let rawPic = pic;
+    // Normalize paths from different OS formats
+    if (rawPic.includes('\\uploads\\')) rawPic = '/uploads/' + rawPic.split('\\uploads\\').pop();
+    else if (rawPic.includes('/uploads/')) rawPic = '/uploads/' + rawPic.split('/uploads/').pop();
+    
+    const finalUrl = rawPic.startsWith('/uploads') ? `${MEDIA_URL}${rawPic}` : rawPic;
+    return finalUrl;
+};

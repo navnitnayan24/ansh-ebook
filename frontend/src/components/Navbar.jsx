@@ -3,7 +3,7 @@ import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, LogOut, Settings, Sun, Moon, Home, Book, Music, Mic, BookOpen, Quote, User, MessageCircle, Youtube, Instagram, Facebook, Linkedin, DownloadCloud } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
-import { MEDIA_URL } from '../config';
+import { MEDIA_URL, getAvatarUrl } from '../config';
 import '../styles/Navbar.css';
 
 const Navbar = ({ isOpen, setIsOpen, closeMenu }) => {
@@ -101,14 +101,6 @@ const Navbar = ({ isOpen, setIsOpen, closeMenu }) => {
         } else {
             closeMenu();
         }
-    };
-
-    const getAvatarUrl = (pic) => {
-        if (!pic) return null;
-        let rawPic = pic;
-        if (rawPic.includes('\\uploads\\')) rawPic = '/uploads/' + rawPic.split('\\uploads\\').pop();
-        else if (rawPic.includes('/uploads/')) rawPic = '/uploads/' + rawPic.split('/uploads/').pop();
-        return rawPic.startsWith('/uploads') ? `${MEDIA_URL}${rawPic}` : rawPic;
     };
 
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Moon, Sun, Send } from 'lucide-react';
 import { useSocket } from '../context/SocketContext';
+import { getAvatarUrl } from '../../config';
 
 const ChatSidebar = ({ users, setSelectedChat, selectedChat }) => {
     const [search, setSearch] = useState('');
@@ -61,9 +62,9 @@ const ChatSidebar = ({ users, setSelectedChat, selectedChat }) => {
                         >
                             <div className="user-avatar-wrapper">
                                 <img 
-                                    src={user.profile_pic || 'https://ui-avatars.com/api/?name=' + (user.username || 'U')} 
+                                    src={getAvatarUrl(user.profile_pic, user.username)} 
                                     alt={user.username} 
-                                    onError={(e) => { e.target.src = 'https://ui-avatars.com/api/?name=' + (user.username || 'U'); }}
+                                    onError={(e) => { e.target.src = getAvatarUrl(null, user.username); }}
                                 />
                                 <span className={`status-dot ${onlineUsers[user._id] === 'online' ? 'online' : 'offline'}`}></span>
                             </div>

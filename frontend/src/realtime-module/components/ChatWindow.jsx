@@ -3,6 +3,7 @@ import MessageInput from './MessageInput';
 import { useSocket } from '../context/SocketContext';
 import { Phone, Video, MoreVertical } from 'lucide-react';
 import { fetchMessages } from '../../api';
+import { getAvatarUrl } from '../../config';
 
 const ChatWindow = ({ chat }) => {
     const [messages, setMessages] = useState([]);
@@ -96,9 +97,9 @@ const ChatWindow = ({ chat }) => {
             <div className="chat-header">
                 <div className="other-user-info">
                     <img 
-                        src={otherUser.profile_pic || 'https://ui-avatars.com/api/?name=' + (otherUser.username || 'U')} 
+                        src={getAvatarUrl(otherUser.profile_pic, otherUser.username)} 
                         alt="avatar" 
-                        onError={(e) => { e.target.src = 'https://ui-avatars.com/api/?name=' + (otherUser.username || 'U'); }}
+                        onError={(e) => { e.target.src = getAvatarUrl(null, otherUser.username); }}
                     />
                     <div className="text-info">
                         <h4>{formatUsername(otherUser.username)}</h4>
