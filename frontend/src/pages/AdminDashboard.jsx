@@ -4,7 +4,7 @@ import { Plus, Trash2, Edit, Save, X, Search, Settings as SettingsIcon, ArrowLef
 import { 
     fetchContentByType, addContent, updateContent, deleteContent, 
     fetchCategories, fetchSettings, updateSetting, 
-    changePassword as changePasswordApi, 
+    changePassword as changePasswordApi, fetchCloudinarySignature,
     fetchSubscribers, fetchUsers, deleteSubscriber, deleteUser, deleteCategory,
     fetchReviews, deleteReview
 } from '../api';
@@ -176,10 +176,15 @@ const AdminDashboard = () => {
             const MAX_SIZE = 0; // 0MB - ALWAYS BYPASS BACKEND FOR FILES
             
             const uploadDirectlyToCloudinary = async (file) => {
+                const sigRes = await fetchCloudinarySignature();
+                const { signature, timestamp, cloudName, apiKey } = sigRes.data;
+
                 const fd = new FormData();
                 fd.append('file', file);
-                fd.append('upload_preset', 'ml_default');
-                const cloudName = 'datao7ela'; // Hardcoded fallback for bypass
+                fd.append('api_key', apiKey);
+                fd.append('timestamp', timestamp);
+                fd.append('signature', signature);
+                
                 let resourceType = 'auto';
                 if (file.type.startsWith('audio/') || file.type.startsWith('video/')) {
                     resourceType = 'video';

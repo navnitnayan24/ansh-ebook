@@ -89,6 +89,8 @@ export const deleteContent = (type, id) => {
     return API.delete(`admin/${route}/${id}`);
 };
 
+export const fetchCloudinarySignature = () => API.get('admin/cloudinary-signature');
+
 // Auth
 export const login = (data) => API.post('auth/login', data);
 export const register = (data) => API.post('auth/register', data);

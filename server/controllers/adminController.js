@@ -18,6 +18,24 @@ exports.getUsers = async (req, res) => {
     }
 };
 
+exports.getCloudinarySignature = (req, res) => {
+    try {
+        const cloudinary = require('cloudinary').v2;
+        const timestamp = Math.round((new Date()).getTime() / 1000);
+        // The timestamp must be signed
+        const signature = cloudinary.utils.api_sign_request({ timestamp: timestamp }, process.env.CLOUDINARY_API_SECRET);
+        
+        res.json({ 
+            signature, 
+            timestamp, 
+            cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+            apiKey: process.env.CLOUDINARY_API_KEY
+        });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to generate signature' });
+    }
+};
+
 exports.deleteUser = async (req, res) => {
     const { id } = req.params;
     try {

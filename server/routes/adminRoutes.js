@@ -25,6 +25,9 @@ router.delete('/subscribers/:id', adminController.deleteSubscriber);
 router.get('/users', adminController.getUsers);
 router.delete('/users/:id', adminController.deleteUser);
 
+// Cloudinary
+router.get('/cloudinary-signature', adminController.getCloudinarySignature);
+
 router.post('/:type', (req, res, next) => {
     console.log(`[ADMIN POST] Target: ${req.params.type}`);
     next();
