@@ -29,7 +29,7 @@ if (process.env.CLOUDINARY_CLOUD_NAME) {
             resource_type = 'video';
         } else if (file.mimetype === 'application/pdf' || file.mimetype.includes('ebook')) {
             folder = 'ansh-ebook/pdfs';
-            resource_type = 'raw';
+            resource_type = 'image'; // Cloudinary handles PDFs best as 'image'
         }
 
         return {

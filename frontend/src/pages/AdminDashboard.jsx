@@ -181,8 +181,7 @@ const AdminDashboard = () => {
                 fd.append('upload_preset', 'ml_default');
                 const cloudName = 'datao7ela'; // Hardcoded fallback for bypass
                 let resourceType = 'auto';
-                if (file.type === 'application/pdf' || file.type.includes('ebook')) resourceType = 'raw';
-                else if (file.type.startsWith('audio/') || file.type.startsWith('video/')) resourceType = 'video';
+                if (file.type.startsWith('audio/') || file.type.startsWith('video/')) resourceType = 'video';
                 
                 const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`, {
                     method: 'POST',
@@ -238,7 +237,10 @@ const AdminDashboard = () => {
             const errorData = err.response?.data;
             const errorMsg = errorData?.error || errorData?.message || err.message;
             
-            if (errorMsg.toLowerCase().includes('network error') || !err.response) {
+            // Allow explicit Cloudinary bypass errors (which lack err.response) to bubble through
+            if (errorMsg.includes('Bypass upload failed') || errorMsg.includes('File is too large')) {
+                alert(`Upload Failed: ${errorMsg}\n\nPlease try compressing the file. Maximum Cloudinary file limit applies.`);
+            } else if (errorMsg.toLowerCase().includes('network error') && !err.response) {
                 alert(`Upload Failed: Network Error.\n\nPossible causes:\n1. File is too large.\n2. Internet connection was interrupted.\n3. Server timed out.\n\nPlease try again with a smaller file or a faster connection.`);
             } else if (errorMsg.toLowerCase().includes('auth server misconfigured')) {
                 alert(`Security Error: JWT Secret Missing.\n\nPlease add 'JWT_SECRET' to your Render environment variables to fix this permanently.`);
