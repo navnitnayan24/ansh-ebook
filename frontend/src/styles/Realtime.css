@@ -41,13 +41,11 @@
 }
 
 .sidebar-header h3 {
-    font-size: 1.5rem;
-    font-weight: 800;
-    margin-bottom: 20px;
-    background: linear-gradient(to right, #fff, #aaa);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    font-size: 1.8rem;
+    font-weight: 900;
+    margin-bottom: 24px;
+    color: #fff;
+    letter-spacing: -0.5px;
 }
 
 .search-bar-chat {
@@ -111,6 +109,7 @@
     height: 100%;
     border-radius: 50%;
     object-fit: cover;
+    background: #333; /* Dark background for broken images */
 }
 
 .status-dot {
@@ -121,15 +120,25 @@
     height: 10px;
     border-radius: 50%;
     border: 2px solid #1a1a1a;
+    z-index: 2;
 }
 
 .status-dot.online { background: #2ed573; }
 .status-dot.offline { background: #555; }
 
+.user-info {
+    flex: 1;
+    overflow: hidden;
+}
+
 .user-info .user-name {
     display: block;
     font-weight: 500;
     font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #fff;
 }
 
 .user-status-online {
@@ -140,18 +149,20 @@
 
 /* Chat Window */
 .chat-window {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    height: 100%;
     background: rgba(0,0,0,0.1);
 }
 
 .chat-header {
-    padding: 16px 24px;
+    padding: 12px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid var(--glass-border);
     backdrop-filter: blur(10px);
+    background: rgba(255,255,255,0.02);
 }
 
 .other-user-info {
@@ -161,9 +172,10 @@
 }
 
 .other-user-info img {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #333;
 }
 
 .messages-area {

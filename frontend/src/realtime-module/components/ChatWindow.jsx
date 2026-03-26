@@ -35,6 +35,12 @@ const ChatWindow = ({ chat }) => {
             }
         });
 
+        socket.on('message-sent', (message) => {
+            if (message.chat === chat._id) {
+                setMessages(prev => [...prev, message]);
+            }
+        });
+
         socket.on('user-typing', (data) => {
             if (data.senderId === otherUser._id) {
                 setIsTyping(data.isTyping);
@@ -43,6 +49,7 @@ const ChatWindow = ({ chat }) => {
 
         return () => {
             socket.off('receive-message');
+            socket.off('message-sent');
             socket.off('user-typing');
         };
     }, [socket, chat._id]);
@@ -55,7 +62,11 @@ const ChatWindow = ({ chat }) => {
         <div className="chat-window glass-card">
             <div className="chat-header">
                 <div className="other-user-info">
-                    <img src={otherUser.profile_pic || '/default-avatar.png'} alt={otherUser.username} />
+                    <img 
+                        src={otherUser.profile_pic || 'https://ui-avatars.com/api/?name=' + (otherUser.username || 'U')} 
+                        alt="avatar" 
+                        onError={(e) => { e.target.src = 'https://ui-avatars.com/api/?name=' + (otherUser.username || 'U'); }}
+                    />
                     <div className="text-info">
                         <h4>{otherUser.username}</h4>
                         {isTyping ? (

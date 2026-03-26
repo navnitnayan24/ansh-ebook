@@ -41,7 +41,11 @@ const ChatSidebar = ({ users, setSelectedChat, selectedChat }) => {
                             })}
                         >
                             <div className="user-avatar-wrapper">
-                                <img src={user.profile_pic || '/default-avatar.png'} alt={user.username} />
+                                <img 
+                                    src={user.profile_pic || 'https://ui-avatars.com/api/?name=' + (user.username || 'U')} 
+                                    alt={user.username} 
+                                    onError={(e) => { e.target.src = 'https://ui-avatars.com/api/?name=' + (user.username || 'U'); }}
+                                />
                                 <span className={`status-dot ${onlineUsers[user._id] === 'online' ? 'online' : 'offline'}`}></span>
                             </div>
                             <div className="user-info">
