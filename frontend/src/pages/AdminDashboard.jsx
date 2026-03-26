@@ -173,7 +173,7 @@ const AdminDashboard = () => {
             if (!dataToSend.category_id) delete dataToSend.category_id;
             
             let payload = dataToSend;
-            const MAX_SIZE = 15 * 1024 * 1024; // 15MB
+            const MAX_SIZE = 0; // 0MB - ALWAYS BYPASS BACKEND FOR FILES
             
             const uploadDirectlyToCloudinary = async (file) => {
                 const fd = new FormData();
@@ -200,8 +200,8 @@ const AdminDashboard = () => {
                 return resData.secure_url;
             };
 
-            let bypassThumb = thumbnailFile && thumbnailFile.size > MAX_SIZE;
-            let bypassAudio = audioFile && audioFile.size > MAX_SIZE;
+            let bypassThumb = !!thumbnailFile;
+            let bypassAudio = !!audioFile;
 
             if (bypassThumb) {
                 const url = await uploadDirectlyToCloudinary(thumbnailFile);
@@ -222,8 +222,7 @@ const AdminDashboard = () => {
                         formDataObj.append(key, val);
                     }
                 });
-                if (thumbnailFile && !bypassThumb) formDataObj.append('thumbnail', thumbnailFile);
-                if (audioFile && !bypassAudio) formDataObj.append('audio_file', audioFile);
+                // Since we always bypass if files exist, we never append files to formData sent to Render
                 payload = formDataObj;
             }
 
