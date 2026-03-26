@@ -1,7 +1,9 @@
+import React, { useState } from 'react';
 import { Search } from 'lucide-react';
+import { useSocket } from '../context/SocketContext';
 
 const ChatSidebar = ({ users, setSelectedChat, selectedChat }) => {
-    const [search, setSearch] = React.useState('');
+    const [search, setSearch] = useState('');
     const { onlineUsers } = useSocket();
 
     const filteredUsers = users.filter(user => 
