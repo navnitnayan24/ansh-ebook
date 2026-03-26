@@ -23,11 +23,11 @@ export const SocketProvider = ({ children }) => {
     const connectionRefCurrent = useRef();
 
     useEffect(() => {
-        const user = JSON.parse(localStorage.getItem('token'));
-        if (!user) return;
+        const token = localStorage.getItem('token');
+        if (!token) return;
 
         const newSocket = io(window.location.origin, {
-            auth: { token: user }
+            auth: { token }
         });
 
         setSocket(newSocket);
