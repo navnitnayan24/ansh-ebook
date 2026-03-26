@@ -63,12 +63,19 @@ const AdminDashboard = () => {
     const loadItems = async () => {
         setLoading(true);
         try {
-            // Check storage status
+            // Check storage status (with 3s timeout to avoid hang)
             try {
-                const healthRes = await fetch(`${MEDIA_URL}/health`);
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 3000);
+                
+                const healthRes = await fetch(`${MEDIA_URL}/health`, { signal: controller.signal });
+                clearTimeout(timeoutId);
+                
                 const healthData = await healthRes.json();
                 if (healthData.storageType) setStorageStatus(healthData.storageType);
-            } catch (e) {}
+            } catch (e) {
+                console.warn('Health check timed out or failed, using defaults.');
+            }
 
             if (activeTab === 'settings' || activeTab === 'advertisements') {
                 const { data } = await fetchSettings();

@@ -114,8 +114,9 @@ export const fetchPublicSettings = () => API.get('settings');
 export const fetchSubscribers = () => API.get('admin/subscribers');
 export const deleteSubscriber = (id) => API.delete(`admin/subscribers/${id}`);
 export const subscribeUser = (email) => API.post('subscribe', { email });
-export const fetchUsers = () => API.get('realtime/users');
+export const fetchUsers = () => API.get('admin/users');
 export const deleteUser = (id) => API.delete(`admin/users/${id}`);
+export const searchUsers = (q) => API.get('realtime/users', { params: { q } });
 
 // Reviews
 export const fetchReviews = () => API.get('reviews');

@@ -3,7 +3,7 @@ import ChatSidebar from '../components/ChatSidebar';
 import ChatWindow from '../components/ChatWindow';
 import CallModal from '../components/CallModal';
 import { useSocket } from '../context/SocketContext';
-import { fetchUsers } from '../../api'; // Reusing existing user fetch
+import { searchUsers } from '../../api'; // Use search API for discovery
 import { ArrowLeft } from 'lucide-react';
 import '../../styles/Realtime.css';
 
@@ -15,7 +15,7 @@ const ChatPage = () => {
     useEffect(() => {
         const loadUsers = async () => {
             try {
-                const res = await fetchUsers();
+                const res = await searchUsers();
                 // Filter out self
                 const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
                 const currentUserId = currentUser.id || currentUser._id;
