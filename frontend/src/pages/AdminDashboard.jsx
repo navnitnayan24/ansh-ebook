@@ -173,7 +173,7 @@ const AdminDashboard = () => {
             if (!dataToSend.category_id) delete dataToSend.category_id;
             
             let payload = dataToSend;
-            const MAX_SIZE = 20 * 1024 * 1024; // 20MB
+            const MAX_SIZE = 15 * 1024 * 1024; // 15MB
             
             const uploadDirectlyToCloudinary = async (file) => {
                 const fd = new FormData();
@@ -181,7 +181,11 @@ const AdminDashboard = () => {
                 fd.append('upload_preset', 'ml_default');
                 const cloudName = 'datao7ela'; // Hardcoded fallback for bypass
                 let resourceType = 'auto';
-                if (file.type.startsWith('audio/') || file.type.startsWith('video/')) resourceType = 'video';
+                if (file.type.startsWith('audio/') || file.type.startsWith('video/')) {
+                    resourceType = 'video';
+                } else if (file.type === 'application/pdf' || file.name?.toLowerCase().endsWith('.pdf')) {
+                    resourceType = 'raw';
+                }
                 
                 const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`, {
                     method: 'POST',
@@ -242,6 +246,8 @@ const AdminDashboard = () => {
                 alert(`Upload Failed: ${errorMsg}\n\nPlease try compressing the file. Maximum Cloudinary file limit applies.`);
             } else if (errorMsg.toLowerCase().includes('network error') && !err.response) {
                 alert(`Upload Failed: Network Error.\n\nPossible causes:\n1. File is too large.\n2. Internet connection was interrupted.\n3. Server timed out.\n\nPlease try again with a smaller file or a faster connection.`);
+            } else if (errorMsg.toLowerCase() === 'failed to fetch') {
+                alert(`Upload Failed: Direct Upload Network Error.\n\nPossible causes:\n1. File is too large for the Cloudinary free tier (limit is 10MB for raw files).\n2. Ad-blockers or firewall blocked the upload.\n3. Internet connection was interrupted.\n\nPlease try again.`);
             } else if (errorMsg.toLowerCase().includes('auth server misconfigured')) {
                 alert(`Security Error: JWT Secret Missing.\n\nPlease add 'JWT_SECRET' to your Render environment variables to fix this permanently.`);
             } else {
