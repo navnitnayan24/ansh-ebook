@@ -20,6 +20,38 @@
 .sidebar-header {
     padding: 1.5rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.search-bar-chat {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 8px 12px;
+    gap: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.search-bar-chat input {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 0.85rem;
+    width: 100%;
+    outline: none;
+}
+
+.search-icon-chat {
+    opacity: 0.5;
+}
+
+.no-users-found {
+    padding: 2rem;
+    text-align: center;
+    font-size: 0.9rem;
 }
 
 .user-list {

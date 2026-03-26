@@ -49,6 +49,14 @@ const Sidebar = () => {
                         <span>PODCAST</span>
                     </NavLink>
                 </li>
+                {user && (
+                    <li>
+                        <NavLink to="/chat" className={({isActive}) => isActive ? 'active' : ''}>
+                            <MessageCircle size={20} className="sidebar-icon" />
+                            <span>CHAT</span>
+                        </NavLink>
+                    </li>
+                )}
                 {user?.role === 'admin' && (
                     <li>
                         <NavLink to="/admin" className={({isActive}) => isActive ? 'active' : ''}>
