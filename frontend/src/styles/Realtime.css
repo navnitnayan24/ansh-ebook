@@ -604,4 +604,10 @@
     .hide-mobile {
         display: none !important;
     }
+    .send-btn-mobile {
+        width: 45px !important;
+        height: 45px !important;
+        background: var(--msg-sent) !important;
+        box-shadow: 0 4px 15px rgba(255, 20, 147, 0.4) !important;
+    }
 }

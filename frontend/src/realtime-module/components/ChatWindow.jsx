@@ -43,10 +43,14 @@ const ChatWindow = ({ chat }) => {
         if (!socket) return;
         
         socket.on('receive-message', (message) => {
-            if (message.chat === chat._id) {
+            const isMatch = message.chat === chat._id || 
+                           (chat._id.startsWith('new-') && 
+                            (message.sender === otherUser._id || message.receiverId === otherUser._id));
+            
+            if (isMatch) {
                 setMessages(prev => [...prev, message]);
                 notificationSound.play().catch(e => console.log("Sound play error:", e));
-                socket.emit('mark-seen', { chatId: chat._id, senderId: otherUser._id });
+                socket.emit('mark-seen', { chatId: message.chat, senderId: otherUser._id });
             }
         });
 
@@ -61,7 +65,11 @@ const ChatWindow = ({ chat }) => {
         });
 
         socket.on('message-sent', (message) => {
-            if (message.chat === chat._id) {
+            const isMatch = message.chat === chat._id || 
+                           (chat._id.startsWith('new-') && 
+                            (message.sender === currentId || message.receiverId === otherUser._id));
+                            
+            if (isMatch) {
                 setMessages(prev => [...prev, message]);
             }
         });
