@@ -173,6 +173,43 @@ const AdminDashboard = () => {
             if (!dataToSend.category_id) delete dataToSend.category_id;
             
             let payload = dataToSend;
+            const MAX_SIZE = 20 * 1024 * 1024; // 20MB
+            
+            const uploadDirectlyToCloudinary = async (file) => {
+                const fd = new FormData();
+                fd.append('file', file);
+                fd.append('upload_preset', 'ml_default');
+                const cloudName = 'datao7ela'; // Hardcoded fallback for bypass
+                let resourceType = 'auto';
+                if (file.type === 'application/pdf' || file.type.includes('ebook')) resourceType = 'raw';
+                else if (file.type.startsWith('audio/') || file.type.startsWith('video/')) resourceType = 'video';
+                
+                const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`, {
+                    method: 'POST',
+                    body: fd
+                });
+                if (!res.ok) {
+                    const errorObj = await res.json();
+                    throw new Error(errorObj.error?.message || 'Bypass upload failed. Check upload_preset or size limit.');
+                }
+                const resData = await res.json();
+                return resData.secure_url;
+            };
+
+            let bypassThumb = thumbnailFile && thumbnailFile.size > MAX_SIZE;
+            let bypassAudio = audioFile && audioFile.size > MAX_SIZE;
+
+            if (bypassThumb) {
+                const url = await uploadDirectlyToCloudinary(thumbnailFile);
+                dataToSend.thumbnail = url;
+                if (modelName === 'music' || modelName === 'ebook') dataToSend.cover_url = url;
+                if (modelName === 'podcast') dataToSend.thumbnail_url = url;
+            }
+            if (bypassAudio) {
+                const url = await uploadDirectlyToCloudinary(audioFile);
+                dataToSend.file_url = url;
+            }
+
             if (thumbnailFile || audioFile) {
                 const formDataObj = new FormData();
                 Object.keys(dataToSend).forEach(key => {
@@ -181,8 +218,8 @@ const AdminDashboard = () => {
                         formDataObj.append(key, val);
                     }
                 });
-                if (thumbnailFile) formDataObj.append('thumbnail', thumbnailFile);
-                if (audioFile) formDataObj.append('audio_file', audioFile);
+                if (thumbnailFile && !bypassThumb) formDataObj.append('thumbnail', thumbnailFile);
+                if (audioFile && !bypassAudio) formDataObj.append('audio_file', audioFile);
                 payload = formDataObj;
             }
 

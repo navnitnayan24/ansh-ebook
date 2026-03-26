@@ -24,17 +24,17 @@ if (process.env.CLOUDINARY_CLOUD_NAME) {
         if (file.mimetype.startsWith('image/')) {
             folder = 'ansh-ebook/images';
             resource_type = 'auto';
-        } else if (file.mimetype.startsWith('audio/')) {
+        } else if (file.mimetype.startsWith('audio/') || file.mimetype.startsWith('video/')) {
             folder = 'ansh-ebook/audio';
-            resource_type = 'auto'; // Enforce auto
-        } else if (file.mimetype === 'application/pdf') {
+            resource_type = 'video';
+        } else if (file.mimetype === 'application/pdf' || file.mimetype.includes('ebook')) {
             folder = 'ansh-ebook/pdfs';
-            resource_type = 'auto'; // Enforce auto
+            resource_type = 'raw';
         }
 
         return {
           folder: folder,
-          resource_type: 'auto', // Always use auto
+          resource_type: resource_type,
         };
       },
     });
@@ -71,7 +71,7 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({ 
     storage: storage,
     fileFilter: fileFilter,
-    limits: { fileSize: 50 * 1024 * 1024 } // 50MB limit
+    limits: { fileSize: 200 * 1024 * 1024 } // 200MB limit
 });
 
 module.exports = upload;

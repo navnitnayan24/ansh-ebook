@@ -6,7 +6,9 @@ const getBaseURL = () => {
 };
 
 const API = axios.create({ 
-    baseURL: getBaseURL()
+    baseURL: getBaseURL(),
+    maxContentLength: Infinity,
+    maxBodyLength: Infinity
 });
 
 API.interceptors.request.use((req) => {
