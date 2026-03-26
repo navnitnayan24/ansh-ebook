@@ -220,7 +220,13 @@ const Ebooks = () => {
                             <button className="btn btn-primary btn-sm btn-pill" onClick={() => setSelectedPdfUrl(null)}>Close PDF</button>
                         </div>
                         <div style={{width: '100%', maxWidth: '900px', background: 'white', borderRadius: '10px', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.5)'}}>
-                            <iframe src={selectedPdfUrl} width="100%" height="600px" style={{border: 'none'}} title="PDF Viewer"></iframe>
+                            <iframe 
+                                src={`https://docs.google.com/viewer?url=${encodeURIComponent(selectedPdfUrl)}&embedded=true`} 
+                                width="100%" 
+                                height="600px" 
+                                style={{border: 'none'}} 
+                                title="PDF Viewer"
+                            />
                         </div>
                     </motion.div>
                 )}
