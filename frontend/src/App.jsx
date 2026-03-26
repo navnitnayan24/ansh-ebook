@@ -23,10 +23,12 @@ const Shayari = lazy(() => import('./pages/Shayari'));
 const Music = lazy(() => import('./pages/Music'));
 const Podcasts = lazy(() => import('./pages/Podcasts'));
 const Ebooks = lazy(() => import('./pages/Ebooks'));
+const ChatPage = lazy(() => import('./realtime-module/pages/ChatPage')); // Realtime Module Hook
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 import Sidebar from './components/Sidebar';
 import BrandHeader from './components/BrandHeader';
+import { SocketProvider } from './realtime-module/context/SocketContext'; // Realtime Module Hook
 
 const ProtectedRoute = ({ children }) => {
     const user = JSON.parse(localStorage.getItem('user'));
@@ -113,6 +115,7 @@ const AnimatedRoutes = () => {
                 <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
                 <Route path="/register" element={<PageWrapper><Register /></PageWrapper>} />
                 <Route path="/profile" element={<LoginRequiredRoute><PageWrapper><Profile /></PageWrapper></LoginRequiredRoute>} />
+                <Route path="/chat" element={<LoginRequiredRoute><PageWrapper><ChatPage /></PageWrapper></LoginRequiredRoute>} />
                 <Route path="/admin" element={<ProtectedRoute><PageWrapper><AdminDashboard /></PageWrapper></ProtectedRoute>} />
                 
                 {/* Legal & Static - Keep as separate pages or move to Home? 
@@ -140,23 +143,24 @@ function App() {
 
     return (
         <ThemeProvider>
-            <Router>
-                <Layout>
-                    <Suspense fallback={
-                        <div className="premium-loader-container">
-                            <motion.div 
-                                className="premium-loader"
-                                animate={{ rotate: 360 }}
-                                transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-                            />
-                            <p className="loading-text">UNFOLDING CREATIVITY... <br/><span style={{fontSize:'10px', opacity:0.6}}>(Service may take a moment to wake up)</span></p>
-                        </div>
-                    }>
-                        <AnimatedRoutes />
-                    </Suspense>
-                </Layout>
-            </Router>
-
+            <SocketProvider>
+                <Router>
+                    <Layout>
+                        <Suspense fallback={
+                            <div className="premium-loader-container">
+                                <motion.div 
+                                    className="premium-loader"
+                                    animate={{ rotate: 360 }}
+                                    transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+                                />
+                                <p className="loading-text">UNFOLDING CREATIVITY... <br/><span style={{fontSize:'10px', opacity:0.6}}>(Service may take a moment to wake up)</span></p>
+                            </div>
+                        }>
+                            <AnimatedRoutes />
+                        </Suspense>
+                    </Layout>
+                </Router>
+            </SocketProvider>
         </ThemeProvider>
     );
 }

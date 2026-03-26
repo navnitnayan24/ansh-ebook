@@ -22,7 +22,9 @@
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-helmet-async": "^3.0.0",
-    "react-router-dom": "^7.13.1"
+    "react-router-dom": "^7.13.1",
+    "simple-peer": "^9.11.1",
+    "socket.io-client": "^4.8.3"
   },
   "devDependencies": {
     "@capacitor/assets": "^3.0.5",

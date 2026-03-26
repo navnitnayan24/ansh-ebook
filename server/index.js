@@ -106,6 +106,7 @@ app.use('/uploads', (req, res) => {
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/realtime', require('./realtime-module/routes/chat.routes')); // Realtime Module Hook
 app.use('/api', contentRoutes);
 
 // Serve static files from the React app
@@ -138,6 +139,9 @@ async function startServer() {
         const server = app.listen(PORT, () => {
             console.log(`🚀 Premium MERN Server live on port ${PORT}`);
         });
+
+        // Realtime Module Socket Hook
+        require('./realtime-module/socket')(server);
 
         server.timeout = 600000;
 
