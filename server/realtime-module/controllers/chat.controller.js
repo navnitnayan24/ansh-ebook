@@ -1,6 +1,6 @@
-const Chat = require('./models/chat.model');
-const Message = require('./models/message.model');
-const User = require('../models/User'); // Reusing existing user model
+const Chat = require('../models/chat.model');
+const Message = require('../models/message.model');
+const User = require('../../models/User'); // Reusing existing user model
 
 // Get all chats for the current user
 exports.getChats = async (req, res) => {
