@@ -19,6 +19,12 @@ const ChatSidebar = ({ users, setSelectedChat, selectedChat }) => {
         user._id?.toLowerCase().includes(search.toLowerCase())
     );
 
+    const formatUsername = (name) => {
+        if (!name) return 'User';
+        if (name.includes('@')) return name.split('@')[0];
+        return name;
+    };
+
     const displayUsers = search.length > 0 
         ? filteredUsers 
         : users.filter(user => onlineUsers[user._id] === 'online');
@@ -62,11 +68,11 @@ const ChatSidebar = ({ users, setSelectedChat, selectedChat }) => {
                                 <span className={`status-dot ${onlineUsers[user._id] === 'online' ? 'online' : 'offline'}`}></span>
                             </div>
                             <div className="user-info">
-                                <span className="user-name">{user.username}</span>
+                                <span className="user-name">{formatUsername(user.username)}</span>
                                 {onlineUsers[user._id] === 'online' ? (
                                     <span className="user-status-online">Active Now</span>
                                 ) : (
-                                    <span className="user-status-offline">Offline</span>
+                                    <span className="user-status-offline" style={{fontSize: '0.6rem'}}>Seen recently</span>
                                 )}
                             </div>
                             <div className="quick-action-icon">

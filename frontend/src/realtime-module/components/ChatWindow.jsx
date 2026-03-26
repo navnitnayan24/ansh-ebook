@@ -15,6 +15,11 @@ const ChatWindow = ({ chat }) => {
     // Reliable public notification sound
     const notificationSound = new Audio('https://res.cloudinary.com/dhpwp898n/video/upload/v1711516000/notification_vqc6vz.mp3'); 
 
+    const formatUsername = (name) => {
+        if (!name) return 'User';
+        if (name.includes('@')) return name.split('@')[0];
+        return name;
+    };
     useEffect(() => {
         if (chat._id && socket) {
             socket.emit('mark-seen', { chatId: chat._id, senderId: otherUser._id });
@@ -88,7 +93,7 @@ const ChatWindow = ({ chat }) => {
                         onError={(e) => { e.target.src = 'https://ui-avatars.com/api/?name=' + (otherUser.username || 'U'); }}
                     />
                     <div className="text-info">
-                        <h4>{otherUser.username}</h4>
+                        <h4>{formatUsername(otherUser.username)}</h4>
                         {isTyping ? (
                             <span className="typing-pulse">typing...</span>
                         ) : (
