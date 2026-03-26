@@ -11,6 +11,10 @@ const ChatSidebar = ({ users, setSelectedChat, selectedChat }) => {
         user._id?.toLowerCase().includes(search.toLowerCase())
     );
 
+    const displayUsers = search.length > 0 
+        ? filteredUsers 
+        : users.filter(user => onlineUsers[user._id] === 'online');
+
     return (
         <div className="chat-sidebar glass-card">
             <div className="sidebar-header">
@@ -26,8 +30,8 @@ const ChatSidebar = ({ users, setSelectedChat, selectedChat }) => {
                 </div>
             </div>
             <div className="user-list">
-                {filteredUsers.length > 0 ? (
-                    filteredUsers.map((user) => (
+                {displayUsers.length > 0 ? (
+                    displayUsers.map((user) => (
                         <div 
                             key={user._id} 
                             className={`user-item ${selectedChat?.participants?.[1]?._id === user._id ? 'active' : ''}`}
@@ -36,20 +40,20 @@ const ChatSidebar = ({ users, setSelectedChat, selectedChat }) => {
                                 participants: [{}, user] 
                             })}
                         >
-                        <div className="user-avatar-wrapper">
-                            <img src={user.profilePic || '/default-avatar.png'} alt={user.name} />
-                            {onlineUsers[user._id] === 'online' && <span className="online-indicator"></span>}
+                            <div className="user-avatar-wrapper">
+                                <img src={user.profilePic || '/default-avatar.png'} alt={user.name} />
+                                <span className={`status-dot ${onlineUsers[user._id] === 'online' ? 'online' : 'offline'}`}></span>
+                            </div>
+                            <div className="user-info">
+                                <span className="user-name">{user.name}</span>
+                                {onlineUsers[user._id] === 'online' && <span className="user-status-online">Online</span>}
+                            </div>
                         </div>
-                        <div className="user-info">
-                            <span className="user-name">{user.name}</span>
-                            <span className="user-status muted-text">
-                                {onlineUsers[user._id] === 'online' ? 'Online' : 'Offline'}
-                            </span>
-                        </div>
-                    </div>
-                ))
+                    ))
                 ) : (
-                    <div className="no-users-found muted-text">No users found</div>
+                    <div className="no-users-found muted-text">
+                        {search.length > 0 ? "No users found" : "No users online. Use search to find someone!"}
+                    </div>
                 )}
             </div>
         </div>
