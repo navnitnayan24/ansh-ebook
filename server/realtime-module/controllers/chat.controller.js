@@ -19,7 +19,7 @@ exports.getChats = async (req, res) => {
 exports.getMessages = async (req, res) => {
     try {
         const messages = await Message.find({ chat: req.params.chatId })
-            .populate('sender', 'name')
+            .populate('sender', 'username profile_pic')
             .sort({ createdAt: 1 });
         res.json(messages);
     } catch (err) {
@@ -46,10 +46,10 @@ exports.findOrCreateChat = async (req, res) => {
     }
 };
 
-// Get all users for chat discovery
+// Get all users for chat discovery (Privacy-safe: No emails)
 exports.getUsers = async (req, res) => {
     try {
-        const users = await User.find({}, 'username profile_pic email _id')
+        const users = await User.find({}, 'username profile_pic _id')
             .limit(100); // Sensible limit
         res.json(users);
     } catch (err) {
