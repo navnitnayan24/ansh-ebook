@@ -531,6 +531,58 @@
     color: var(--text-muted);
 }
 
+/* --- EBOOK CARD MINI (HOME) --- */
+.ebook-card-mini {
+    display: flex;
+    flex-direction: column;
+    padding: 0 !important;
+    overflow: hidden;
+    height: 100%;
+    transition: all 0.3s ease;
+    border: 1px solid var(--glass-border);
+}
+
+.ebook-card-mini:hover {
+    transform: translateY(-8px);
+    border-color: var(--accent);
+    box-shadow: 0 10px 30px rgba(255, 20, 147, 0.2);
+}
+
+.ebook-cover {
+    width: 100%;
+    aspect-ratio: 2/3;
+    position: relative;
+    overflow: hidden;
+    background: #1a1a1a;
+}
+
+.ebook-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.ebook-card-mini:hover .ebook-cover img {
+    transform: scale(1.1);
+}
+
+.ebook-info {
+    padding: 1rem;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.ebook-info h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin: 0;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 /* =============================================
    SUBSCRIBE NEWSLETTER SECTION
    ============================================= */
@@ -679,6 +731,10 @@ section {
 
 /* Small mobile */
 @media (max-width: 480px) {
+    .grid-4, .grid-3, .grid-2 {
+        grid-template-columns: 1fr !important;
+    }
+
     .explore-grid {
         grid-template-columns: 1fr 1fr;
         gap: 1rem;
