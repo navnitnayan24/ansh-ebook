@@ -76,8 +76,17 @@ export const SocketProvider = ({ children }) => {
 
             const peer = new Peer({ initiator: true, trickle: false, stream: currentStream });
 
+            const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+            const currentUserId = currentUser.id || currentUser._id;
+
             peer.on('signal', (data) => {
-                socket.emit('call-user', { userToCall: id, signalData: data, from: socket.id, name, type });
+                socket.emit('call-user', { 
+                    userToCall: id, 
+                    signalData: data, 
+                    from: currentUserId, // Use persistent userId instead of transient socket.id
+                    name: currentUser.username, 
+                    type 
+                });
             });
 
             peer.on('stream', (remoteStream) => {

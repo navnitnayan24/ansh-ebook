@@ -81,36 +81,45 @@ const MessageInput = ({ chatId, receiverId, setMessages }) => {
     };
 
     return (
-        <form className="message-input-wrapper" onSubmit={handleSend}>
-            <input 
-                type="file" 
-                hidden 
-                ref={fileInputRef} 
-                onChange={handleFileSelect} 
-                accept="image/*,video/*,audio/*,.pdf,.doc,.docx"
-            />
-            
-            <button type="button" className="icon-btn" onClick={() => fileInputRef.current?.click()}>
-                <Paperclip size={20}/>
-            </button>
-            
-            <button type="button" className="icon-btn" onClick={() => fileInputRef.current?.click()}>
-                <Image size={20}/>
-            </button>
+        <form className="message-input-form" onSubmit={handleSend}>
+            <div className="input-field-container">
+                <input 
+                    type="file" 
+                    hidden 
+                    ref={fileInputRef} 
+                    onChange={handleFileSelect} 
+                    accept="image/*,video/*,audio/*,.pdf,.doc,.docx"
+                />
+                
+                <button type="button" className="action-icon-btn left" onClick={() => fileInputRef.current?.click()}>
+                    <Image size={20}/>
+                </button>
 
-            <input 
-                type="text" 
-                placeholder={isUploading ? "Uploading media..." : "Type a message..."} 
-                value={text}
-                onChange={handleTyping}
-                disabled={isUploading}
-            />
+                <input 
+                    type="text" 
+                    className="main-chat-input"
+                    placeholder={isUploading ? "Uploading..." : "Type a message..."} 
+                    value={text}
+                    onChange={handleTyping}
+                    disabled={isUploading}
+                />
 
-            {text.trim() ? (
-                <button type="submit" className="send-btn" disabled={isUploading}><Send size={20}/></button>
-            ) : (
-                <button type="button" className="icon-btn" disabled={isUploading}><Mic size={20}/></button>
-            )}
+                <div className="right-actions">
+                    <button type="button" className="action-icon-btn" onClick={() => fileInputRef.current?.click()}>
+                        <Paperclip size={18}/>
+                    </button>
+                    
+                    {text.trim() ? (
+                        <button type="submit" className="send-btn-minimal" disabled={isUploading}>
+                            <Send size={20}/>
+                        </button>
+                    ) : (
+                        <>
+                            <button type="button" className="action-icon-btn"><Mic size={18}/></button>
+                        </>
+                    )}
+                </div>
+            </div>
         </form>
     );
 };
