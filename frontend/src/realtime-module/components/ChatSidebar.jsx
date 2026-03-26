@@ -33,10 +33,10 @@ const ChatSidebar = ({ users, setSelectedChat, selectedChat }) => {
                     </button>
                 </div>
                 <div className="search-bar-chat">
-                    <Search size={16} className="search-icon-chat" />
+                    <Search size={18} className="search-icon-chat" />
                     <input 
                         type="text" 
-                        placeholder="Search name or ID..." 
+                        placeholder="Discovery: Search name or ID..." 
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                     />
@@ -63,7 +63,14 @@ const ChatSidebar = ({ users, setSelectedChat, selectedChat }) => {
                             </div>
                             <div className="user-info">
                                 <span className="user-name">{user.username}</span>
-                                {onlineUsers[user._id] === 'online' && <span className="user-status-online">Online</span>}
+                                {onlineUsers[user._id] === 'online' ? (
+                                    <span className="user-status-online">Active Now</span>
+                                ) : (
+                                    <span className="user-status-offline">Offline</span>
+                                )}
+                            </div>
+                            <div className="quick-action-icon">
+                                <Send size={16} />
                             </div>
                         </div>
                     ))

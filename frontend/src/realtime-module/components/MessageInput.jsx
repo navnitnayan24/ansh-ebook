@@ -152,16 +152,16 @@ const MessageInput = ({ chatId, receiverId, setMessages }) => {
                 />
 
                 <div className="right-actions">
-                    <button type="button" className="action-icon-btn" onClick={() => fileInputRef.current?.click()}>
-                        <Image size={18}/>
-                    </button>
-
-                    <button type="button" className="action-icon-btn" onClick={() => fileInputRef.current?.click()}>
+                    <button type="button" className="action-icon-btn hide-mobile" onClick={() => fileInputRef.current?.click()}>
                         <Paperclip size={18}/>
                     </button>
                     
+                    <button type="button" className="action-icon-btn" onClick={() => fileInputRef.current?.click()}>
+                        <Image size={18}/>
+                    </button>
+                    
                     {text.trim() ? (
-                        <button type="submit" className="send-btn-minimal" disabled={isUploading}>
+                        <button type="submit" className="send-btn-minimal send-btn-mobile" disabled={isUploading}>
                             <Send size={20}/>
                         </button>
                     ) : (
