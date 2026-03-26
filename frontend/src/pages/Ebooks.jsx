@@ -216,17 +216,22 @@ const Ebooks = () => {
                         exit={{ opacity: 0 }} 
                         style={{position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.85)', zIndex: 9999, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px', backdropFilter: 'blur(5px)'}}
                     >
-                        <div style={{width: '100%', maxWidth: '900px', display: 'flex', justifyContent: 'flex-end', marginBottom: '10px'}}>
-                            <button className="btn btn-primary btn-sm btn-pill" onClick={() => setSelectedPdfUrl(null)}>Close PDF</button>
-                        </div>
-                        <div style={{width: '100%', maxWidth: '900px', background: 'white', borderRadius: '10px', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.5)'}}>
-                            <iframe 
-                                src={`https://docs.google.com/viewer?url=${encodeURIComponent(selectedPdfUrl)}&embedded=true`} 
-                                width="100%" 
-                                height="600px" 
-                                style={{border: 'none'}} 
-                                title="PDF Viewer"
-                            />
+                        <div style={{width: '100%', maxWidth: '500px', background: 'var(--card-bg)', borderRadius: '16px', padding: '2rem', textAlign: 'center', boxShadow: '0 10px 30px rgba(0,0,0,0.5)'}}>
+                            <BookOpen size={48} style={{color: 'var(--pink-primary)', marginBottom: '1rem'}} />
+                            <h3 style={{marginBottom: '0.5rem'}}>PDF Ready to Open</h3>
+                            <p style={{color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1.5rem'}}>Click below to open the PDF in your device's viewer.</p>
+                            <div style={{display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap'}}>
+                                <a 
+                                    href={selectedPdfUrl} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="btn btn-primary shadow-neon btn-pill"
+                                    onClick={() => setSelectedPdfUrl(null)}
+                                >
+                                    <BookOpen size={16}/> Open PDF
+                                </a>
+                                <button className="btn btn-secondary btn-pill" onClick={() => setSelectedPdfUrl(null)}>Cancel</button>
+                            </div>
                         </div>
                     </motion.div>
                 )}
