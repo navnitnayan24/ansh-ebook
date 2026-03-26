@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Moon, Sun } from 'lucide-react';
+import { Search, Moon, Sun, Send } from 'lucide-react';
 import { useSocket } from '../context/SocketContext';
 
 const ChatSidebar = ({ users, setSelectedChat, selectedChat }) => {
