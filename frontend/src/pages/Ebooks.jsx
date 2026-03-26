@@ -179,6 +179,11 @@ const Ebooks = () => {
                                                                     finalUrl = finalUrl.replace('http:', 'https:');
                                                                 }
 
+                                                                // For Cloudinary raw PDFs, add fl_attachment transformation so they open correctly
+                                                                if (finalUrl?.includes('res.cloudinary.com') && finalUrl?.includes('/raw/upload/')) {
+                                                                    finalUrl = finalUrl.replace('/raw/upload/', '/raw/upload/fl_attachment/');
+                                                                }
+
                                                                 if (finalUrl) {
                                                                     setSelectedPdfUrl(finalUrl);
                                                                 } else {
