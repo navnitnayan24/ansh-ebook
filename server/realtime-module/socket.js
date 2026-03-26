@@ -33,6 +33,16 @@ const setupSocket = (server) => {
         // Join a private room for the user
         socket.join(userId);
 
+        // Mark any 'sent' messages to 'delivered' now that they are online
+        const markDelivered = async () => {
+            await Message.updateMany(
+                { receiverId: userId, status: 'sent' }, 
+                { status: 'delivered' }
+            );
+            // Notify senders? (Optionally for each chat)
+        };
+        markDelivered();
+
         // Notify others that user is online
         io.emit('user-status', { userId, status: 'online' });
 
@@ -59,6 +69,13 @@ const setupSocket = (server) => {
                 // Send back to sender (for multi-device sync)
                 io.to(userId).emit('message-sent', message);
 
+                // If receiver is online, mark as delivered immediately
+                if (onlineUsers.has(receiverId)) {
+                    message.status = 'delivered';
+                    await message.save();
+                    io.to(userId).emit('message-delivered', { messageId: message._id, chatId });
+                }
+
             } catch (err) {
                 console.error("Socket Message Error:", err);
             }
@@ -68,6 +85,21 @@ const setupSocket = (server) => {
         socket.on('typing', (data) => {
             const { receiverId, isTyping } = data;
             io.to(receiverId).emit('user-typing', { senderId: userId, isTyping });
+        });
+
+        // Mark Messages as Seen
+        socket.on('mark-seen', async (data) => {
+            const { chatId, senderId } = data;
+            try {
+                await Message.updateMany(
+                    { chat: chatId, sender: senderId, status: { $ne: 'seen' } },
+                    { status: 'seen' }
+                );
+                // Notify the sender that their messages were seen
+                io.to(senderId).emit('messages-seen', { chatId, seenBy: userId });
+            } catch (err) {
+                console.error("Mark seen error:", err);
+            }
         });
 
         // WebRTC Signaling

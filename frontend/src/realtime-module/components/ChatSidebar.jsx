@@ -1,10 +1,18 @@
-import React, { useState } from 'react';
-import { Search } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, Moon, Sun } from 'lucide-react';
 import { useSocket } from '../context/SocketContext';
 
 const ChatSidebar = ({ users, setSelectedChat, selectedChat }) => {
     const [search, setSearch] = useState('');
     const { onlineUsers } = useSocket();
+    const [theme, setTheme] = useState(localStorage.getItem('chat-theme') || 'dark');
+
+    useEffect(() => {
+        document.documentElement.setAttribute('data-chat-theme', theme);
+        localStorage.setItem('chat-theme', theme);
+    }, [theme]);
+
+    const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark');
 
     const filteredUsers = users.filter(user => 
         user.username?.toLowerCase().includes(search.toLowerCase()) || 
@@ -18,7 +26,12 @@ const ChatSidebar = ({ users, setSelectedChat, selectedChat }) => {
     return (
         <div className="chat-sidebar glass-card">
             <div className="sidebar-header">
-                <h3>Messages</h3>
+                <div className="flex-between align-center mb-15">
+                    <h3>Messages</h3>
+                    <button className="theme-toggle-btn" onClick={toggleTheme}>
+                        {theme === 'dark' ? <Sun size={20}/> : <Moon size={20}/>}
+                    </button>
+                </div>
                 <div className="search-bar-chat">
                     <Search size={16} className="search-icon-chat" />
                     <input 

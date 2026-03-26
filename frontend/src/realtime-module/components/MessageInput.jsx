@@ -1,15 +1,24 @@
 import React, { useState, useRef } from 'react';
-import { Send, Image, Mic, Paperclip } from 'lucide-react';
+import { Send, Image, Mic, Paperclip, Camera } from 'lucide-react';
 import { useSocket } from '../context/SocketContext';
 import { findOrCreateChat, fetchCloudinarySignature } from '../../api';
+import CameraModal from './CameraModal';
 
 const MessageInput = ({ chatId, receiverId, setMessages }) => {
     const [text, setText] = useState('');
     const [isUploading, setIsUploading] = useState(false);
+    const [isRecording, setIsRecording] = useState(false);
+    const [isCameraOpen, setIsCameraOpen] = useState(false);
+    const [mediaRecorder, setMediaRecorder] = useState(null);
     const { socket } = useSocket();
     const fileInputRef = useRef();
+    const audioChunksRef = useRef([]);
 
     const uploadFile = async (file) => {
+        if (file.size > 100 * 1024 * 1024) {
+            alert("File size exceeds 100MB limit!");
+            return null;
+        }
         try {
             setIsUploading(true);
             const sigRes = await fetchCloudinarySignature();
@@ -75,6 +84,44 @@ const MessageInput = ({ chatId, receiverId, setMessages }) => {
         }
     };
 
+    const handleCameraCapture = async (file) => {
+        const media = await uploadFile(file);
+        if (media) {
+            handleSend(null, media);
+        }
+    };
+
+    const startRecording = async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const recorder = new MediaRecorder(stream);
+            audioChunksRef.current = [];
+            
+            recorder.ondataavailable = (e) => audioChunksRef.current.push(e.data);
+            recorder.onstop = async () => {
+                const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+                const file = new File([audioBlob], 'voice-message.webm', { type: 'audio/webm' });
+                const media = await uploadFile(file);
+                if (media) handleSend(null, media);
+                stream.getTracks().forEach(track => track.stop());
+            };
+
+            setMediaRecorder(recorder);
+            recorder.start();
+            setIsRecording(true);
+        } catch (err) {
+            console.error("Recording error:", err);
+            alert("Microphone access needed!");
+        }
+    };
+
+    const stopRecording = () => {
+        if (mediaRecorder) {
+            mediaRecorder.stop();
+            setIsRecording(false);
+        }
+    };
+
     const handleTyping = (e) => {
         setText(e.target.value);
         socket.emit('typing', { receiverId, isTyping: e.target.value.length > 0 });
@@ -91,8 +138,8 @@ const MessageInput = ({ chatId, receiverId, setMessages }) => {
                     accept="image/*,video/*,audio/*,.pdf,.doc,.docx"
                 />
                 
-                <button type="button" className="action-icon-btn left" onClick={() => fileInputRef.current?.click()}>
-                    <Image size={20}/>
+                <button type="button" className="action-icon-btn left" onClick={() => setIsCameraOpen(true)}>
+                    <Camera size={20}/>
                 </button>
 
                 <input 
@@ -106,6 +153,10 @@ const MessageInput = ({ chatId, receiverId, setMessages }) => {
 
                 <div className="right-actions">
                     <button type="button" className="action-icon-btn" onClick={() => fileInputRef.current?.click()}>
+                        <Image size={18}/>
+                    </button>
+
+                    <button type="button" className="action-icon-btn" onClick={() => fileInputRef.current?.click()}>
                         <Paperclip size={18}/>
                     </button>
                     
@@ -114,12 +165,25 @@ const MessageInput = ({ chatId, receiverId, setMessages }) => {
                             <Send size={20}/>
                         </button>
                     ) : (
-                        <>
-                            <button type="button" className="action-icon-btn"><Mic size={18}/></button>
-                        </>
+                        <button 
+                            type="button" 
+                            className={`action-icon-btn ${isRecording ? 'recording-active' : ''}`}
+                            onMouseDown={startRecording}
+                            onMouseUp={stopRecording}
+                            onTouchStart={startRecording}
+                            onTouchEnd={stopRecording}
+                        >
+                            <Mic size={18}/>
+                        </button>
                     )}
                 </div>
             </div>
+            
+            <CameraModal 
+                isOpen={isCameraOpen} 
+                onClose={() => setIsCameraOpen(false)} 
+                onCapture={handleCameraCapture} 
+            />
         </form>
     );
 };

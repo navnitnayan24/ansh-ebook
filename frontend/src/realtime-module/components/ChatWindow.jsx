@@ -12,6 +12,14 @@ const ChatWindow = ({ chat }) => {
     const currentUser = JSON.parse(localStorage.getItem('user'));
     const currentId = currentUser?.id || currentUser?._id;
     const otherUser = chat.participants.find(p => p._id !== currentId) || {};
+    // Reliable public notification sound
+    const notificationSound = new Audio('https://res.cloudinary.com/dhpwp898n/video/upload/v1711516000/notification_vqc6vz.mp3'); 
+
+    useEffect(() => {
+        if (chat._id && socket) {
+            socket.emit('mark-seen', { chatId: chat._id, senderId: otherUser._id });
+        }
+    }, [chat._id, messages.length]);
 
     useEffect(() => {
         // Fetch message history
@@ -32,7 +40,19 @@ const ChatWindow = ({ chat }) => {
         socket.on('receive-message', (message) => {
             if (message.chat === chat._id) {
                 setMessages(prev => [...prev, message]);
+                notificationSound.play().catch(e => console.log("Sound play error:", e));
+                socket.emit('mark-seen', { chatId: chat._id, senderId: otherUser._id });
             }
+        });
+
+        socket.on('messages-seen', ({ chatId }) => {
+            if (chatId === chat._id) {
+                setMessages(prev => prev.map(m => m.sender === currentId ? { ...m, status: 'seen' } : m));
+            }
+        });
+
+        socket.on('message-delivered', ({ messageId }) => {
+            setMessages(prev => prev.map(m => m._id === messageId ? { ...m, status: 'delivered' } : m));
         });
 
         socket.on('message-sent', (message) => {
@@ -112,7 +132,16 @@ const ChatWindow = ({ chat }) => {
                             </div>
                         )}
                         
-                        <span className="timestamp">{new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                        <div className="message-meta">
+                            <span className="timestamp">{new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                            {msg.sender === currentId && (
+                                <span className={`status-icon ${msg.status}`}>
+                                    {msg.status === 'sent' && '✓'}
+                                    {msg.status === 'delivered' && '✓✓'}
+                                    {msg.status === 'seen' && '✓✓'}
+                                </span>
+                            )}
+                        </div>
                     </div>
                 ))}
                 <div ref={scrollRef}></div>
