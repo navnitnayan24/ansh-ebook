@@ -4,6 +4,7 @@ import ChatWindow from '../components/ChatWindow';
 import CallModal from '../components/CallModal';
 import { useSocket } from '../context/SocketContext';
 import { fetchUsers } from '../../api'; // Reusing existing user fetch
+import { ArrowLeft } from 'lucide-react';
 import '../../styles/Realtime.css';
 
 const ChatPage = () => {
@@ -16,8 +17,9 @@ const ChatPage = () => {
             try {
                 const res = await fetchUsers();
                 // Filter out self
-                const currentUser = JSON.parse(localStorage.getItem('user'));
-                setUsers(res.data.filter(u => u._id !== currentUser.id));
+                const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+                const currentUserId = currentUser.id || currentUser._id;
+                setUsers(res.data.filter(u => u._id !== currentUserId));
             } catch (err) {
                 console.error("Failed to load users:", err);
             }
@@ -34,7 +36,12 @@ const ChatPage = () => {
                     selectedChat={selectedChat} 
                 />
                 {selectedChat ? (
-                    <ChatWindow chat={selectedChat} />
+                    <div className={`chat-window-container ${selectedChat ? 'active' : ''}`}>
+                        <button className="mobile-back-btn" onClick={() => setSelectedChat(null)}>
+                            <ArrowLeft size={20} />
+                        </button>
+                        <ChatWindow chat={selectedChat} />
+                    </div>
                 ) : (
                     <div className="no-chat-selected flex-center">
                         <div className="text-center">

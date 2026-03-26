@@ -45,3 +45,14 @@ exports.findOrCreateChat = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+
+// Get all users for chat discovery
+exports.getUsers = async (req, res) => {
+    try {
+        const users = await User.find({}, 'name profilePic email _id')
+            .limit(100); // Sensible limit
+        res.json(users);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};

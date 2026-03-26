@@ -7,6 +7,7 @@ router.use(authenticate); // All realtime routes require authentication
 
 router.get('/chats', chatController.getChats);
 router.get('/messages/:chatId', chatController.getMessages);
+router.get('/users', chatController.getUsers);
 router.post('/chats', chatController.findOrCreateChat);
 
 module.exports = router;
