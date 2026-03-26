@@ -34,7 +34,8 @@ app.use(helmet({
             "img-src": ["'self'", "data:", "https://res.cloudinary.com", "https://*.cloudinary.com", "https://api.dicebear.com"],
             "media-src": ["'self'", "https://res.cloudinary.com", "https://*.cloudinary.com"],
             "script-src": ["'self'", "'unsafe-inline'", "https://pagead2.googlesyndication.com", "https://*.googlesyndication.com"],
-            "frame-src": ["'self'", "https://googleads.g.doubleclick.net", "https://*.googlesyndication.com"],
+            "frame-src": ["'self'", "https://googleads.g.doubleclick.net", "https://*.googlesyndication.com", "https://res.cloudinary.com", "https://*.cloudinary.com"],
+            "object-src": ["'none'", "https://res.cloudinary.com", "https://*.cloudinary.com"],
             "connect-src": ["'self'", "https://res.cloudinary.com", "https://*.cloudinary.com", "https://ansh-ebook.onrender.com"]
         },
     },
