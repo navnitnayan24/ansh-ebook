@@ -24,6 +24,7 @@ const Music = lazy(() => import('./pages/Music'));
 const Podcasts = lazy(() => import('./pages/Podcasts'));
 const Ebooks = lazy(() => import('./pages/Ebooks'));
 const ChatPage = lazy(() => import('./realtime-module/pages/ChatPage')); // Realtime Module Hook
+const Settings = lazy(() => import('./pages/Settings'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 import Sidebar from './components/Sidebar';
@@ -116,6 +117,7 @@ const AnimatedRoutes = () => {
                 <Route path="/register" element={<PageWrapper><Register /></PageWrapper>} />
                 <Route path="/profile" element={<LoginRequiredRoute><PageWrapper><Profile /></PageWrapper></LoginRequiredRoute>} />
                 <Route path="/chat" element={<LoginRequiredRoute><PageWrapper><ChatPage /></PageWrapper></LoginRequiredRoute>} />
+                <Route path="/settings" element={<LoginRequiredRoute><PageWrapper><Settings /></PageWrapper></LoginRequiredRoute>} />
                 <Route path="/admin" element={<ProtectedRoute><PageWrapper><AdminDashboard /></PageWrapper></ProtectedRoute>} />
                 
                 {/* Legal & Static - Keep as separate pages or move to Home? 

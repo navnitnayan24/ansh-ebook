@@ -74,6 +74,12 @@ const Sidebar = () => {
                             </NavLink>
                         </li>
                         <li>
+                            <NavLink to="/settings" className={({isActive}) => isActive ? 'active' : ''}>
+                                <Settings size={20} className="sidebar-icon" />
+                                <span>SETTINGS</span>
+                            </NavLink>
+                        </li>
+                        <li>
                             <button 
                                 onClick={() => {
                                     localStorage.removeItem('token');
