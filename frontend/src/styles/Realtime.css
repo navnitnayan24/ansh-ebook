@@ -57,7 +57,8 @@
 
 @media (max-width: 768px) {
     .realtime-chat-page {
-        height: calc(100vh - 80px); /* Account for mobile BrandHeader (80px) */
+        height: calc(100dvh - 80px); /* Account for mobile BrandHeader (80px) */
+        min-height: -webkit-fill-available;
     }
 }
 
@@ -186,6 +187,12 @@
     letter-spacing: 0.8px;
     color: var(--c-muted);
     flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+    .user-list {
+        padding-bottom: 110px; /* Space for MobileFooter pill */
+    }
 }
 
 /* ── Chat / User Row ── */
@@ -537,6 +544,12 @@
     background-image:
         radial-gradient(circle at 20% 80%, rgba(124,58,237,0.05) 0%, transparent 50%),
         radial-gradient(circle at 80% 20%, rgba(233,30,140,0.05) 0%, transparent 50%);
+}
+
+@media (max-width: 768px) {
+    .messages-area {
+        padding-bottom: 90px; /* Extra clearance for camera-btn and mobile keyboard */
+    }
 }
 
 /* Message Bubbles */
@@ -942,9 +955,9 @@
    ================================================================ */
 @media (max-width: 768px) {
     .chat-layout {
-        grid-template-columns: 1fr;
+        display: block; /* Avoid grid line bugs on some mobile browsers */
     }
-    .chat-sidebar  { width: 100%; }
+    .chat-sidebar  { width: 100%; height: 100%; }
 
     .chat-window-container {
         position: fixed;

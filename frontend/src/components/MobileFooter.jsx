@@ -6,11 +6,12 @@ import '../styles/MobileFooter.css';
 
 const MobileFooter = () => {
     const navItems = [
-        { path: '/', label: 'Home', icon: <Home size={20} /> },
-        { path: '/chat', label: 'Chats', icon: <MessageCircle size={20} /> },
-        { path: '/music', label: 'Music', icon: <Music size={20} /> },
-        { path: '/podcasts', label: 'Cast', icon: <Mic size={20} /> },
-        { path: '/ebooks', label: 'Books', icon: <BookOpen size={20} /> },
+        { path: '/', label: 'Home', icon: <Home size={18} /> },
+        { path: '/chat', label: 'Chat', icon: <MessageCircle size={18} /> },
+        { path: '/music', label: 'Music', icon: <Music size={18} /> },
+        { path: '/podcasts', label: 'Cast', icon: <Mic size={18} /> },
+        { path: '/ebooks', label: 'Book', icon: <BookOpen size={18} /> },
+        { path: '/settings', label: 'Set', icon: <Settings size={18} /> },
     ];
 
     return (
