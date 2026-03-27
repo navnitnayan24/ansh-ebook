@@ -29,24 +29,32 @@ const ChatPage = () => {
 
             const userRes = await searchUsers();
             setUsers(userRes.data);
-            
-            // Handle Join Code from URL
-            const params = new URLSearchParams(location.search);
-            const joinCode = params.get('join');
-            if (joinCode) {
-                try {
-                    const res = await joinGroupByCode(joinCode.toUpperCase());
-                    setSelectedChat(res.data);
-                    // Clear the query param without refreshing
-                    navigate('/chat', { replace: true });
-                } catch (err) {
-                    alert("Join link invalid or expired");
-                }
-            }
         } catch (err) {
             console.error("Failed to load chat data:", err);
         }
     };
+
+    useEffect(() => {
+        const handleJoinLink = async () => {
+            const params = new URLSearchParams(location.search);
+            const joinCode = params.get('join');
+            if (joinCode) {
+                // Clear param immediately to prevent loops
+                navigate('/chat', { replace: true });
+                
+                if (window.confirm(`Do you want to join this group?`)) {
+                    try {
+                        const res = await joinGroupByCode(joinCode.toUpperCase());
+                        setSelectedChat(res.data);
+                        loadData(); // Refresh list
+                    } catch (err) {
+                        alert("Join link invalid or expired");
+                    }
+                }
+            }
+        };
+        handleJoinLink();
+    }, [location.search]);
 
     useEffect(() => {
         loadData();

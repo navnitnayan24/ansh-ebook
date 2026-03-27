@@ -125,7 +125,9 @@ const MessageInput = ({ chatId, receiverId, setMessages }) => {
 
     const handleTyping = (e) => {
         setText(e.target.value);
-        socket.emit('typing', { chatId, isTyping: e.target.value.length > 0 });
+        if (chatId && !chatId.startsWith('new-')) {
+            socket.emit('typing', { chatId, isTyping: e.target.value.length > 0 });
+        }
     };
 
     return (

@@ -32,7 +32,7 @@ const ChatWindow = ({ chat }) => {
     };
 
     useEffect(() => {
-        if (chat._id && socket) {
+        if (chat._id && !chat._id.startsWith('new-') && socket) {
             socket.emit('mark-seen', { chatId: chat._id });
         }
     }, [chat._id, messages.length]);
