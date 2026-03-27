@@ -135,8 +135,9 @@ export const removeFromMusicPlaylist = (playlistId, songId) => API.delete(`music
 export const fetchChats = () => API.get('realtime/chats');
 export const fetchMessages = (chatId) => API.get(`realtime/messages/${chatId}`);
 export const findOrCreateChat = (userId) => API.post('realtime/chats', { userId });
-export const createGroupChat = (data) => API.post('realtime/chats/groups', data);
-export const pinMessage = (chatId, messageId) => API.post('realtime/chats/pin', { chatId, messageId });
+export const createGroupChat = (data) => API.post('realtime/groups', data);
+export const addMember = (data) => API.post('realtime/add-member', data);
+export const pinMessage = (data) => API.post('realtime/pin', data);
 
 export { API };
 export default API;

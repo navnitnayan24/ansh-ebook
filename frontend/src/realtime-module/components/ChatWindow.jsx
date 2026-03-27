@@ -181,7 +181,16 @@ const ChatWindow = ({ chat }) => {
 
             <MessageInput chatId={chat._id} receiverId={otherUser?._id} setMessages={setMessages} />
 
-            {showInfo && <GroupInfoView chat={chat} onClose={() => setShowInfo(false)} />}
+            {showInfo && <GroupInfoView 
+                chat={chat} 
+                onClose={() => setShowInfo(false)} 
+                onUpdate={(updatedChat) => {
+                    // This will ideally be handled by a parent state or the chat object itself
+                    // For now, we update the local chat object reference if possible
+                    Object.assign(chat, updatedChat);
+                    setShowInfo(false);
+                }}
+            />}
         </div>
     );
 };

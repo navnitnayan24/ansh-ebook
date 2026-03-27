@@ -6,7 +6,7 @@ const User = require('../../models/User');
 exports.getChats = async (req, res) => {
     try {
         const chats = await Chat.find({ participants: req.user.id })
-            .populate('participants', 'username profile_pic')
+            .populate('participants', 'username profile_pic _id')
             .populate('lastMessage')
             .sort({ updatedAt: -1 });
         res.json(chats);
@@ -19,7 +19,7 @@ exports.getChats = async (req, res) => {
 exports.getMessages = async (req, res) => {
     try {
         const messages = await Message.find({ chat: req.params.chatId })
-            .populate('sender', 'username profile_pic')
+            .populate('sender', 'username profile_pic _id')
             .sort({ createdAt: 1 });
         res.json(messages);
     } catch (err) {
@@ -35,7 +35,7 @@ exports.findOrCreateChat = async (req, res) => {
             isGroup: false,
             participants: { $all: [req.user.id, userId], $size: 2 }
         })
-        .populate('participants', 'username profile_pic')
+        .populate('participants', 'username profile_pic _id')
         .populate('lastMessage');
 
         if (!chat) {
@@ -43,7 +43,7 @@ exports.findOrCreateChat = async (req, res) => {
                 participants: [req.user.id, userId],
                 isGroup: false
             });
-            chat = await chat.populate('participants', 'username profile_pic');
+            chat = await chat.populate('participants', 'username profile_pic _id');
         }
         res.json(chat);
     } catch (err) {
@@ -63,7 +63,7 @@ exports.createGroupChat = async (req, res) => {
             description,
             admin: req.user.id
         });
-        const populatedChat = await chat.populate('participants', 'username profile_pic');
+        const populatedChat = await chat.populate('participants', 'username profile_pic _id');
         res.json(populatedChat);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -75,8 +75,34 @@ exports.pinMessage = async (req, res) => {
     const { chatId, messageId } = req.body;
     try {
         const chat = await Chat.findByIdAndUpdate(chatId, { pinnedMessage: messageId }, { new: true })
-            .populate('pinnedMessage');
+            .populate('pinnedMessage')
+            .populate('participants', 'username profile_pic _id');
         res.json(chat);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// Add a member to a group
+exports.addMemberToGroup = async (req, res) => {
+    const { chatId, userId } = req.body;
+    try {
+        const chat = await Chat.findById(chatId);
+        if (!chat) return res.status(404).json({ error: 'Chat not found' });
+        
+        // Check if requester is admin
+        if (chat.admin.toString() !== req.user.id) {
+            return res.status(403).json({ error: 'Only admins can add members' });
+        }
+
+        // Add if not already a participant
+        if (!chat.participants.includes(userId)) {
+            chat.participants.push(userId);
+            await chat.save();
+        }
+        
+        const populatedChat = await chat.populate('participants', 'username profile_pic _id');
+        res.json(populatedChat);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -85,7 +111,9 @@ exports.pinMessage = async (req, res) => {
 // Get all users for chat discovery
 exports.getUsers = async (req, res) => {
     try {
-        const users = await User.find({}, 'username profile_pic _id')
+        const { q } = req.query;
+        const query = q ? { username: { $regex: q, $options: 'i' } } : {};
+        const users = await User.find(query, 'username profile_pic _id')
             .limit(100);
         res.json(users);
     } catch (err) {
