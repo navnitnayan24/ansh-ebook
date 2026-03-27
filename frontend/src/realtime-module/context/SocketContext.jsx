@@ -57,12 +57,28 @@ export const SocketProvider = ({ children }) => {
             if (call.type === 'video') constraints.video = true;
             
             console.log("Answering call with constraints:", constraints);
-            const currentStream = await navigator.mediaDevices.getUserMedia(constraints);
+            let currentStream;
+            try {
+                currentStream = await navigator.mediaDevices.getUserMedia(constraints);
+            } catch (mediaErr) {
+                console.error("Answer Call - getUserMedia Failed:", mediaErr);
+                handleMediaError(mediaErr, "getUserMedia");
+                return;
+            }
+
             setStream(currentStream);
             if (myVideoRef.current) myVideoRef.current.srcObject = currentStream;
 
             setCallAccepted(true);
-            const peer = new Peer({ initiator: false, trickle: false, stream: currentStream });
+            
+            let peer;
+            try {
+                peer = new Peer({ initiator: false, trickle: false, stream: currentStream });
+            } catch (peerErr) {
+                console.error("Answer Call - Peer Constructor Failed:", peerErr);
+                alert("Call Library Error: " + peerErr.message);
+                return;
+            }
 
             peer.on('signal', (data) => {
                 socket.emit('accept-call', { signal: data, to: call.from });
@@ -75,13 +91,13 @@ export const SocketProvider = ({ children }) => {
             peer.signal(call.signal);
             connectionRefCurrent.current = peer;
         } catch (err) {
-            console.error("Failed to answer call:", err);
-            handleMediaError(err);
+            console.error("Unexpected Answer Call Error:", err);
+            handleMediaError(err, "Unexpected");
         }
     };
 
-    const handleMediaError = (err) => {
-        console.error("🔴 Media Error Detail:", {
+    const handleMediaError = (err, phase = "") => {
+        console.error(`🔴 Media Error [${phase}]:`, {
             name: err.name,
             message: err.message,
             stack: err.stack,
@@ -89,8 +105,10 @@ export const SocketProvider = ({ children }) => {
             origin: window.location.origin
         });
         
+        const contextMsg = window.isSecureContext ? " (Secure Context: Yes)" : " (INSECURE CONTEXT: NO HTTPS)";
+        
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-            alert("Call Failed: Insecure connection (HTTPS required) or unsupported browser. Current Context: " + (window.isSecureContext ? "Secure" : "INSECURE"));
+            alert("Call Failed: Insecure connection (HTTPS required). Browser blocked access." + contextMsg);
         } else if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
             alert("Permission Denied: Please allow camera/mic access in your browser settings.");
         } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
@@ -98,9 +116,9 @@ export const SocketProvider = ({ children }) => {
         } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError' || err.name === 'AbortError') {
             alert("Hardware Busy: Camera/Mic is being used by another app.");
         } else if (err.name === 'TypeError') {
-            alert("Call Error (TypeError): Check if you have a camera/mic plugged in and you are using HTTPS.");
+            alert(`Call Error (TypeError) at ${phase}: Potential browser restriction. Ensure HTTPS and valid hardware.` + contextMsg);
         } else {
-            alert(`Call Error: ${err.message || err.name}. Please ensure you are on HTTPS.`);
+            alert(`Call Error at ${phase}: ${err.message || err.name}. Please ensure you are on HTTPS.`);
         }
     };
 
@@ -110,11 +128,26 @@ export const SocketProvider = ({ children }) => {
             if (type === 'video') constraints.video = true;
 
             console.log("Initiating call with constraints:", constraints);
-            const currentStream = await navigator.mediaDevices.getUserMedia(constraints);
+            let currentStream;
+            try {
+                currentStream = await navigator.mediaDevices.getUserMedia(constraints);
+            } catch (mediaErr) {
+                console.error("Make Call - getUserMedia Failed:", mediaErr);
+                handleMediaError(mediaErr, "getUserMedia");
+                return;
+            }
+
             setStream(currentStream);
             if (myVideoRef.current) myVideoRef.current.srcObject = currentStream;
 
-            const peer = new Peer({ initiator: true, trickle: false, stream: currentStream });
+            let peer;
+            try {
+                peer = new Peer({ initiator: true, trickle: false, stream: currentStream });
+            } catch (peerErr) {
+                console.error("Make Call - Peer Constructor Failed:", peerErr);
+                alert("Call Library Error: " + peerErr.message);
+                return;
+            }
 
             const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
             const currentUserId = currentUser.id || currentUser._id;
@@ -141,9 +174,8 @@ export const SocketProvider = ({ children }) => {
             connectionRefCurrent.current = peer;
             setCall({ isReceivingCall: false, from: id, type, isCalling: true });
         } catch (err) {
-            console.error("Failed to make call:", err);
+            console.error("Unexpected Make Call Error:", err);
             
-            // Auto-fallback: If video failed, try audio only automatically
             if (type === 'video') {
                 try {
                     console.log("Attempting audio-only fallback after video failure...");
@@ -164,10 +196,10 @@ export const SocketProvider = ({ children }) => {
                     setCall({ isReceivingCall: false, from: id, type: 'audio', isCalling: true });
                     return;
                 } catch (audioErr) {
-                    handleMediaError(audioErr);
+                    handleMediaError(audioErr, "Auto-Fallback");
                 }
             } else {
-                handleMediaError(err);
+                handleMediaError(err, "Unexpected");
             }
         }
     };
