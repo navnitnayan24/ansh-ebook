@@ -4,7 +4,7 @@ import { createGroupChat, joinGroupByCode } from '../../api';
 import { useSocket } from '../context/SocketContext';
 import { getAvatarUrl, maskEmail } from '../../config';
 
-const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat }) => {
+const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef }) => {
     const [search, setSearch] = useState('');
     const [typingStatus, setTypingStatus] = useState({}); // chatId -> isTyping
     const { socket, onlineUsers } = useSocket();
@@ -117,6 +117,7 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat }) => {
                 <div className="search-container-modern">
                     <Search size={18} className="search-icon-chat" />
                     <input 
+                        ref={searchRef}
                         type="text" 
                         placeholder="Search chats or find people..." 
                         value={search}

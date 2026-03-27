@@ -13,6 +13,11 @@ const ChatPage = () => {
     const [users, setUsers] = useState([]);
     const [chats, setChats] = useState([]);
     const { socket, call } = useSocket();
+    const searchRef = React.useRef(null);
+
+    const handleStartChatting = () => {
+        searchRef.current?.focus();
+    };
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -76,6 +81,7 @@ const ChatPage = () => {
                     users={users} 
                     setSelectedChat={setSelectedChat} 
                     selectedChat={selectedChat} 
+                    searchRef={searchRef}
                 />
                 
                 <div className={`chat-window-container ${selectedChat ? 'active' : ''}`}>
@@ -91,7 +97,7 @@ const ChatPage = () => {
                             <div className="chat-welcome-icon">💎</div>
                             <h2>Kohinoor Premium</h2>
                             <p className="muted-text">Real-time collaboration & private messaging</p>
-                            <button className="btn-premium-start" onClick={() => {/* Search trigger */}}>
+                            <button className="btn-premium-start" onClick={handleStartChatting}>
                                 Start a conversation
                             </button>
                         </div>
