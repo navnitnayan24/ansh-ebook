@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Moon, Sun, Send, Users } from 'lucide-react';
 import { useSocket } from '../context/SocketContext';
-import { getAvatarUrl } from '../../config';
+import { getAvatarUrl, maskEmail } from '../../config';
 
 const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat }) => {
     const [search, setSearch] = useState('');
@@ -34,12 +34,6 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat }) => {
 
     const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark');
 
-    const formatUsername = (name) => {
-        if (!name) return 'User';
-        if (name.includes('@')) return name.split('@')[0];
-        return name;
-    };
-
     // Filter active chats by search
     const filteredChats = chats.filter(chat => {
         if (chat.isGroup) {
@@ -59,15 +53,15 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat }) => {
     return (
         <div className="chat-sidebar">
             <div className="sidebar-header">
-                <div className="flex-between align-center mb-15">
-                    <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div className="header-top-row">
+                    <h3 className="sidebar-title">
                         Messages <span className="badge-premium">REALTIME</span>
                     </h3>
                     <button className="theme-toggle-btn" onClick={toggleTheme}>
                         {theme === 'dark' ? <Sun size={20}/> : <Moon size={20}/>}
                     </button>
                 </div>
-                <div className="search-bar-chat">
+                <div className="search-container-modern">
                     <Search size={18} className="search-icon-chat" />
                     <input 
                         type="text" 
@@ -99,7 +93,7 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat }) => {
                                 ) : (
                                     <img 
                                         src={getAvatarUrl(otherParticipant?.profile_pic, otherParticipant?.username)} 
-                                        alt="avatar" 
+                                        alt={maskEmail(otherParticipant?.username)} 
                                         onError={(e) => { e.target.src = getAvatarUrl(null, otherParticipant?.username); }}
                                     />
                                 )}
@@ -108,7 +102,7 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat }) => {
                             <div className="user-info">
                                 <div className="user-name-row">
                                     <span className="user-name">
-                                        {chat.isGroup ? (chat.name || 'Kohinoor Group') : formatUsername(otherParticipant?.username)}
+                                        {chat.isGroup ? (chat.name || 'Kohinoor Group') : maskEmail(otherParticipant?.username)}
                                     </span>
                                     {unreadCount > 0 && <span className="unread-badge">{unreadCount}</span>}
                                 </div>
@@ -137,13 +131,13 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat }) => {
                                 <div className="user-avatar-wrapper">
                                     <img 
                                         src={getAvatarUrl(user.profile_pic, user.username)} 
-                                        alt={user.username} 
+                                        alt={maskEmail(user.username)} 
                                         onError={(e) => { e.target.src = getAvatarUrl(null, user.username); }}
                                     />
                                     <span className={`status-dot ${onlineUsers[user._id] === 'online' ? 'online' : 'offline'}`}></span>
                                 </div>
                                 <div className="user-info">
-                                    <span className="user-name">{formatUsername(user.username)}</span>
+                                    <span className="user-name">{maskEmail(user.username)}</span>
                                     <span className="user-status-online">Available for chat</span>
                                 </div>
                                 <div className="quick-action-icon">

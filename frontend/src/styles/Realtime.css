@@ -39,14 +39,54 @@
 
 .sidebar-header {
     padding: 20px;
+    background: rgba(255, 255, 255, 0.03);
     border-bottom: 1px solid var(--glass-border);
 }
 
-.sidebar-header h3 {
-    font-size: 1.5rem;
-    font-weight: 800;
-    margin-bottom: 20px;
-    color: #fff;
+.header-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.sidebar-title {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.search-container-modern {
+    position: relative;
+    width: 100%;
+}
+
+.search-container-modern input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 10px 10px 10px 40px;
+    color: white;
+    font-size: 0.9rem;
+    transition: 0.3s;
+}
+
+.search-container-modern input:focus {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--accent-pink);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 20, 147, 0.1);
+}
+
+.search-icon-chat {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.4;
+    pointer-events: none;
+    z-index: 5;
 }
 
 /* Chat Window - Kohinoor Theme */

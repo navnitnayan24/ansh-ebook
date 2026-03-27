@@ -10,9 +10,18 @@ if (import.meta.env.DEV) {
 }
 export const MEDIA_URL = parsedMediaUrl;
 
+export const maskEmail = (name) => {
+    if (!name) return 'User';
+    if (typeof name === 'string' && name.includes('@')) return name.split('@')[0];
+    return name;
+};
+
 export const getAvatarUrl = (pic, username = 'U') => {
-    const fallback = `https://ui-avatars.com/api/?name=${username || 'U'}&background=random&color=fff`;
-    if (!pic) return fallback;
+    // Sanitized name for third party services like ui-avatars to prevent email leakage in URLs
+    const safeName = maskEmail(username);
+    const fallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(safeName || 'U')}&background=random&color=fff`;
+    
+    if (!pic || pic === 'default-avatar.png' || pic.includes('default')) return fallback;
     
     let rawPic = pic;
     // Normalize paths from different OS formats
