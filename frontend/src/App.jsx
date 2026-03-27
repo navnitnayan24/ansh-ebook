@@ -60,6 +60,9 @@ const Layout = ({ children }) => {
 
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
     const closeMenu = () => setIsMenuOpen(false);
+    
+    const location = useLocation();
+    const isChatPage = location.pathname === '/chat';
 
     return (
         <div className="app-wrapper">
@@ -68,7 +71,7 @@ const Layout = ({ children }) => {
                 {!isMobile && <Sidebar />}
                 <div className={`main-layout ${!isMobile ? 'desktop-with-sidebar' : ''}`}>
                     <main className="content-fluid">{children}</main>
-                    <Footer />
+                    {!isChatPage && <Footer />}
                 </div>
             </div>
             {isMobile && <MobileFooter />}
