@@ -102,6 +102,14 @@ exports.addMemberToGroup = async (req, res) => {
         }
         
         const populatedChat = await chat.populate('participants', 'username profile_pic _id');
+        
+        // Notify the added user via socket
+        const { getIo } = require('../socket');
+        const io = getIo();
+        if (io) {
+            io.to(userId.toString()).emit('chat-added', populatedChat);
+        }
+
         res.json(populatedChat);
     } catch (err) {
         res.status(500).json({ error: err.message });

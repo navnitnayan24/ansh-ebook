@@ -3,10 +3,12 @@ const jwt = require('jsonwebtoken');
 const Message = require('./models/message.model');
 const Chat = require('./models/chat.model');
 
+let io;
+
 const setupSocket = (server) => {
-    const io = new Server(server, {
+    io = new Server(server, {
         cors: {
-            origin: "*", // Adjust for production
+            origin: "*",
             methods: ["GET", "POST"]
         }
     });
@@ -96,7 +98,7 @@ const setupSocket = (server) => {
                 if (!chat.isGroup && receiverId && onlineUsers.has(receiverId)) {
                     message.status = 'delivered';
                     await message.save();
-                    io.to(chatId.toString()).emit('message-delivered', { messageId: message._id, chatId });
+                    io.to(roomName).emit('message-delivered', { messageId: message._id, chatId });
                 }
 
             } catch (err) {
@@ -119,6 +121,12 @@ const setupSocket = (server) => {
                     { chat: chatId, sender: { $ne: userId }, status: { $ne: 'seen' } },
                     { status: 'seen' }
                 );
+                
+                // Reset unread count for this user in this chat
+                await Chat.findByIdAndUpdate(chatId, {
+                    $set: { [`unreadCount.${userId}`]: 0 }
+                });
+
                 // Notify the room that messages were seen by this user
                 io.to(chatId.toString()).emit('messages-seen', { chatId, seenBy: userId });
             } catch (err) {
@@ -126,7 +134,7 @@ const setupSocket = (server) => {
             }
         });
 
-        // WebRTC Signaling (remains mostly same, but uses receiverId for direct signaling)
+        // WebRTC Signaling
         socket.on('call-user', (data) => {
             const { userToCall, signalData, from, type } = data;
             io.to(userToCall).emit('hey-calling', { signal: signalData, from, type });
@@ -150,4 +158,8 @@ const setupSocket = (server) => {
     return io;
 };
 
+// Helper for controllers to emit global events
+const getIo = () => io;
+
 module.exports = setupSocket;
+module.exports.getIo = getIo;

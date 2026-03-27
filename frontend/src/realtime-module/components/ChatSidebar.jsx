@@ -5,11 +5,27 @@ import { getAvatarUrl } from '../../config';
 
 const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat }) => {
     const [search, setSearch] = useState('');
-    const { onlineUsers } = useSocket();
+    const [typingStatus, setTypingStatus] = useState({}); // chatId -> isTyping
+    const { socket, onlineUsers } = useSocket();
     const [theme, setTheme] = useState(localStorage.getItem('chat-theme') || 'dark');
 
     const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
     const currentUserId = currentUser.id || currentUser._id;
+
+    useEffect(() => {
+        if (!socket) return;
+
+        socket.on('user-typing', (data) => {
+            setTypingStatus(prev => ({
+                ...prev,
+                [data.chatId]: data.isTyping
+            }));
+        });
+
+        return () => {
+            socket.off('user-typing');
+        };
+    }, [socket]);
 
     useEffect(() => {
         document.documentElement.setAttribute('data-chat-theme', theme);
@@ -68,6 +84,8 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat }) => {
                     const otherParticipant = !chat.isGroup ? chat.participants.find(p => p._id !== currentUserId) : null;
                     const isSelected = selectedChat?._id === chat._id;
                     const isOnline = !chat.isGroup && onlineUsers[otherParticipant?._id] === 'online';
+                    const unreadCount = chat.unreadCount?.[currentUserId] || 0;
+                    const isTyping = typingStatus[chat._id];
 
                     return (
                         <div 
@@ -88,11 +106,14 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat }) => {
                                 {!chat.isGroup && <span className={`status-dot ${isOnline ? 'online' : 'offline'}`}></span>}
                             </div>
                             <div className="user-info">
-                                <span className="user-name">
-                                    {chat.isGroup ? (chat.name || 'Kohinoor Group') : formatUsername(otherParticipant?.username)}
-                                </span>
-                                <span className="last-message-preview">
-                                    {chat.lastMessage?.text || (chat.isGroup ? 'Group Chat' : 'Start chatting')}
+                                <div className="user-name-row">
+                                    <span className="user-name">
+                                        {chat.isGroup ? (chat.name || 'Kohinoor Group') : formatUsername(otherParticipant?.username)}
+                                    </span>
+                                    {unreadCount > 0 && <span className="unread-badge">{unreadCount}</span>}
+                                </div>
+                                <span className={`last-message-preview ${isTyping ? 'is-typing' : ''}`}>
+                                    {isTyping ? 'typing...' : (chat.lastMessage?.text || (chat.isGroup ? 'Group Chat' : 'Start chatting'))}
                                 </span>
                             </div>
                         </div>

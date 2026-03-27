@@ -33,12 +33,14 @@ const ChatPage = () => {
         if (socket) {
             socket.on('receive-message', () => loadData());
             socket.on('chat-created', () => loadData());
+            socket.on('chat-added', () => loadData());
         }
 
         return () => {
             if (socket) {
                 socket.off('receive-message');
                 socket.off('chat-created');
+                socket.off('chat-added');
             }
         };
     }, [socket]);
