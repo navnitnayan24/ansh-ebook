@@ -53,7 +53,14 @@ export const SocketProvider = ({ children }) => {
 
     const answerCall = async () => {
         try {
-            const currentStream = await navigator.mediaDevices.getUserMedia({ video: call.type === 'video', audio: true });
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            const hasVideo = devices.some(d => d.kind === 'videoinput');
+            const requestVideo = call.type === 'video' && hasVideo;
+
+            const currentStream = await navigator.mediaDevices.getUserMedia({ 
+                video: requestVideo, 
+                audio: true 
+            });
             setStream(currentStream);
             if (myVideoRef.current) myVideoRef.current.srcObject = currentStream;
 
@@ -71,14 +78,45 @@ export const SocketProvider = ({ children }) => {
             peer.signal(call.signal);
             connectionRefCurrent.current = peer;
         } catch (err) {
-            console.error("Failed to get media stream:", err);
-            alert("Please allow camera/mic access to answer the call.");
+            console.error("Failed to answer call:", err);
+            handleMediaError(err);
+        }
+    };
+
+    const handleMediaError = (err) => {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            alert("Call Failed: Your browser does not support audio/video calls or you are in an insecure connection (requires HTTPS).");
+        } else if (err.name === 'NotAllowedError') {
+            alert("Permission Denied: Please allow camera/mic access in your browser settings to continue.");
+        } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+            alert("Hardware Not Found: We couldn't find a camera or microphone. Please check your connections.");
+        } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
+            alert("Hardware Busy: Your camera or microphone is being used by another app. Please close other apps and try again.");
+        } else {
+            alert(`Call Error (${err.name}): Could not access media devices. Ensure you use HTTPS and no other app is using the camera.`);
         }
     };
 
     const callUser = async (id, type) => {
         try {
-            const currentStream = await navigator.mediaDevices.getUserMedia({ video: type === 'video', audio: true });
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            const hasVideo = devices.some(d => d.kind === 'videoinput');
+            const hasAudio = devices.some(d => d.kind === 'audioinput');
+
+            if (!hasAudio) {
+                alert("Microphone not found. You need a microphone to make a call.");
+                return;
+            }
+
+            const requestVideo = type === 'video' && hasVideo;
+            if (type === 'video' && !hasVideo) {
+                alert("Camera not found. Starting an audio-only call.");
+            }
+
+            const currentStream = await navigator.mediaDevices.getUserMedia({ 
+                video: requestVideo, 
+                audio: true 
+            });
             setStream(currentStream);
             if (myVideoRef.current) myVideoRef.current.srcObject = currentStream;
 
@@ -91,7 +129,7 @@ export const SocketProvider = ({ children }) => {
                 socket.emit('call-user', { 
                     userToCall: id, 
                     signalData: data, 
-                    from: currentUserId, // Use persistent userId instead of transient socket.id
+                    from: currentUserId,
                     name: currentUser.username, 
                     type 
                 });
@@ -107,16 +145,10 @@ export const SocketProvider = ({ children }) => {
             });
 
             connectionRefCurrent.current = peer;
-            setCall({ isReceivingCall: false, from: id, type, isCalling: true }); // Mark as calling
+            setCall({ isReceivingCall: false, from: id, type: requestVideo ? 'video' : 'audio', isCalling: true });
         } catch (err) {
-            console.error("Failed to get media stream:", err);
-            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                alert("Call Failed: Your browser does not support audio/video calls or you are in an insecure connection.");
-            } else if (err.name === 'NotAllowedError') {
-                alert("Permission Denied: Please allow camera/mic access in your browser settings to make a call.");
-            } else {
-                alert("Call Error: Could not access camera/microphone. Ensure no other app is using them.");
-            }
+            console.error("Failed to make call:", err);
+            handleMediaError(err);
         }
     };
 
