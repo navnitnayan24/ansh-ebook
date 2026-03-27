@@ -141,7 +141,12 @@ async function startServer() {
         });
 
         // Realtime Module Socket Hook
+        const chatController = require('./realtime-module/controllers/chat.controller');
         require('./realtime-module/socket')(server);
+        
+        // --- PERMANENT GROUP SEEDING ---
+        console.log('💎 Validating Premium Group Status...');
+        await chatController.seedKohinoorGroup();
 
         server.timeout = 600000;
 

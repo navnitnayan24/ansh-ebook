@@ -9,5 +9,7 @@ router.get('/chats', chatController.getChats);
 router.get('/messages/:chatId', chatController.getMessages);
 router.get('/users', chatController.getUsers);
 router.post('/chats', chatController.findOrCreateChat);
+router.post('/groups', chatController.createGroupChat);
+router.post('/pin', chatController.pinMessage);
 
 module.exports = router;

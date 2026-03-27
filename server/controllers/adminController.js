@@ -22,16 +22,21 @@ exports.getCloudinarySignature = (req, res) => {
     try {
         const cloudinary = require('cloudinary').v2;
         const timestamp = Math.round((new Date()).getTime() / 1000);
+        
+        const cloudName = process.env.CLOUDINARY_CLOUD_NAME || 'datao7ela';
+        const apiKey = process.env.CLOUDINARY_API_KEY || '367996669885499';
+        const apiSecret = process.env.CLOUDINARY_API_SECRET || '2eH_KFosTqgBvhlZruG-2kbKIBA';
+
         const signature = cloudinary.utils.api_sign_request({ 
             timestamp: timestamp,
             access_mode: 'public'
-        }, process.env.CLOUDINARY_API_SECRET);
+        }, apiSecret);
         
         res.json({ 
             signature, 
             timestamp, 
-            cloudName: process.env.CLOUDINARY_CLOUD_NAME,
-            apiKey: process.env.CLOUDINARY_API_KEY
+            cloudName,
+            apiKey
         });
     } catch (err) {
         res.status(500).json({ error: 'Failed to generate signature' });

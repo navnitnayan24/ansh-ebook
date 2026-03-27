@@ -1,6 +1,6 @@
 const Chat = require('../models/chat.model');
 const Message = require('../models/message.model');
-const User = require('../../models/User'); // Reusing existing user model
+const User = require('../../models/User');
 
 // Get all chats for the current user
 exports.getChats = async (req, res) => {
@@ -29,16 +29,21 @@ exports.getMessages = async (req, res) => {
 
 // Find or Create a one-to-one chat
 exports.findOrCreateChat = async (req, res) => {
-    const { userId } = req.body; // ID of the other person
+    const { userId } = req.body;
     try {
         let chat = await Chat.findOne({
+            isGroup: false,
             participants: { $all: [req.user.id, userId], $size: 2 }
-        });
+        })
+        .populate('participants', 'username profile_pic')
+        .populate('lastMessage');
 
         if (!chat) {
             chat = await Chat.create({
-                participants: [req.user.id, userId]
+                participants: [req.user.id, userId],
+                isGroup: false
             });
+            chat = await chat.populate('participants', 'username profile_pic');
         }
         res.json(chat);
     } catch (err) {
@@ -46,13 +51,74 @@ exports.findOrCreateChat = async (req, res) => {
     }
 };
 
-// Get all users for chat discovery (Privacy-safe: No emails)
+// Create a group chat
+exports.createGroupChat = async (req, res) => {
+    const { name, participants, groupIcon, description } = req.body;
+    try {
+        const chat = await Chat.create({
+            name,
+            participants: [...participants, req.user.id],
+            isGroup: true,
+            groupIcon: groupIcon || 'https://res.cloudinary.com/datao7ela/image/upload/v1711516000/default-group_vqc6vz.png',
+            description,
+            admin: req.user.id
+        });
+        const populatedChat = await chat.populate('participants', 'username profile_pic');
+        res.json(populatedChat);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// Pin a message
+exports.pinMessage = async (req, res) => {
+    const { chatId, messageId } = req.body;
+    try {
+        const chat = await Chat.findByIdAndUpdate(chatId, { pinnedMessage: messageId }, { new: true })
+            .populate('pinnedMessage');
+        res.json(chat);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// Get all users for chat discovery
 exports.getUsers = async (req, res) => {
     try {
         const users = await User.find({}, 'username profile_pic _id')
-            .limit(100); // Sensible limit
+            .limit(100);
         res.json(users);
     } catch (err) {
         res.status(500).json({ error: err.message });
+    }
+};
+
+// Seed Kohinoor Group (Internal)
+exports.seedKohinoorGroup = async () => {
+    try {
+        const existing = await Chat.findOne({ name: /Kohinoor/i, isGroup: true });
+        if (existing) {
+            console.log('💎 Kohinoor Group already exists. Skipping seed.');
+            return;
+        }
+
+        // Find an admin user to be the owner
+        const admin = await User.findOne({ role: 'admin' }) || await User.findOne();
+        if (!admin) {
+            console.log('⚠️ No users found to assign as Kohinoor admin. Skipping seed.');
+            return;
+        }
+
+        const chat = await Chat.create({
+            name: '🔥 🌹 Kohinoor 🌹 🔥',
+            description: 'Premium real-time collaboration & private messaging for the Ansh Ebook community.',
+            participants: [admin._id],
+            isGroup: true,
+            groupIcon: 'https://res.cloudinary.com/datao7ela/image/upload/v1711516000/default-group_vqc6vz.png',
+            admin: admin._id
+        });
+        console.log('✅ Kohinoor Group seeded successfully.');
+    } catch (err) {
+        console.error('❌ Error seeding Kohinoor group:', err);
     }
 };

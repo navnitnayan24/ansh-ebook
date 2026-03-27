@@ -25,13 +25,23 @@ const setupSocket = (server) => {
 
     const onlineUsers = new Map(); // userId -> socketId
 
-    io.on('connection', (socket) => {
+    io.on('connection', async (socket) => {
         const userId = socket.user.id;
         onlineUsers.set(userId, socket.id);
         console.log(`User connected: ${userId}`);
 
-        // Join a private room for the user
+        // Join a private room for the user (for individual notifications/calls)
         socket.join(userId);
+
+        // Join rooms for all chats the user is part of
+        try {
+            const userChats = await Chat.find({ participants: userId });
+            userChats.forEach(chat => {
+                socket.join(chat._id.toString());
+            });
+        } catch (err) {
+            console.error("Error joining chat rooms:", err);
+        }
 
         // Mark any 'sent' messages to 'delivered' now that they are online
         const markDelivered = async () => {
@@ -39,7 +49,6 @@ const setupSocket = (server) => {
                 { receiverId: userId, status: 'sent' }, 
                 { status: 'delivered' }
             );
-            // Notify senders? (Optionally for each chat)
         };
         markDelivered();
 
@@ -51,6 +60,9 @@ const setupSocket = (server) => {
             const { chatId, receiverId, text, mediaUrl, mediaType } = data;
             
             try {
+                // Ensure socket is in the room (in case of newly created chat)
+                socket.join(chatId.toString());
+
                 const message = await Message.create({
                     chat: chatId,
                     sender: userId,
@@ -59,21 +71,19 @@ const setupSocket = (server) => {
                     mediaType
                 });
 
-                await Chat.findByIdAndUpdate(chatId, { 
+                const chat = await Chat.findByIdAndUpdate(chatId, { 
                     lastMessage: message._id,
                     $inc: { [`unreadCount.${receiverId}`]: 1 }
-                });
+                }, { new: true });
 
-                // Send to receiver
-                io.to(receiverId).emit('receive-message', message);
-                // Send back to sender (for multi-device sync)
-                io.to(userId).emit('message-sent', message);
-
-                // If receiver is online, mark as delivered immediately
-                if (onlineUsers.has(receiverId)) {
+                // Broadcast to the entire chat room
+                io.to(chatId.toString()).emit('receive-message', message);
+                
+                // If it's a 1-to-1 chat and receiver is online, mark as delivered
+                if (!chat.isGroup && receiverId && onlineUsers.has(receiverId)) {
                     message.status = 'delivered';
                     await message.save();
-                    io.to(userId).emit('message-delivered', { messageId: message._id, chatId });
+                    io.to(chatId.toString()).emit('message-delivered', { messageId: message._id, chatId });
                 }
 
             } catch (err) {
@@ -83,26 +93,27 @@ const setupSocket = (server) => {
 
         // Typing Indicator
         socket.on('typing', (data) => {
-            const { receiverId, isTyping } = data;
-            io.to(receiverId).emit('user-typing', { senderId: userId, isTyping });
+            const { chatId, isTyping } = data;
+            // Emit to the room, excluding the sender
+            socket.to(chatId.toString()).emit('user-typing', { senderId: userId, isTyping, chatId });
         });
 
         // Mark Messages as Seen
         socket.on('mark-seen', async (data) => {
-            const { chatId, senderId } = data;
+            const { chatId } = data;
             try {
                 await Message.updateMany(
-                    { chat: chatId, sender: senderId, status: { $ne: 'seen' } },
+                    { chat: chatId, sender: { $ne: userId }, status: { $ne: 'seen' } },
                     { status: 'seen' }
                 );
-                // Notify the sender that their messages were seen
-                io.to(senderId).emit('messages-seen', { chatId, seenBy: userId });
+                // Notify the room that messages were seen by this user
+                io.to(chatId.toString()).emit('messages-seen', { chatId, seenBy: userId });
             } catch (err) {
                 console.error("Mark seen error:", err);
             }
         });
 
-        // WebRTC Signaling
+        // WebRTC Signaling (remains mostly same, but uses receiverId for direct signaling)
         socket.on('call-user', (data) => {
             const { userToCall, signalData, from, type } = data;
             io.to(userToCall).emit('hey-calling', { signal: signalData, from, type });

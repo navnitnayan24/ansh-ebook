@@ -6,6 +6,29 @@ const chatSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     }],
+    isGroup: {
+        type: Boolean,
+        default: false
+    },
+    name: {
+        type: String,
+        trim: true
+    },
+    groupIcon: {
+        type: String
+    },
+    description: {
+        type: String,
+        trim: true
+    },
+    admin: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    },
+    pinnedMessage: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Message'
+    },
     lastMessage: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Message'

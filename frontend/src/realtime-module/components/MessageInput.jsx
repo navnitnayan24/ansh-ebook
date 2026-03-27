@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Send, Image, Mic, Paperclip, Camera } from 'lucide-react';
+import { Send, Image, Mic, Paperclip, Camera, Smile, Plus } from 'lucide-react';
 import { useSocket } from '../context/SocketContext';
 import { findOrCreateChat, fetchCloudinarySignature } from '../../api';
 import CameraModal from './CameraModal';
@@ -124,7 +124,7 @@ const MessageInput = ({ chatId, receiverId, setMessages }) => {
 
     const handleTyping = (e) => {
         setText(e.target.value);
-        socket.emit('typing', { receiverId, isTyping: e.target.value.length > 0 });
+        socket.emit('typing', { chatId, isTyping: e.target.value.length > 0 });
     };
 
     return (
@@ -138,42 +138,35 @@ const MessageInput = ({ chatId, receiverId, setMessages }) => {
                     accept="image/*,video/*,audio/*,.pdf,.doc,.docx"
                 />
                 
-                <button type="button" className="action-icon-btn left" onClick={() => setIsCameraOpen(true)}>
+                {/* Fixed camera button on the left as per screenshot */}
+                <button type="button" className="camera-btn-round" onClick={() => setIsCameraOpen(true)}>
                     <Camera size={20}/>
                 </button>
 
                 <input 
                     type="text" 
                     className="main-chat-input"
-                    placeholder={isUploading ? "Uploading..." : "Type a message..."} 
+                    placeholder={isUploading ? "Uploading..." : "Message..."} 
                     value={text}
                     onChange={handleTyping}
                     disabled={isUploading}
                 />
 
-                <div className="right-actions">
-                    <button type="button" className="action-icon-btn hide-mobile" onClick={() => fileInputRef.current?.click()}>
-                        <Paperclip size={18}/>
-                    </button>
-                    
-                    <button type="button" className="action-icon-btn" onClick={() => fileInputRef.current?.click()}>
-                        <Image size={18}/>
-                    </button>
-                    
-                    {text.trim() ? (
-                        <button type="submit" className="send-btn-minimal send-btn-mobile" disabled={isUploading}>
-                            <Send size={20}/>
-                        </button>
+                <div className="input-actions-right">
+                    {isRecording ? (
+                        <div className="recording-indicator">Recording...</div>
                     ) : (
-                        <button 
-                            type="button" 
-                            className={`action-icon-btn ${isRecording ? 'recording-active' : ''}`}
-                            onMouseDown={startRecording}
-                            onMouseUp={stopRecording}
-                            onTouchStart={startRecording}
-                            onTouchEnd={stopRecording}
-                        >
-                            <Mic size={18}/>
+                        <>
+                            <Mic size={20} className="input-action-icon" onMouseDown={startRecording} onMouseUp={stopRecording} />
+                            <Image size={20} className="input-action-icon" onClick={() => fileInputRef.current?.click()} />
+                            <Smile size={20} className="input-action-icon" />
+                            <Plus size={20} className="input-action-icon" onClick={() => fileInputRef.current?.click()} />
+                        </>
+                    )}
+                    
+                    {text.trim() && (
+                        <button type="submit" className="send-btn-minimal" style={{ marginLeft: '5px' }}>
+                            <Send size={18} />
                         </button>
                     )}
                 </div>

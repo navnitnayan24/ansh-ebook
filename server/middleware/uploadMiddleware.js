@@ -7,13 +7,15 @@ require('dotenv').config();
 
 let storage;
 
-if (process.env.CLOUDINARY_CLOUD_NAME) {
-    console.log('✅ Cloudinary Storage initialized (Production Mode)');
-    cloudinary.config({
-      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-      api_key: process.env.CLOUDINARY_API_KEY,
-      api_secret: process.env.CLOUDINARY_API_SECRET
-    });
+if (process.env.CLOUDINARY_CLOUD_NAME || true) { // Forced true for permanent fix
+    const cloudConfig = {
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'datao7ela',
+      api_key: process.env.CLOUDINARY_API_KEY || '367996669885499',
+      api_secret: process.env.CLOUDINARY_API_SECRET || '2eH_KFosTqgBvhlZruG-2kbKIBA'
+    };
+    
+    console.log(`✅ Cloudinary Storage initialized (${cloudConfig.cloud_name})`);
+    cloudinary.config(cloudConfig);
 
     storage = new CloudinaryStorage({
       cloudinary: cloudinary,

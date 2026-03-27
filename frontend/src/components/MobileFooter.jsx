@@ -6,24 +6,12 @@ import '../styles/MobileFooter.css';
 
 const MobileFooter = () => {
     const navItems = [
-        { path: '/', label: 'Home', icon: <Home size={22} /> },
-        { path: '/music', label: 'Music', icon: <Music size={22} /> },
-        { path: '/podcasts', label: 'Podcast', icon: <Mic size={22} /> },
-        { path: '/chat', label: 'Chat', icon: <MessageCircle size={22} /> },
-        { path: '/ebooks', label: 'E-Books', icon: <BookOpen size={22} /> },
+        { path: '/', label: 'Home', icon: <Home size={20} /> },
+        { path: '/chat', label: 'Chats', icon: <MessageCircle size={20} /> },
+        { path: '/music', label: 'Music', icon: <Music size={20} /> },
+        { path: '/podcasts', label: 'Cast', icon: <Mic size={20} /> },
+        { path: '/ebooks', label: 'Books', icon: <BookOpen size={20} /> },
     ];
-
-    const handleNavClick = (e, item) => {
-        if (item.path.startsWith('/#')) {
-            const id = item.path.substring(2);
-            const element = document.getElementById(id);
-            if (element) {
-                e.preventDefault();
-                element.scrollIntoView({ behavior: 'smooth' });
-                window.history.pushState(null, null, item.path);
-            }
-        }
-    };
 
     return (
         <div className="mobile-footer-wrapper">
@@ -37,6 +25,7 @@ const MobileFooter = () => {
                             className={({isActive}) => `pill-item ${isActive ? 'active' : ''}`}
                         >
                             <span className="pill-icon">{item.icon}</span>
+                            <span className="pill-label">{item.label}</span>
                         </NavLink>
                     ))}
                 </div>

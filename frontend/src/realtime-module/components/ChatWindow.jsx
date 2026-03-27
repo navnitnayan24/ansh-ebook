@@ -1,18 +1,22 @@
 import React, { useState, useEffect, useRef } from 'react';
 import MessageInput from './MessageInput';
+import GroupInfoView from './GroupInfoView';
 import { useSocket } from '../context/SocketContext';
-import { Phone, Video, MoreVertical } from 'lucide-react';
+import { Phone, Video, MoreVertical, Pin } from 'lucide-react';
 import { fetchMessages } from '../../api';
 import { getAvatarUrl } from '../../config';
 
 const ChatWindow = ({ chat }) => {
     const [messages, setMessages] = useState([]);
-    const [isTyping, setIsTyping] = useState(false);
+    const [isTyping, setIsTyping] = useState([]);
+    const [showInfo, setShowInfo] = useState(false);
     const { socket, callUser, onlineUsers } = useSocket();
     const scrollRef = useRef();
     const currentUser = JSON.parse(localStorage.getItem('user'));
     const currentId = currentUser?.id || currentUser?._id;
-    const otherUser = chat.participants.find(p => p._id !== currentId) || {};
+
+    const otherUser = !chat.isGroup ? (chat.participants.find(p => p._id !== currentId) || {}) : null;
+    
     // Reliable public notification sound
     const notificationSound = new Audio('https://res.cloudinary.com/dhpwp898n/video/upload/v1711516000/notification_vqc6vz.mp3'); 
 
@@ -21,14 +25,14 @@ const ChatWindow = ({ chat }) => {
         if (name.includes('@')) return name.split('@')[0];
         return name;
     };
+
     useEffect(() => {
         if (chat._id && socket) {
-            socket.emit('mark-seen', { chatId: chat._id, senderId: otherUser._id });
+            socket.emit('mark-seen', { chatId: chat._id });
         }
     }, [chat._id, messages.length]);
 
     useEffect(() => {
-        // Fetch message history
         if (chat._id && !chat._id.startsWith('new-')) {
             const fetchHistory = async () => {
                 const res = await fetchMessages(chat._id);
@@ -44,46 +48,43 @@ const ChatWindow = ({ chat }) => {
         if (!socket) return;
         
         socket.on('receive-message', (message) => {
-            const isMatch = message.chat === chat._id || 
-                           (chat._id.startsWith('new-') && 
-                            (message.sender === otherUser._id || message.receiverId === otherUser._id));
-            
-            if (isMatch) {
+            if (message.chat === chat._id) {
                 setMessages(prev => [...prev, message]);
-                notificationSound.play().catch(e => console.log("Sound play error:", e));
-                socket.emit('mark-seen', { chatId: message.chat, senderId: otherUser._id });
+                if (message.sender !== currentId) {
+                    notificationSound.play().catch(e => console.log("Sound play error:", e));
+                }
+                socket.emit('mark-seen', { chatId: message.chat });
             }
         });
 
-        socket.on('messages-seen', ({ chatId }) => {
-            if (chatId === chat._id) {
+        socket.on('messages-seen', ({ chatId, seenBy }) => {
+            if (chatId === chat._id && seenBy !== currentId) {
                 setMessages(prev => prev.map(m => m.sender === currentId ? { ...m, status: 'seen' } : m));
             }
         });
 
-        socket.on('message-delivered', ({ messageId }) => {
-            setMessages(prev => prev.map(m => m._id === messageId ? { ...m, status: 'delivered' } : m));
-        });
-
-        socket.on('message-sent', (message) => {
-            const isMatch = message.chat === chat._id || 
-                           (chat._id.startsWith('new-') && 
-                            (message.sender === currentId || message.receiverId === otherUser._id));
-                            
-            if (isMatch) {
-                setMessages(prev => [...prev, message]);
+        socket.on('message-delivered', ({ messageId, chatId }) => {
+            if (chatId === chat._id) {
+                setMessages(prev => prev.map(m => m._id === messageId ? { ...m, status: 'delivered' } : m));
             }
         });
 
         socket.on('user-typing', (data) => {
-            if (data.senderId === otherUser._id) {
-                setIsTyping(data.isTyping);
+            if (data.chatId === chat._id) {
+                setIsTyping(prev => {
+                    if (data.isTyping) {
+                        return [...new Set([...prev, data.senderId])];
+                    } else {
+                        return prev.filter(id => id !== data.senderId);
+                    }
+                });
             }
         });
 
         return () => {
             socket.off('receive-message');
-            socket.off('message-sent');
+            socket.off('messages-seen');
+            socket.off('message-delivered');
             socket.off('user-typing');
         };
     }, [socket, chat._id]);
@@ -92,63 +93,80 @@ const ChatWindow = ({ chat }) => {
         scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
 
+    const isKohinoor = chat.name?.toLowerCase().includes('kohinoor') || chat.isGroup;
+
     return (
-        <div className="chat-window glass-card">
-            <div className="chat-header">
+        <div className="chat-window">
+            <div className="chat-header" onClick={() => setShowInfo(true)} style={{ cursor: 'pointer' }}>
                 <div className="other-user-info">
-                    <img 
-                        src={getAvatarUrl(otherUser.profile_pic, otherUser.username)} 
-                        alt="avatar" 
-                        onError={(e) => { e.target.src = getAvatarUrl(null, otherUser.username); }}
-                    />
-                    <div className="text-info">
-                        <h4>{formatUsername(otherUser.username)}</h4>
-                        {isTyping ? (
-                            <span className="typing-pulse">typing...</span>
-                        ) : (
-                            <span className="user-status-text">
-                                {onlineUsers[otherUser._id] === 'online' ? 'Online' : 'Offline'}
-                            </span>
-                        )}
+                    {chat.isGroup ? (
+                        <div className="group-avatar-main">💎</div>
+                    ) : (
+                        <img 
+                            src={getAvatarUrl(otherUser?.profile_pic, otherUser?.username)} 
+                            alt="avatar" 
+                            onError={(e) => { e.target.src = getAvatarUrl(null, otherUser?.username); }}
+                        />
+                    )}
+                    <div className="chat-header-title">
+                        <h4>
+                            {chat.isGroup ? (isKohinoor ? '🔥 🌹 Kohinoor 🌹 🔥' : chat.name) : formatUsername(otherUser?.username)}
+                        </h4>
+                        <span className="user-status-text" style={{ fontSize: '0.75rem', opacity: 0.7 }}>
+                            {chat.isGroup ? `${chat.participants?.length || 0} members` : (onlineUsers[otherUser?._id] === 'online' ? 'Online' : 'Offline')}
+                            {isTyping.length > 0 && ` • typing...`}
+                        </span>
                     </div>
                 </div>
-                <div className="chat-actions">
-                    <button onClick={() => callUser(otherUser._id, 'audio')}><Phone size={20}/></button>
-                    <button onClick={() => callUser(otherUser._id, 'video')}><Video size={20}/></button>
+                <div className="chat-actions" onClick={(e) => e.stopPropagation()}>
+                    {!chat.isGroup && (
+                        <>
+                            <button onClick={() => callUser(otherUser?._id, 'audio')}><Phone size={20}/></button>
+                            <button onClick={() => callUser(otherUser?._id, 'video')}><Video size={20}/></button>
+                        </>
+                    )}
                     <button><MoreVertical size={20}/></button>
                 </div>
             </div>
 
-            <div className="messages-area">
+            {chat.pinnedMessage && (
+                <div className="pinned-message-banner" onClick={() => {/* Scroll to message logic */}}>
+                    <Pin size={14} />
+                    <span>Pinned: {chat.pinnedMessage.text || 'View Media'}</span>
+                </div>
+            )}
+
+            <div className="messages-area" style={{ flex: 1 }}>
                 {messages.map((msg, idx) => (
                     <div 
                         key={idx} 
-                        className={`message-bubble ${msg.sender === currentId ? 'sent' : 'received'}`} 
+                        className={`message-bubble ${msg.sender === currentId || msg.sender?._id === currentId ? 'sent' : 'received'}`} 
                     >
-                        {msg.text && <p>{msg.text}</p>}
+                        {chat.isGroup && msg.sender !== currentId && msg.sender?._id !== currentId && (
+                            <div className="message-sender-name" style={{ fontSize: '0.7rem', color: '#ff69b4', fontWeight: '600', marginBottom: '2px' }}>
+                                {msg.sender?.username || 'Member'}
+                            </div>
+                        )}
+                        
+                        {msg.text && <p style={{ margin: 0 }}>{msg.text}</p>}
                         
                         {msg.mediaUrl && (
-                            <div className="media-content">
+                            <div className="media-content" style={{ marginTop: msg.text ? '5px' : '0' }}>
                                 {msg.mediaType === 'image' && (
-                                    <img src={msg.mediaUrl} alt="shared" className="message-media" onClick={() => window.open(msg.mediaUrl)} />
+                                    <img src={msg.mediaUrl} alt="shared" className="message-media" style={{ maxWidth: '100%', borderRadius: '10px' }} onClick={() => window.open(msg.mediaUrl)} />
                                 )}
                                 {msg.mediaType === 'video' && (
-                                    <video src={msg.mediaUrl} controls className="message-media" />
+                                    <video src={msg.mediaUrl} controls className="message-media" style={{ maxWidth: '100%', borderRadius: '10px' }} />
                                 )}
                                 {msg.mediaType === 'audio' && (
-                                    <audio src={msg.mediaUrl} controls className="message-media-audio" />
-                                )}
-                                {(msg.mediaType === 'application' || msg.mediaType === 'file') && (
-                                    <a href={msg.mediaUrl} target="_blank" rel="noreferrer" className="file-link">
-                                        📄 View Document
-                                    </a>
+                                    <audio src={msg.mediaUrl} controls className="message-media-audio" style={{ width: '100%' }} />
                                 )}
                             </div>
                         )}
                         
                         <div className="message-meta">
                             <span className="timestamp">{new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                            {msg.sender === currentId && (
+                            {(msg.sender === currentId || msg.sender?._id === currentId) && (
                                 <span className={`status-icon ${msg.status}`}>
                                     {msg.status === 'sent' && '✓'}
                                     {msg.status === 'delivered' && '✓✓'}
@@ -161,7 +179,9 @@ const ChatWindow = ({ chat }) => {
                 <div ref={scrollRef}></div>
             </div>
 
-            <MessageInput chatId={chat._id} receiverId={otherUser._id} setMessages={setMessages} />
+            <MessageInput chatId={chat._id} receiverId={otherUser?._id} setMessages={setMessages} />
+
+            {showInfo && <GroupInfoView chat={chat} onClose={() => setShowInfo(false)} />}
         </div>
     );
 };
