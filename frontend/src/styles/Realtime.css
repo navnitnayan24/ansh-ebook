@@ -343,3 +343,116 @@
 .user-search-item span { font-size: 0.9rem; color: #fff; font-weight: 500; }
 .add-icon-mini { margin-left: auto; color: #ff1493; opacity: 0.7; }
 .loading-spinner-small { text-align: center; font-size: 0.8rem; opacity: 0.6; padding: 1rem; }
+
+/* --- MEMBER DETAIL OVERLAY --- */
+.member-detail-overlay {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: rgba(15, 15, 25, 0.95);
+    backdrop-filter: blur(20px);
+    z-index: 10;
+}
+
+.detail-header {
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.detail-header h3 { font-size: 1.1rem; margin: 0; }
+.back-btn { background: none; border: none; color: white; cursor: pointer; opacity: 0.7; transition: 0.2s; }
+.back-btn:hover { opacity: 1; transform: translateX(-3px); }
+
+.detail-main {
+    padding: 2.5rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    flex: 1;
+}
+
+.detail-avatar-container {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    padding: 4px;
+    background: linear-gradient(45deg, var(--accent-pink), #8a2be2);
+}
+
+.detail-avatar-container img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #0f0f19;
+}
+
+.detail-username { font-size: 1.5rem; font-weight: 700; color: #fff; margin: 0; }
+
+.detail-info-group {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.detail-info-group label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--accent-pink);
+    font-weight: 600;
+}
+
+.id-pill-container {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 0.8rem;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.system-id-pill {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.9rem;
+    word-break: break-all;
+    color: #ccc;
+}
+
+.role-text { color: #fff; font-size: 1rem; }
+
+.privacy-note {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    opacity: 0.5;
+    font-size: 0.8rem;
+    margin-top: auto;
+}
+
+.detail-actions {
+    padding: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.message-direct-btn {
+    width: 100%;
+    background: var(--accent-pink);
+    color: white;
+    border: none;
+    padding: 1rem;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.message-direct-btn:hover {
+    background: #ff1493;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 20, 147, 0.3);
+}

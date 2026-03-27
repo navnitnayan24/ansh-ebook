@@ -5,6 +5,7 @@ import { searchUsers, addMember } from '../../api';
 
 const GroupInfoView = ({ chat, onClose, onUpdate }) => {
     const [isAdding, setIsAdding] = useState(false);
+    const [selectedMember, setSelectedMember] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [availableUsers, setAvailableUsers] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -57,7 +58,46 @@ const GroupInfoView = ({ chat, onClose, onUpdate }) => {
                 <h3>{isAdding ? 'Add Member' : 'Group Info'}</h3>
             </div>
 
-            {isAdding ? (
+            {selectedMember ? (
+                <div className="member-detail-overlay">
+                    <div className="detail-header">
+                        <button className="back-btn" onClick={() => setSelectedMember(null)}><X size={20}/></button>
+                        <h3>User Profile</h3>
+                    </div>
+                    <div className="detail-main">
+                        <div className="detail-avatar-container">
+                            <img 
+                                src={getAvatarUrl(selectedMember.profile_pic, selectedMember.username)} 
+                                alt={selectedMember.username}
+                                onError={(e) => { e.target.src = getAvatarUrl(null, selectedMember.username); }}
+                            />
+                        </div>
+                        <h2 className="detail-username">{formatUsername(selectedMember.username)}</h2>
+                        
+                        <div className="detail-info-group">
+                            <label>System ID</label>
+                            <div className="id-pill-container">
+                                <code className="system-id-pill">{selectedMember._id}</code>
+                            </div>
+                        </div>
+
+                        <div className="detail-info-group">
+                            <label>Role</label>
+                            <span className="role-text">{chat.admin === selectedMember._id ? 'Group Admin' : 'Member'}</span>
+                        </div>
+                        
+                        <div className="detail-info-group privacy-note">
+                            <Shield size={14} />
+                            <span>Privacy protected: Email hidden</span>
+                        </div>
+                    </div>
+                    <div className="detail-actions">
+                        <button className="message-direct-btn" onClick={() => { /* logic to start direct chat */ alert("Direct message coming soon!"); }}>
+                            Send Message
+                        </button>
+                    </div>
+                </div>
+            ) : isAdding ? (
                 <div className="add-member-view">
                     <div className="search-bar-modern">
                         <Search size={18} />
@@ -105,7 +145,7 @@ const GroupInfoView = ({ chat, onClose, onUpdate }) => {
                         <h4>Participants</h4>
                         <div className="participants-list">
                             {chat.participants?.map((member) => (
-                                <div key={member._id} className="participant-item">
+                                <div key={member._id} className="participant-item" onClick={() => setSelectedMember(member)}>
                                     <img 
                                         src={getAvatarUrl(member.profile_pic, member.username)} 
                                         alt={member.username} 
@@ -116,7 +156,7 @@ const GroupInfoView = ({ chat, onClose, onUpdate }) => {
                                         {chat.admin === member._id && <span className="admin-tag">Admin</span>}
                                     </div>
                                     {isAdmin && member._id !== (currentUser.id || currentUser._id) && (
-                                        <button className="member-more-btn"><MoreVertical size={16}/></button>
+                                        <button className="member-more-btn" onClick={(e) => { e.stopPropagation(); /* more options */ }}><MoreVertical size={16}/></button>
                                     )}
                                 </div>
                             ))}
