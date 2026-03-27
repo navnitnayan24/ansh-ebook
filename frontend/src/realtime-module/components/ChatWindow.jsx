@@ -14,8 +14,13 @@ const ChatWindow = ({ chat }) => {
     const scrollRef = useRef();
     const currentUser = JSON.parse(localStorage.getItem('user'));
     const currentId = currentUser?.id || currentUser?._id;
-
-    const otherUser = !chat.isGroup ? (chat.participants.find(p => p._id !== currentId) || {}) : null;
+    
+    // Find other participant, or self if chatting with self
+    const otherUser = !chat.isGroup ? (
+        chat.participants.find(p => (p._id || p.id)?.toString() !== currentId?.toString()) || 
+        chat.participants[0] || 
+        {}
+    ) : null;
     
     // Reliable public notification sound
     const notificationSound = new Audio('https://res.cloudinary.com/dhpwp898n/video/upload/v1711516000/notification_vqc6vz.mp3'); 
