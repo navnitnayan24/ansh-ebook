@@ -53,7 +53,10 @@ export const SocketProvider = ({ children }) => {
 
     const answerCall = async () => {
         try {
-            const constraints = { audio: true, video: call.type === 'video' };
+            const constraints = { audio: true };
+            if (call.type === 'video') constraints.video = true;
+            
+            console.log("Answering call with constraints:", constraints);
             const currentStream = await navigator.mediaDevices.getUserMedia(constraints);
             setStream(currentStream);
             if (myVideoRef.current) myVideoRef.current.srcObject = currentStream;
@@ -78,25 +81,35 @@ export const SocketProvider = ({ children }) => {
     };
 
     const handleMediaError = (err) => {
-        console.error("Media Error Detail:", err);
+        console.error("🔴 Media Error Detail:", {
+            name: err.name,
+            message: err.message,
+            stack: err.stack,
+            secure: window.isSecureContext,
+            origin: window.location.origin
+        });
+        
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-            alert("Call Failed: Insecure connection (HTTPS required) or unsupported browser.");
+            alert("Call Failed: Insecure connection (HTTPS required) or unsupported browser. Current Context: " + (window.isSecureContext ? "Secure" : "INSECURE"));
         } else if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-            alert("Permission Denied: Please allow camera/mic access in browser settings.");
+            alert("Permission Denied: Please allow camera/mic access in your browser settings.");
         } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
             alert("Hardware Not Found: No camera or microphone detected.");
         } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError' || err.name === 'AbortError') {
             alert("Hardware Busy: Camera/Mic is being used by another app.");
         } else if (err.name === 'TypeError') {
-            alert("Call Error: Browser blocked media access. Ensure you are on HTTPS and using a modern browser.");
+            alert("Call Error (TypeError): Check if you have a camera/mic plugged in and you are using HTTPS.");
         } else {
-            alert(`Call Error: ${err.message || err.name}. Ensure you use HTTPS.`);
+            alert(`Call Error: ${err.message || err.name}. Please ensure you are on HTTPS.`);
         }
     };
 
     const callUser = async (id, type) => {
         try {
-            const constraints = { audio: true, video: type === 'video' };
+            const constraints = { audio: true };
+            if (type === 'video') constraints.video = true;
+
+            console.log("Initiating call with constraints:", constraints);
             const currentStream = await navigator.mediaDevices.getUserMedia(constraints);
             setStream(currentStream);
             if (myVideoRef.current) myVideoRef.current.srcObject = currentStream;
@@ -131,12 +144,13 @@ export const SocketProvider = ({ children }) => {
             console.error("Failed to make call:", err);
             
             // Auto-fallback: If video failed, try audio only automatically
-            if (type === 'video' && (err.name === 'NotFoundError' || err.name === 'NotReadableError' || err.name === 'TypeError')) {
+            if (type === 'video') {
                 try {
-                    const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+                    console.log("Attempting audio-only fallback after video failure...");
+                    const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
                     setStream(audioStream);
-                    alert("Camera issues detected. Switching to audio-only call.");
-                    // Re-run peer logic for audio
+                    alert("Camera issues detected. Continuing with audio-only.");
+                    
                     const peer = new Peer({ initiator: true, trickle: false, stream: audioStream });
                     const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
                     peer.on('signal', (data) => {
