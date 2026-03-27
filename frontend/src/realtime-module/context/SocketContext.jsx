@@ -110,7 +110,13 @@ export const SocketProvider = ({ children }) => {
             setCall({ isReceivingCall: false, from: id, type, isCalling: true }); // Mark as calling
         } catch (err) {
             console.error("Failed to get media stream:", err);
-            alert("Please allow camera/mic access to make a call.");
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                alert("Call Failed: Your browser does not support audio/video calls or you are in an insecure connection.");
+            } else if (err.name === 'NotAllowedError') {
+                alert("Permission Denied: Please allow camera/mic access in your browser settings to make a call.");
+            } else {
+                alert("Call Error: Could not access camera/microphone. Ensure no other app is using them.");
+            }
         }
     };
 

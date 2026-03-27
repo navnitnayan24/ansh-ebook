@@ -46,13 +46,19 @@
 
 /* ─── Page Root ─── */
 .realtime-chat-page {
-    height: 100vh;
+    height: calc(100vh - 100px); /* Account for desktop BrandHeader (100px) */
     max-height: 100dvh;
     display: flex;
     background: var(--c-bg);
     position: relative;
     z-index: 50;
     overflow: hidden;
+}
+
+@media (max-width: 768px) {
+    .realtime-chat-page {
+        height: calc(100vh - 80px); /* Account for mobile BrandHeader (80px) */
+    }
 }
 
 .chat-layout {

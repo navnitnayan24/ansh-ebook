@@ -136,8 +136,8 @@ const setupSocket = (server) => {
 
         // WebRTC Signaling
         socket.on('call-user', (data) => {
-            const { userToCall, signalData, from, type } = data;
-            io.to(userToCall).emit('hey-calling', { signal: signalData, from, type });
+            const { userToCall, signalData, from, name, type } = data;
+            io.to(userToCall).emit('hey-calling', { signal: signalData, from, name, type });
         });
 
         socket.on('accept-call', (data) => {

@@ -90,7 +90,10 @@ const ChatWindow = ({ chat }) => {
     }, [socket, chat._id]);
 
     useEffect(() => {
-        scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
+        const timeout = setTimeout(() => {
+            scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+        return () => clearTimeout(timeout);
     }, [messages]);
 
     const isKohinoor = chat.name?.toLowerCase().includes('kohinoor') || chat.isGroup;
