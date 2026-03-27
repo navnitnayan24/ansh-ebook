@@ -80,21 +80,28 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
     const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark');
 
     // Filter active chats by search
-    const filteredChats = chats.filter(chat => {
+    const filteredChats = (chats || []).filter(chat => {
+        if (!chat) return false;
+        const searchTerm = (search || '').toLowerCase();
         if (chat.isGroup) {
-            return chat.name?.toLowerCase().includes(search.toLowerCase());
+            return chat.name?.toLowerCase().includes(searchTerm);
         } else {
-            const otherParticipant = chat.participants.find(p => p._id !== currentUserId);
-            return otherParticipant?.username?.toLowerCase().includes(search.toLowerCase());
+            // Support self-chats: other participant is the same user
+            const otherParticipant = chat.participants?.find(p => p._id !== currentUserId) || chat.participants?.[0];
+            return otherParticipant?.username?.toLowerCase().includes(searchTerm);
         }
     });
 
     // Filter users for discovery
-    const filteredUsers = users.filter(user => {
-        const matchesSearch = user.username?.toLowerCase().includes(search.toLowerCase());
+    const filteredUsers = (users || []).filter(user => {
+        if (!user || !user._id) return false;
+        const searchTerm = (search || '').toLowerCase();
+        const username = user.username?.toLowerCase() || '';
+        const matchesSearch = username.includes(searchTerm);
+        
         if (search.length > 0) return matchesSearch;
         // If no search, show only those NOT in active chats to avoid duplication
-        return !chats.some(c => !c.isGroup && c.participants.some(p => p._id === user._id));
+        return !chats?.some(c => !c.isGroup && c.participants?.some(p => p._id === user._id));
     });
 
     return (
