@@ -127,13 +127,15 @@ const ChatWindow = ({ chat }) => {
                     </div>
                 </div>
                 <div className="chat-actions" onClick={(e) => e.stopPropagation()}>
-                    {!chat.isGroup && (
+                    {!chat.isGroup && !chat._id?.toString().startsWith('new-') && (
                         <>
                             <button onClick={() => callUser(otherUser?._id, 'audio')}><Phone size={20}/></button>
                             <button onClick={() => callUser(otherUser?._id, 'video')}><Video size={20}/></button>
                         </>
                     )}
-                    <button onClick={() => setShowInfo(true)}><MoreVertical size={20}/></button>
+                    {!chat._id?.toString().startsWith('new-') && (
+                        <button onClick={() => setShowInfo(true)}><MoreVertical size={20}/></button>
+                    )}
                 </div>
             </div>
 

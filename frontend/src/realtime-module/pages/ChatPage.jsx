@@ -37,12 +37,12 @@ const ChatPage = () => {
     useEffect(() => {
         const handleJoinLink = async () => {
             const params = new URLSearchParams(location.search);
-            const joinCode = params.get('join');
+            const joinCode = params.get('join')?.trim();
             if (joinCode) {
                 // Clear param immediately to prevent loops
                 navigate('/chat', { replace: true });
                 
-                if (window.confirm(`Do you want to join this group?`)) {
+                if (window.confirm(`Join this Kohinoor group?`)) {
                     try {
                         const res = await joinGroupByCode(joinCode.toUpperCase());
                         setSelectedChat(res.data);

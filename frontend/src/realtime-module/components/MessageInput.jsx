@@ -55,9 +55,10 @@ const MessageInput = ({ chatId, receiverId, setMessages }) => {
         if (!text.trim() && !mediaData) return;
 
         if (!chatId) return;
-        let currentChatId = (typeof chatId === 'string' && chatId.startsWith('new-')) ? null : chatId;
+        const normalizedChatId = chatId.toString();
+        let currentChatId = normalizedChatId.startsWith('new-') ? null : normalizedChatId;
         
-        if (chatId.startsWith('new-')) {
+        if (normalizedChatId.startsWith('new-')) {
             const res = await findOrCreateChat(receiverId);
             currentChatId = res.data._id;
         }
