@@ -116,7 +116,80 @@ exports.addMemberToGroup = async (req, res) => {
     }
 };
 
+// Remove a member from a group
+exports.removeMemberFromGroup = async (req, res) => {
+    const { chatId, userId } = req.body;
+    try {
+        const chat = await Chat.findById(chatId);
+        if (!chat) return res.status(404).json({ error: 'Chat not found' });
+        
+        if (chat.admin.toString() !== req.user.id) {
+            return res.status(403).json({ error: 'Only admins can remove members' });
+        }
+
+        chat.participants = chat.participants.filter(p => p.toString() !== userId);
+        await chat.save();
+
+        const populatedChat = await chat.populate('participants', 'username profile_pic _id');
+        
+        // Notify the removed user via socket so their sidebar updates
+        const { getIo } = require('../socket');
+        const io = getIo();
+        if (io) {
+            io.to(userId.toString()).emit('chat-removed', { chatId });
+        }
+
+        res.json(populatedChat);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// Update group details
+exports.updateGroupDetails = async (req, res) => {
+    const { chatId, name, description } = req.body;
+    try {
+        const chat = await Chat.findById(chatId);
+        if (!chat) return res.status(404).json({ error: 'Chat not found' });
+        
+        if (chat.admin.toString() !== req.user.id) {
+            return res.status(403).json({ error: 'Only admins can edit group' });
+        }
+
+        if (name) chat.name = name;
+        if (description) chat.description = description;
+        await chat.save();
+
+        const populatedChat = await chat.populate('participants', 'username profile_pic _id');
+        res.json(populatedChat);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// Leave group
+exports.leaveGroup = async (req, res) => {
+    const { chatId } = req.body;
+    try {
+        const chat = await Chat.findById(chatId);
+        if (!chat) return res.status(404).json({ error: 'Chat not found' });
+        
+        chat.participants = chat.participants.filter(p => p.toString() !== req.user.id);
+        
+        // If the admin is leaving, assign someone else or delete (for now just assign if participants exist)
+        if (chat.admin.toString() === req.user.id && chat.participants.length > 0) {
+            chat.admin = chat.participants[0];
+        }
+
+        await chat.save();
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
 // Get all users for chat discovery
+// ... (rest of the file)
 exports.getUsers = async (req, res) => {
     try {
         const { q } = req.query;

@@ -501,3 +501,55 @@
     background: rgba(255, 255, 255, 0.05);
     border-left: 3px solid var(--accent-pink);
 }
+
+/* --- GROUP MANAGEMENT --- */
+.edit-group-view { padding: 1.5rem; }
+.edit-form { display: flex; flex-direction: column; gap: 1.5rem; }
+.form-group { display: flex; flex-direction: column; gap: 0.5rem; }
+.form-group label { font-size: 0.8rem; color: var(--accent-pink); font-weight: 600; text-transform: uppercase; }
+.form-group input, .form-group textarea {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 0.8rem;
+    color: white;
+    font-size: 0.9rem;
+}
+.form-group input:focus, .form-group textarea:focus { border-color: var(--accent-pink); outline: none; }
+
+.edit-actions { display: flex; gap: 1rem; margin-top: 1rem; }
+.save-group-btn {
+    flex: 2;
+    background: var(--accent-pink);
+    color: white;
+    border: none;
+    padding: 0.8rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.cancel-edit-btn {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: none;
+    padding: 0.8rem;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.remove-member-btn {
+    width: 100%;
+    background: rgba(255, 68, 68, 0.1);
+    color: #ff4444;
+    border: 1px solid rgba(255, 68, 68, 0.2);
+    padding: 1rem;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    margin-bottom: 1rem;
+    transition: 0.3s;
+}
+.remove-member-btn:hover { background: #ff4444; color: white; }

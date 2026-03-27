@@ -11,6 +11,9 @@ router.get('/users', chatController.getUsers);
 router.post('/chats', chatController.findOrCreateChat);
 router.post('/groups', chatController.createGroupChat);
 router.post('/add-member', chatController.addMemberToGroup);
+router.post('/remove-member', chatController.removeMemberFromGroup);
+router.post('/update-group', chatController.updateGroupDetails);
+router.post('/leave-group', chatController.leaveGroup);
 router.post('/pin', chatController.pinMessage);
 
 module.exports = router;

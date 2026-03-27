@@ -34,6 +34,10 @@ const ChatPage = () => {
             socket.on('receive-message', () => loadData());
             socket.on('chat-created', () => loadData());
             socket.on('chat-added', () => loadData());
+            socket.on('chat-removed', ({ chatId }) => {
+                setChats(prev => prev.filter(c => c._id !== chatId));
+                if (selectedChat?._id === chatId) setSelectedChat(null);
+            });
         }
 
         return () => {
@@ -41,6 +45,7 @@ const ChatPage = () => {
                 socket.off('receive-message');
                 socket.off('chat-created');
                 socket.off('chat-added');
+                socket.off('chat-removed');
             }
         };
     }, [socket]);

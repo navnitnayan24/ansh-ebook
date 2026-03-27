@@ -137,6 +137,9 @@ export const fetchMessages = (chatId) => API.get(`realtime/messages/${chatId}`);
 export const findOrCreateChat = (userId) => API.post('realtime/chats', { userId });
 export const createGroupChat = (data) => API.post('realtime/groups', data);
 export const addMember = (data) => API.post('realtime/add-member', data);
+export const removeMember = (data) => API.post('realtime/remove-member', data);
+export const updateGroup = (data) => API.post('realtime/update-group', data);
+export const leaveGroup = (chatId) => API.post('realtime/leave-group', { chatId });
 export const pinMessage = (data) => API.post('realtime/pin', data);
 
 export { API };
