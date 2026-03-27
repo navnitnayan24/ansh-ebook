@@ -92,6 +92,12 @@ const setupSocket = (server) => {
 
                 // Broadcast to the entire chat room
                 io.to(roomName).emit('receive-message', message);
+                
+                // CRITICAL: Also emit to receiver's private room for potential discovery chats
+                if (!chat.isGroup && receiverId) {
+                    io.to(receiverId).emit('receive-message', message);
+                }
+                
                 console.log(`📩 Message sent in chat ${chatId} by ${userId}`);
                 
                 // If it's a 1-to-1 chat and receiver is online, mark as delivered

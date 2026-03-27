@@ -96,7 +96,10 @@ const ChatPage = () => {
                             <button className="mobile-back-btn" onClick={() => setSelectedChat(null)}>
                                 <ArrowLeft size={20} />
                             </button>
-                            <ChatWindow chat={selectedChat} setSelectedChat={setSelectedChat} />
+                            <ChatWindow 
+                                chat={selectedChat} 
+                                setSelectedChat={setSelectedChat} 
+                            />
                         </>
                     ) : (
                         <div className="no-chat-selected">

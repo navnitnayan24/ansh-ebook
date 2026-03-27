@@ -6,7 +6,7 @@ import { Phone, Video, MoreVertical, Pin } from 'lucide-react';
 import { fetchMessages } from '../../api';
 import { getAvatarUrl, maskEmail } from '../../config';
 
-const ChatWindow = ({ chat }) => {
+const ChatWindow = ({ chat, setSelectedChat }) => {
     const [messages, setMessages] = useState([]);
     const [isTyping, setIsTyping] = useState([]);
     const [showInfo, setShowInfo] = useState(false);
@@ -53,10 +53,23 @@ const ChatWindow = ({ chat }) => {
         if (!socket) return;
         
         socket.on('receive-message', (message) => {
-            if (message.chat === chat._id) {
-                setMessages(prev => [...prev, message]);
+            const isTempChat = chat._id?.toString().startsWith('new-');
+            const isSenderMe = message.sender?._id === currentId || message.sender === currentId;
+            const otherPid = isSenderMe ? message.receiverId : (message.sender?._id || message.sender);
+
+            // Handle synchronization for new chats
+            if (isTempChat && message.chat && !message.isGroup) {
+                // If this message belongs to the current "new-" session, refresh the chat
+                if (chat._id === `new-${otherPid}`) {
+                    window.location.reload(); // Hard refresh is safest to sync all lists
+                    return;
+                }
+            }
+
+            if (message.chat === chat._id || (isTempChat && `new-${otherPid}` === chat._id)) {
+                setMessages((prev) => [...prev, message]);
                 if (message.sender !== currentId) {
-                    notificationSound.play().catch(e => console.log("Sound play error:", e));
+                    notificationSound.play().catch(() => {});
                 }
                 socket.emit('mark-seen', { chatId: message.chat });
             }
