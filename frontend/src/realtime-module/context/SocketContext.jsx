@@ -30,6 +30,14 @@ export const SocketProvider = ({ children }) => {
             auth: { token }
         });
 
+        newSocket.on('connect_error', (err) => {
+            console.error("🔌 Socket Connection Error:", err.message);
+        });
+
+        newSocket.on('connect', () => {
+            console.log("🔌 Socket Connected Successfully");
+        });
+
         setSocket(newSocket);
 
         newSocket.on('user-status', (data) => {

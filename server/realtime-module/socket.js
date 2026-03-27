@@ -16,7 +16,8 @@ const setupSocket = (server) => {
         const token = socket.handshake.auth.token;
         if (!token) return next(new Error("Authentication error"));
 
-        jwt.verify(token, process.env.JWT_SECRET || 'your_default_secret', (err, decoded) => {
+        const secret = process.env.JWT_SECRET || 'ansh_ebook_internal_fallback_secure_2026_@#$';
+        jwt.verify(token, secret, (err, decoded) => {
             if (err) return next(new Error("Authentication error"));
             socket.user = decoded;
             next();
@@ -59,25 +60,37 @@ const setupSocket = (server) => {
         socket.on('send-message', async (data) => {
             const { chatId, receiverId, text, mediaUrl, mediaType } = data;
             
+            if (!chatId) {
+                console.error("❌ Cannot send message: chatId is missing");
+                return;
+            }
+
             try {
-                // Ensure socket is in the room (in case of newly created chat)
-                socket.join(chatId.toString());
+                // Ensure socket is in the room
+                const roomName = chatId.toString();
+                socket.join(roomName);
 
                 const message = await Message.create({
                     chat: chatId,
                     sender: userId,
-                    text,
+                    text: text || '',
                     mediaUrl,
                     mediaType
                 });
 
                 const chat = await Chat.findByIdAndUpdate(chatId, { 
                     lastMessage: message._id,
-                    $inc: { [`unreadCount.${receiverId}`]: 1 }
+                    $inc: { [`unreadCount.${receiverId || 'system'}`]: 1 }
                 }, { new: true });
 
+                if (!chat) {
+                    console.error(`❌ Chat not found for ID: ${chatId}`);
+                    return;
+                }
+
                 // Broadcast to the entire chat room
-                io.to(chatId.toString()).emit('receive-message', message);
+                io.to(roomName).emit('receive-message', message);
+                console.log(`📩 Message sent in chat ${chatId} by ${userId}`);
                 
                 // If it's a 1-to-1 chat and receiver is online, mark as delivered
                 if (!chat.isGroup && receiverId && onlineUsers.has(receiverId)) {
