@@ -125,7 +125,7 @@ const ChatWindow = ({ chat }) => {
                             <button onClick={() => callUser(otherUser?._id, 'video')}><Video size={20}/></button>
                         </>
                     )}
-                    <button><MoreVertical size={20}/></button>
+                    <button onClick={() => setShowInfo(true)}><MoreVertical size={20}/></button>
                 </div>
             </div>
 

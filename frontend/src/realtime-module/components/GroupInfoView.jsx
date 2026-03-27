@@ -16,8 +16,8 @@ const GroupInfoView = ({ chat, onClose, onUpdate }) => {
     const [editDesc, setEditDesc] = useState(chat.description || '');
 
     const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
-    const currentUserId = currentUser.id || currentUser._id;
-    const isAdmin = chat.admin === currentUserId || chat.admin?._id === currentUserId;
+    const currentId = currentUser.id || currentUser._id;
+    const isAdmin = chat.admin === currentId || chat.admin?._id === currentId;
 
     const formatUsername = (name) => {
         if (!name) return 'User';
