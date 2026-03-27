@@ -140,6 +140,7 @@ export const addMember = (data) => API.post('realtime/add-member', data);
 export const removeMember = (data) => API.post('realtime/remove-member', data);
 export const updateGroup = (data) => API.post('realtime/update-group', data);
 export const leaveGroup = (chatId) => API.post('realtime/leave-group', { chatId });
+export const joinGroupByCode = (joinCode) => API.post('realtime/join-group-code', { joinCode });
 export const pinMessage = (data) => API.post('realtime/pin', data);
 
 export { API };

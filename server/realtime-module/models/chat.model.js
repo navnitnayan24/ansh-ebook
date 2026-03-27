@@ -21,6 +21,11 @@ const chatSchema = new mongoose.Schema({
         type: String,
         trim: true
     },
+    joinCode: {
+        type: String,
+        unique: true,
+        sparse: true
+    },
     admin: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'

@@ -3,8 +3,9 @@ import ChatSidebar from '../components/ChatSidebar';
 import ChatWindow from '../components/ChatWindow';
 import CallModal from '../components/CallModal';
 import { useSocket } from '../context/SocketContext';
-import { searchUsers, fetchChats } from '../../api';
+import { searchUsers, fetchChats, joinGroupByCode } from '../../api';
 import { ArrowLeft } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import '../../styles/Realtime.css';
 
 const ChatPage = () => {
@@ -12,6 +13,9 @@ const ChatPage = () => {
     const [users, setUsers] = useState([]);
     const [chats, setChats] = useState([]);
     const { socket, call } = useSocket();
+
+    const location = useLocation();
+    const navigate = useNavigate();
 
     const loadData = async () => {
         try {
@@ -22,6 +26,20 @@ const ChatPage = () => {
             const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
             const currentUserId = currentUser.id || currentUser._id;
             setUsers(userRes.data.filter(u => u._id !== currentUserId));
+            
+            // Handle Join Code from URL
+            const params = new URLSearchParams(location.search);
+            const joinCode = params.get('join');
+            if (joinCode) {
+                try {
+                    const res = await joinGroupByCode(joinCode.toUpperCase());
+                    setSelectedChat(res.data);
+                    // Clear the query param without refreshing
+                    navigate('/chat', { replace: true });
+                } catch (err) {
+                    alert("Join link invalid or expired");
+                }
+            }
         } catch (err) {
             console.error("Failed to load chat data:", err);
         }
@@ -66,7 +84,7 @@ const ChatPage = () => {
                             <button className="mobile-back-btn" onClick={() => setSelectedChat(null)}>
                                 <ArrowLeft size={20} />
                             </button>
-                            <ChatWindow chat={selectedChat} />
+                            <ChatWindow chat={selectedChat} setSelectedChat={setSelectedChat} />
                         </>
                     ) : (
                         <div className="no-chat-selected">

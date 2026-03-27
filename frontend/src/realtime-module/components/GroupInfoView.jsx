@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, UserPlus, Shield, UserMinus, LogOut, MoreVertical, Search, Check, Plus, Edit2, Save } from 'lucide-react';
+import { X, UserPlus, Shield, UserMinus, LogOut, MoreVertical, Search, Check, Plus, Edit2, Save, Copy, Camera, Link } from 'lucide-react';
 import { getAvatarUrl, maskEmail } from '../../config';
 import { searchUsers, addMember, removeMember, updateGroup, leaveGroup } from '../../api';
 
@@ -84,6 +84,38 @@ const GroupInfoView = ({ chat, onClose, onUpdate }) => {
             window.location.reload(); // Refresh to clear the chat from sidebar
         } catch (err) {
             alert(err.response?.data?.error || "Failed to leave group");
+        }
+    };
+
+    const copyJoinLink = () => {
+        const link = `${window.location.origin}/chat?join=${chat.joinCode}`;
+        navigator.clipboard.writeText(link);
+        alert("Join link copied to clipboard!");
+    };
+
+    const handleIconUpdate = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', 'ml_default'); // Assuming standard preset or should I use ansh-ebook logic?
+        
+        setIsLoading(true);
+        try {
+            // Using Cloudinary direct upload for simplicity or existing API if available
+            const cloudRes = await fetch(`https://api.cloudinary.com/v1_1/datao7ela/image/upload`, {
+                method: 'POST',
+                body: formData
+            });
+            const cloudData = await cloudRes.json();
+            
+            const res = await updateGroup({ chatId: chat._id, groupIcon: cloudData.secure_url });
+            if (onUpdate) onUpdate(res.data);
+        } catch (err) {
+            alert("Failed to update group icon");
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -199,9 +231,31 @@ const GroupInfoView = ({ chat, onClose, onUpdate }) => {
                 // Main info view...
                 <>
                     <div className="group-info-main">
-                        <div className="group-avatar-large">💎</div>
+                        <div className="group-avatar-large" style={{ position: 'relative' }}>
+                            {chat.groupIcon ? (
+                                <img src={chat.groupIcon} alt="" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+                            ) : '💎'}
+                            {isAdmin && (
+                                <label className="edit-icon-overlay">
+                                    <Camera size={20} />
+                                    <input type="file" hidden onChange={handleIconUpdate} accept="image/*" />
+                                </label>
+                            )}
+                        </div>
                         <h2 className="group-name-large">{chat.name || 'Kohinoor Group'}</h2>
                         <p className="group-desc">{chat.description || 'Premium real-time collaboration group.'}</p>
+                        
+                        <div className="join-code-box">
+                            <div className="join-code-row">
+                                <span className="join-label">JOIN CODE</span>
+                                <span className="join-val">{chat.joinCode || 'N/A'}</span>
+                                <button className="copy-btn-mini" onClick={copyJoinLink}>
+                                    <Copy size={14} />
+                                </button>
+                            </div>
+                            <span className="join-hint">Share link to invite members</span>
+                        </div>
+
                         <span className="members-count">{chat.participants?.length || 0} Members</span>
                     </div>
 
