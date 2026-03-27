@@ -89,11 +89,13 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
         }
     });
 
-    // Filter users for discovery (only show if not already in a chat)
-    const filteredUsers = users.filter(user => 
-        user.username?.toLowerCase().includes(search.toLowerCase()) &&
-        !chats.some(c => !c.isGroup && c.participants.some(p => p._id === user._id))
-    );
+    // Filter users for discovery
+    const filteredUsers = users.filter(user => {
+        const matchesSearch = user.username?.toLowerCase().includes(search.toLowerCase());
+        if (search.length > 0) return matchesSearch;
+        // If no search, show only those NOT in active chats to avoid duplication
+        return !chats.some(c => !c.isGroup && c.participants.some(p => p._id === user._id));
+    });
 
     return (
         <div className="chat-sidebar">
@@ -169,13 +171,13 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
                 })}
 
                 {/* User Discovery (only when searching or if no chats) */}
-                {search.length > 0 && filteredUsers.length > 0 && (
+                {(search.length > 0 || filteredUsers.length > 0) && (
                     <>
                         <div className="sidebar-section-title">People you may know</div>
                         {filteredUsers.map((user) => (
                             <div 
                                 key={user._id} 
-                                className="user-item discovery"
+                                className={`user-item discovery ${user._id === currentUserId ? 'is-self' : ''}`}
                                 onClick={() => setSelectedChat({ 
                                     _id: `new-${user._id}`, 
                                     participants: [currentUser, user],
@@ -191,8 +193,12 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
                                     <span className={`status-dot ${onlineUsers[user._id] === 'online' ? 'online' : 'offline'}`}></span>
                                 </div>
                                 <div className="user-info">
-                                    <span className="user-name">{maskEmail(user.username)}</span>
-                                    <span className="user-status-online">Available for chat</span>
+                                    <span className="user-name">
+                                        {maskEmail(user.username)} {user._id === currentUserId ? '(You)' : ''}
+                                    </span>
+                                    <span className="user-status-online">
+                                        {user._id === currentUserId ? 'Saved Messages' : 'Available for chat'}
+                                    </span>
                                 </div>
                                 <div className="quick-action-icon">
                                     <Send size={16} />

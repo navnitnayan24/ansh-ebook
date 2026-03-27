@@ -28,9 +28,7 @@ const ChatPage = () => {
             setChats(chatRes.data);
 
             const userRes = await searchUsers();
-            const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
-            const currentUserId = currentUser.id || currentUser._id;
-            setUsers(userRes.data.filter(u => u._id !== currentUserId));
+            setUsers(userRes.data);
             
             // Handle Join Code from URL
             const params = new URLSearchParams(location.search);
