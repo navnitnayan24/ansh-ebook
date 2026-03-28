@@ -263,11 +263,7 @@ const Home = () => {
 
     if (loading) return (
         <div className="premium-loader-container">
-            <motion.div 
-                className="premium-loader"
-                animate={{ rotate: 360 }}
-                transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-            />
+            <div className="premium-loader"></div>
             <p className="loading-text">UNFOLDING CREATIVITY...</p>
         </div>
     );

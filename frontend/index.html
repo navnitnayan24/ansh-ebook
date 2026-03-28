@@ -13,6 +13,15 @@
     <link rel="apple-touch-icon" href="/icon-192.png">
     <!-- Google Site Verification -->
     <meta name="google-site-verification" content="KburRRM-0wQeZDBD1NK6p64zNF4VxCIvZDGxA6NH8xA" />
+    
+    <!-- Preconnect & DNS-Prefetch for Performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://res.cloudinary.com">
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+    <link rel="dns-prefetch" href="https://res.cloudinary.com">
+    <link rel="dns-prefetch" href="https://api.emailjs.com">
 
     <!-- SEO Meta Tags -->
     <title>Ansh Ebook - Free Shayari, Stories & Premium Content</title>
@@ -99,9 +108,47 @@
       window.process = { env: {} };
       window.Buffer = window.Buffer || require('buffer').Buffer;
     </script>
+    <style>
+      /* --- Instant Startup Loader --- */
+      body { background: #000; margin: 0; padding: 0; }
+      #initial-premium-loader {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: radial-gradient(circle at center, #1b0a2e 0%, #000 100%);
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        z-index: 99999; transition: opacity 0.5s ease-out; font-family: sans-serif;
+      }
+      .alfa-logo-pulse {
+        width: 100px; height: 100px; border-radius: 50%;
+        background: linear-gradient(135deg, #ff1493, #7c3aed);
+        box-shadow: 0 0 30px rgba(255, 20, 147, 0.4);
+        animation: logo-pulse 1.8s ease-in-out infinite;
+      }
+      .loading-line {
+        margin-top: 30px; font-size: 14px; font-weight: 700;
+        color: #fff; letter-spacing: 2.5px; text-transform: uppercase;
+        opacity: 0.8; animation: text-fade 1.5s ease-in-out infinite;
+      }
+      @keyframes logo-pulse {
+        0%, 100% { transform: scale(0.9); opacity: 0.7; box-shadow: 0 0 20px rgba(255, 20, 147, 0.2); }
+        50% { transform: scale(1.05); opacity: 1; box-shadow: 0 0 50px rgba(255, 20, 147, 0.6); }
+      }
+      @keyframes text-fade {
+        0%, 100% { opacity: 0.4; transform: translateY(0); }
+        50% { opacity: 1; transform: translateY(-3px); }
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <!-- This div is shown instantly and replaced by React once hydrated -->
+    <div id="root">
+      <div id="initial-premium-loader">
+        <div class="alfa-logo-pulse"></div>
+        <div class="loading-line">ANSH EBOOK</div>
+        <p style="color: rgba(255,255,255,0.3); font-size: 10px; margin-top: 20px; text-align: center;">
+          UNFOLDING PREMIUM CONTENT... <br/> (Waking up server, please wait)
+        </p>
+      </div>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

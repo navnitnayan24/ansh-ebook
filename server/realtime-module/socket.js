@@ -7,6 +7,8 @@ let io;
 
 const setupSocket = (server) => {
     io = new Server(server, {
+        pingTimeout: 60000,
+        pingInterval: 25000,
         cors: {
             origin: "*",
             methods: ["GET", "POST"]

@@ -81,7 +81,7 @@ const ChatPage = () => {
 
     return (
         <div className="realtime-chat-page">
-            <div className="chat-layout">
+            <div className={`chat-layout ${selectedChat ? 'has-selected-chat' : ''}`}>
                 <ChatSidebar 
                     chats={chats}
                     users={users} 
@@ -90,17 +90,12 @@ const ChatPage = () => {
                     searchRef={searchRef}
                 />
                 
-                <div className={`chat-window-container ${selectedChat ? 'active' : ''}`}>
+                <div className="chat-window-container">
                     {selectedChat ? (
-                        <>
-                            <button className="mobile-back-btn" onClick={() => setSelectedChat(null)}>
-                                <ArrowLeft size={20} />
-                            </button>
-                            <ChatWindow 
-                                chat={selectedChat} 
-                                setSelectedChat={setSelectedChat} 
-                            />
-                        </>
+                        <ChatWindow 
+                            chat={selectedChat} 
+                            setSelectedChat={setSelectedChat} 
+                        />
                     ) : (
                         <div className="no-chat-selected">
                             <div className="chat-welcome-icon">💎</div>

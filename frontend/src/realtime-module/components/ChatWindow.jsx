@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import MessageInput from './MessageInput';
 import GroupInfoView from './GroupInfoView';
 import { useSocket } from '../context/SocketContext';
-import { Phone, Video, MoreVertical, Pin } from 'lucide-react';
+import { Phone, Video, MoreVertical, Pin, ArrowLeft } from 'lucide-react';
 import { fetchMessages } from '../../api';
 import { getAvatarUrl, maskEmail } from '../../config';
 
@@ -119,24 +119,32 @@ const ChatWindow = ({ chat, setSelectedChat }) => {
     return (
         <div className="chat-window">
             <div className="chat-header" onClick={() => setShowInfo(true)} style={{ cursor: 'pointer' }}>
-                <div className="other-user-info">
-                    {chat.isGroup ? (
-                        <div className="group-avatar-main">💎</div>
-                    ) : (
-                        <img 
-                            src={getAvatarUrl(otherUser?.profile_pic, otherUser?.username)} 
-                            alt={maskEmail(otherUser?.username)} 
-                            onError={(e) => { e.target.src = getAvatarUrl(null, otherUser?.username); }}
-                        />
-                    )}
-                    <div className="chat-header-title">
-                        <h4>
-                            {chat.isGroup ? (isKohinoor ? '🔥 🌹 Kohinoor 🌹 🔥' : chat.name) : maskEmail(otherUser?.username)}
-                        </h4>
-                        <span className="user-status-text" style={{ fontSize: '0.75rem', opacity: 0.7 }}>
-                            {chat.isGroup ? `${chat.participants?.length || 0} members` : (onlineUsers[otherUser?._id] === 'online' ? 'Online' : 'Offline')}
-                            {isTyping.length > 0 && ` • typing...`}
-                        </span>
+                <div className="chat-header-title">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <button className="mobile-back-btn" onClick={() => setSelectedChat(null)}>
+                            <ArrowLeft size={24} />
+                        </button>
+                        <div className="other-user-info">
+                            {chat.isGroup ? (
+                                <div className="group-avatar-main">💎</div>
+                            ) : (
+                                <img 
+                                    src={getAvatarUrl(otherUser?.profile_pic, otherUser?.username)} 
+                                    alt={maskEmail(otherUser?.username)} 
+                                    onError={(e) => { e.target.src = getAvatarUrl(null, otherUser?.username); }}
+                                    className="header-avatar"
+                                />
+                            )}
+                            <div className="chat-header-title-text">
+                                <h4 className="header-username">
+                                    {chat.isGroup ? (isKohinoor ? '🔥 🌹 Kohinoor 🌹 🔥' : chat.name) : maskEmail(otherUser?.username)}
+                                </h4>
+                                <span className="user-status-text">
+                                    {chat.isGroup ? `${chat.participants?.length || 0} members` : (onlineUsers[otherUser?._id] === 'online' ? 'Online' : 'Offline')}
+                                    {isTyping.length > 0 && ` • typing...`}
+                                </span>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div className="chat-actions" onClick={(e) => e.stopPropagation()}>

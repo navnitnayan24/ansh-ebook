@@ -43,6 +43,7 @@ const AdminDashboard = () => {
 
     const [thumbnailFile, setThumbnailFile] = useState(null);
     const [audioFile, setAudioFile] = useState(null);
+    const [uploadProgress, setUploadProgress] = useState({ active: false, percent: 0, currentChunk: 0, totalChunks: 0 });
 
     const getSavedUser = () => {
         try {
@@ -184,7 +185,7 @@ const AdminDashboard = () => {
             
             const uploadDirectlyToCloudinary = async (file) => {
                 const sigRes = await fetchCloudinarySignature();
-                const { signature, timestamp, cloudName, apiKey } = sigRes.data;
+                const { signature, timestamp, cloudName, apiKey, uploadPreset } = sigRes.data;
 
                 let resourceType = 'auto';
                 if (file.type.startsWith('audio/') || file.type.startsWith('video/')) {
@@ -193,24 +194,83 @@ const AdminDashboard = () => {
                     resourceType = 'raw';
                 }
 
-                const fd = new FormData();
-                fd.append('file', file);
-                fd.append('api_key', apiKey);
-                fd.append('timestamp', timestamp);
-                fd.append('signature', signature);
-                fd.append('access_mode', 'public');
-                
-                const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`, {
-                    method: 'POST',
-                    body: fd
-                });
+                // If file is small (< 5MB), do a standard upload
+                const CHUNK_SIZE = 5 * 1024 * 1024; // 5MB
+                if (file.size <= CHUNK_SIZE) {
+                    setUploadProgress({ active: true, percent: 10, currentChunk: 1, totalChunks: 1 });
+                    const fd = new FormData();
+                    fd.append('file', file);
+                    fd.append('api_key', apiKey);
+                    fd.append('timestamp', timestamp);
+                    fd.append('signature', signature);
+                    fd.append('access_mode', 'public');
+                    
+                    const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`, {
+                        method: 'POST',
+                        body: fd
+                    });
 
-                if (!res.ok) {
-                    const errorObj = await res.json();
-                    throw new Error(errorObj.error?.message || 'Bypass upload failed. Check upload_preset or size limit.');
+                    if (!res.ok) {
+                        const errorObj = await res.json();
+                        throw new Error(errorObj.error?.message || 'Upload failed');
+                    }
+                    const resData = await res.json();
+                    setUploadProgress({ active: false, percent: 100, currentChunk: 1, totalChunks: 1 });
+                    return resData.secure_url;
                 }
-                const resData = await res.json();
-                return resData.secure_url;
+
+                // --- CHUNKED UPLOAD LOGIC ---
+                const uniqueUploadId = 'ansh_' + Date.now() + '_' + Math.random().toString(36).substring(7);
+                const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+                let secureUrl = '';
+
+                for (let i = 0; i < totalChunks; i++) {
+                    const start = i * CHUNK_SIZE;
+                    const end = Math.min(start + CHUNK_SIZE, file.size);
+                    const chunk = file.slice(start, end);
+
+                    setUploadProgress({ active: true, percent: Math.round((i / totalChunks) * 100), currentChunk: i + 1, totalChunks });
+
+                    let retryCount = 0;
+                    let success = false;
+                    while (!success && retryCount < 3) {
+                        try {
+                            const fd = new FormData();
+                            fd.append('file', chunk);
+                            fd.append('api_key', apiKey);
+                            fd.append('timestamp', timestamp);
+                            fd.append('signature', signature);
+                            fd.append('access_mode', 'public');
+                            
+                            // Important: Use the same signature/timestamp for all chunks in unsigned-like signed uploads
+                            // or fetch a fresh signature for each if Cloudinary requires it.
+                            // For simplicity and speed, we reuse.
+                            
+                            const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`, {
+                                method: 'POST',
+                                headers: {
+                                    'X-Unique-Upload-Id': uniqueUploadId,
+                                    'Content-Range': `bytes ${start}-${end - 1}/${file.size}`
+                                },
+                                body: fd
+                            });
+
+                            if (!res.ok) throw new Error('Chunk failed');
+                            const resData = await res.json();
+                            if (i === totalChunks - 1) {
+                                secureUrl = resData.secure_url;
+                            }
+                            success = true;
+                        } catch (err) {
+                            retryCount++;
+                            if (retryCount >= 3) throw new Error(`Failed to upload chunk ${i+1} after 3 retries.`);
+                            await new Promise(r => setTimeout(r, 2000)); // Wait before retry
+                        }
+                    }
+                }
+
+                setUploadProgress({ active: false, percent: 100, currentChunk: totalChunks, totalChunks });
+                return secureUrl;
             };
 
             let bypassThumb = !!thumbnailFile;
@@ -365,7 +425,35 @@ const AdminDashboard = () => {
                 )}
             </div>
 
-             <motion.div 
+            {/* PROGRESS OVERLAY */}
+            <AnimatePresence>
+                {uploadProgress.active && (
+                    <motion.div 
+                        className="upload-progress-overlay"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                    >
+                        <div className="progress-card glass-card shadow-neon">
+                            <h3>🚀 Powering through upload...</h3>
+                            <div className="progress-bar-container">
+                                <motion.div 
+                                    className="progress-bar-fill"
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${uploadProgress.percent}%` }}
+                                />
+                            </div>
+                            <div className="progress-details">
+                                <span className="percent">{uploadProgress.percent}%</span>
+                                <span className="chunks">Chunk {uploadProgress.currentChunk} / {uploadProgress.totalChunks}</span>
+                            </div>
+                            <p className="slow-internet-note">Keep your browser open, especially on slow internet. We're retrying automatically if needed! 💎</p>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            <motion.div 
                 className={`dashboard-content framed-body glass-card content-section-${activeTab}`}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}

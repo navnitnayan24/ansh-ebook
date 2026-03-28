@@ -46,8 +46,7 @@
 
 /* ─── Page Root ─── */
 .realtime-chat-page {
-    height: calc(100vh - 100px); /* Account for desktop BrandHeader (100px) */
-    max-height: 100dvh;
+    height: 100dvh; /* Use Dynamic Viewport Height for all screens */
     display: flex;
     background: var(--c-bg);
     position: relative;
@@ -57,7 +56,8 @@
 
 @media (max-width: 768px) {
     .realtime-chat-page {
-        height: calc(100dvh - 80px); /* Account for mobile BrandHeader (80px) */
+        height: 100dvh;
+        /* Ensure it covers browser bars on mobile */
         min-height: -webkit-fill-available;
     }
 }
@@ -68,6 +68,59 @@
     width: 100%;
     height: 100%;
     overflow: hidden;
+}
+
+@media (max-width: 768px) {
+    .chat-layout {
+        display: block;
+        position: relative;
+    }
+    
+    .chat-sidebar {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        inset: 0;
+        z-index: 10;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        background: var(--c-bg);
+    }
+    
+    .chat-layout.has-selected-chat .chat-sidebar {
+        transform: translateX(-100%);
+    }
+    
+    .chat-window {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        inset: 0;
+        z-index: 5;
+        background: var(--c-bg);
+        transform: translateX(100%);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .chat-layout.has-selected-chat .chat-window {
+        transform: translateX(0);
+        z-index: 15;
+    }
+    
+    .mobile-back-btn {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        background: transparent;
+        border: none;
+        color: var(--c-txt);
+        padding: 8px;
+        margin-right: 5px;
+        cursor: pointer;
+    }
+}
+
+.mobile-back-btn {
+    display: none;
 }
 
 /* ================================================================
@@ -436,13 +489,24 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: rgba(10,10,10,0.88);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background: rgba(10, 10, 10, 0.88);
+    backdrop-filter: blur(25px) saturate(180%);
+    -webkit-backdrop-filter: blur(25px) saturate(180%);
     border-bottom: 1px solid var(--c-glassborder);
     z-index: 100;
     cursor: pointer;
-    min-height: 64px;
+    min-height: 70px; /* Slightly taller for mobile comfort */
+}
+
+@media (max-width: 768px) {
+    .chat-header {
+        padding: 10px 14px;
+        min-height: 64px;
+        position: sticky;
+        top: 0;
+        width: 100%;
+        background: rgba(13, 13, 13, 0.95);
+    }
 }
 
 .other-user-info {
@@ -472,7 +536,7 @@
 }
 .chat-header-title h4 {
     margin: 0 0 2px;
-    font-size: 0.98rem;
+    font-size: 1.05rem; /* Larger for elite feel */
     font-weight: 700;
     color: var(--c-txt);
     white-space: nowrap;
@@ -480,16 +544,25 @@
     text-overflow: ellipsis;
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 6px;
+    letter-spacing: -0.2px;
+}
+
+@media (max-width: 768px) {
+    .chat-header-title h4 {
+        font-size: 0.95rem;
+    }
 }
 
 .user-status-text {
-    font-size: 0.73rem;
-    color: var(--c-muted);
+    font-size: 0.75rem;
+    color: var(--c-pink); /* Highlighted for elite feel */
+    font-weight: 500;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     display: block;
+    opacity: 0.85;
 }
 
 .chat-actions {
@@ -614,11 +687,22 @@
    ================================================================ */
 .message-input-form {
     flex-shrink: 0;
-    padding: 10px 14px 14px;
-    background: rgba(10,10,10,0.9);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+    background: rgba(10, 10, 10, 0.92);
+    backdrop-filter: blur(25px) saturate(180%);
+    -webkit-backdrop-filter: blur(25px) saturate(180%);
     border-top: 1px solid var(--c-glassborder);
+    position: relative;
+    z-index: 10;
+}
+
+@media (max-width: 768px) {
+    .message-input-form {
+        padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px));
+        position: sticky;
+        bottom: 0;
+        width: 100%;
+    }
 }
 
 .input-field-container {
