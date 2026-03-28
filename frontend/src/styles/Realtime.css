@@ -73,33 +73,39 @@
 
 @media (max-width: 768px) {
     .chat-layout {
-        display: block;
-        position: relative;
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
     }
     
     .chat-sidebar {
+        grid-column: 1 / -1;
+        grid-row: 1 / -1;
         width: 100%;
         height: 100%;
-        position: absolute;
-        inset: 0;
+        position: relative;
         z-index: 10;
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         background: var(--c-bg);
     }
     
-    .chat-layout.has-selected-chat .chat-sidebar {
-        transform: translateX(-100%);
-    }
-    
     .chat-window-container {
+        grid-column: 1 / -1;
+        grid-row: 1 / -1;
         width: 100%;
         height: 100%;
-        position: absolute;
-        inset: 0;
+        position: relative;
         z-index: 5;
         background: var(--c-bg);
         transform: translateX(100%);
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .chat-layout.has-selected-chat .chat-sidebar {
+        transform: translateX(-100%);
     }
     
     .chat-layout.has-selected-chat .chat-window-container {
