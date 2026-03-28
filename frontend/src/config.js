@@ -19,12 +19,21 @@ export const maskEmail = (name) => {
 export const getAvatarUrl = (pic, username = 'U') => {
     // Sanitized name for third party services like ui-avatars to prevent email leakage in URLs
     const safeName = maskEmail(username);
-    const fallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(safeName || 'U')}&background=random&color=fff`;
     
-    if (!pic || pic === 'default-avatar.png' || pic.includes('default')) return fallback;
+    // --- Premium Shadow Man Fallback ---
+    // Using a reliable public 'Mystery Person' avatar from Gravatar or Flaticon
+    const shadowMan = `https://www.gravatar.com/avatar/${encodeURIComponent(safeName)}?d=mp&f=y`;
+    const fallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(safeName || 'U')}&background=ff1493&color=fff&size=200`;
+    
+    // If no pic, return shadow man
+    if (!pic || pic === 'default-avatar.png' || pic.includes('default') || pic === 'undefined' || pic === 'null') {
+        return shadowMan;
+    }
     
     let rawPic = pic;
     // Normalize paths from different OS formats
+    if (typeof rawPic !== 'string') return fallback;
+    
     if (rawPic.includes('\\uploads\\')) rawPic = '/uploads/' + rawPic.split('\\uploads\\').pop();
     else if (rawPic.includes('/uploads/')) rawPic = '/uploads/' + rawPic.split('/uploads/').pop();
     

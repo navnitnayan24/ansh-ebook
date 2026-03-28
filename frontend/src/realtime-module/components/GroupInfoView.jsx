@@ -136,8 +136,11 @@ const GroupInfoView = ({ chat, onClose, onUpdate }) => {
                         <div className="detail-avatar-container">
                             <img 
                                 src={getAvatarUrl(selectedMember.profile_pic, selectedMember.username)} 
-                                alt={maskEmail(selectedMember.username)}
-                                onError={(e) => { e.target.src = getAvatarUrl(null, selectedMember.username); }}
+                                alt="" 
+                                onError={(e) => { 
+                                    e.target.onerror = null;
+                                    e.target.src = getAvatarUrl(null, selectedMember.username); 
+                                }}
                             />
                         </div>
                         <h2 className="detail-username">{maskEmail(selectedMember.username)}</h2>
@@ -188,7 +191,14 @@ const GroupInfoView = ({ chat, onClose, onUpdate }) => {
                         {isLoading ? <div className="loading-spinner-small">Searching...</div> : 
                          availableUsers.map(user => (
                             <div key={user._id} className="user-search-item" onClick={() => handleAddUser(user._id)}>
-                                <img src={getAvatarUrl(user.profile_pic, user.username)} alt={maskEmail(user.username)} />
+                                <img 
+                                    src={getAvatarUrl(user.profile_pic, user.username)} 
+                                    alt="" 
+                                    onError={(e) => { 
+                                        e.target.onerror = null;
+                                        e.target.src = getAvatarUrl(null, user.username); 
+                                    }}
+                                />
                                 <span>{maskEmail(user.username)}</span>
                                 <Plus size={16} className="add-icon-mini" />
                             </div>
@@ -282,8 +292,11 @@ const GroupInfoView = ({ chat, onClose, onUpdate }) => {
                                 <div key={member._id} className="participant-item" onClick={() => setSelectedMember(member)}>
                                     <img 
                                         src={getAvatarUrl(member.profile_pic, member.username)} 
-                                        alt={maskEmail(member.username)} 
-                                        onError={(e) => { e.target.src = getAvatarUrl(null, member.username); }}
+                                        alt="" 
+                                        onError={(e) => { 
+                                            e.target.onerror = null;
+                                            e.target.src = getAvatarUrl(null, member.username); 
+                                        }}
                                     />
                                     <div className="participant-name">
                                         <span>{maskEmail(member.username)}</span>

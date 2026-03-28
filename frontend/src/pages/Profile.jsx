@@ -98,11 +98,15 @@ const Profile = () => {
                     <div className="profile-avatar-wrapper" style={{ position: 'relative' }}>
                         <div className="avatar-glow"></div>
                         <div className="main-avatar-container shadow-neon">
-                            {user.profile_pic ? (
-                                <img src={getAvatarUrl(user.profile_pic)} alt="Profile Avatar" className="avatar-icon-large" />
-                            ) : (
-                                <User size={80} className="avatar-placeholder" />
-                            )}
+                            <img 
+                                src={getAvatarUrl(user.profile_pic, user.username)} 
+                                alt="Profile Avatar" 
+                                className="avatar-icon-large" 
+                                onError={(e) => { 
+                                    e.target.onerror = null;
+                                    e.target.src = getAvatarUrl(null, user.username); 
+                                }}
+                            />
                             {uploading && <div className="upload-overlay"><div className="loader-mini"></div></div>}
                         </div>
                         

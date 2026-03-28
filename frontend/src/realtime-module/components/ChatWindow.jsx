@@ -130,8 +130,11 @@ const ChatWindow = ({ chat, setSelectedChat }) => {
                             ) : (
                                 <img 
                                     src={getAvatarUrl(otherUser?.profile_pic, otherUser?.username)} 
-                                    alt={maskEmail(otherUser?.username)} 
-                                    onError={(e) => { e.target.src = getAvatarUrl(null, otherUser?.username); }}
+                                    alt="" 
+                                    onError={(e) => { 
+                                        e.target.onerror = null; // Prevent infinite loop
+                                        e.target.src = getAvatarUrl(null, otherUser?.username); 
+                                    }}
                                     className="header-avatar"
                                 />
                             )}

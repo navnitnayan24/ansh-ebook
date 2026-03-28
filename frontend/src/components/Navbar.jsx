@@ -211,11 +211,15 @@ const Navbar = ({ isOpen, setIsOpen, closeMenu }) => {
                                             <li>
                                                 <Link to="/profile" onClick={closeMenu} className="drawer-link profile-link-highlight">
                                                     <span className="drawer-icon">
-                                                        {user.profile_pic ? (
-                                                            <img src={getAvatarUrl(user.profile_pic)} alt="Profile" style={{ width: '20px', height: '20px', borderRadius: '50%', objectFit: 'cover' }} />
-                                                        ) : (
-                                                            <User size={20} />
-                                                        )}
+                                                        <img 
+                                                            src={getAvatarUrl(user.profile_pic, user.username)} 
+                                                            alt="" 
+                                                            style={{ width: '20px', height: '20px', borderRadius: '50%', objectFit: 'cover' }} 
+                                                            onError={(e) => { 
+                                                                e.target.onerror = null;
+                                                                e.target.src = getAvatarUrl(null, user.username); 
+                                                            }}
+                                                        />
                                                     </span>
                                                     <span className="drawer-label">MY PROFILE</span>
                                                 </Link>

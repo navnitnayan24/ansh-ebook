@@ -156,8 +156,11 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
                                 ) : (
                                     <img 
                                         src={getAvatarUrl(otherParticipant?.profile_pic, otherParticipant?.username)} 
-                                        alt={maskEmail(otherParticipant?.username)} 
-                                        onError={(e) => { e.target.src = getAvatarUrl(null, otherParticipant?.username); }}
+                                        alt="" 
+                                        onError={(e) => { 
+                                            e.target.onerror = null;
+                                            e.target.src = getAvatarUrl(null, otherParticipant?.username); 
+                                        }}
                                     />
                                 )}
                                 {!chat.isGroup && <span className={`status-dot ${isOnline ? 'online' : 'offline'}`}></span>}
@@ -194,8 +197,11 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
                                 <div className="user-avatar-wrapper">
                                     <img 
                                         src={getAvatarUrl(user.profile_pic, user.username)} 
-                                        alt={maskEmail(user.username)} 
-                                        onError={(e) => { e.target.src = getAvatarUrl(null, user.username); }}
+                                        alt="" 
+                                        onError={(e) => { 
+                                            e.target.onerror = null;
+                                            e.target.src = getAvatarUrl(null, user.username); 
+                                        }}
                                     />
                                     <span className={`status-dot ${onlineUsers[user._id] === 'online' ? 'online' : 'offline'}`}></span>
                                 </div>
@@ -244,7 +250,14 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
                                         className={`participant-chip ${selectedUsers.find(s => s._id === u._id) ? 'active' : ''}`}
                                         onClick={() => toggleUserSelection(u)}
                                     >
-                                        <img src={getAvatarUrl(u.profile_pic, u.username)} alt="" />
+                                        <img 
+                                            src={getAvatarUrl(u.profile_pic, u.username)} 
+                                            alt="" 
+                                            onError={(e) => { 
+                                                e.target.onerror = null;
+                                                e.target.src = getAvatarUrl(null, u.username); 
+                                            }}
+                                        />
                                         <span>{maskEmail(u.username)}</span>
                                         {selectedUsers.find(s => s._id === u._id) && <Check size={12} />}
                                     </div>

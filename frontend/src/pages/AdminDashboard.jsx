@@ -406,7 +406,15 @@ const AdminDashboard = () => {
                     </div>
                     <div className="welcome-txt" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                         {user?.profile_pic ? (
-                            <img src={getAvatarUrl(user.profile_pic)} alt="Admin" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} />
+                            <img 
+                                src={getAvatarUrl(user.profile_pic, user.username)} 
+                                alt="" 
+                                style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} 
+                                onError={(e) => { 
+                                    e.target.onerror = null;
+                                    e.target.src = getAvatarUrl(null, user.username); 
+                                }}
+                            />
                         ) : (
                             <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--gradient-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                 <span style={{ color: 'white', fontWeight: 'bold' }}>{user?.username?.charAt(0).toUpperCase()}</span>
