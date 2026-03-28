@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { X, UserPlus, Shield, UserMinus, LogOut, MoreVertical, Search, Check, Plus, Edit2, Save, Copy, Camera, Link } from 'lucide-react';
 import { getAvatarUrl, maskEmail } from '../../config';
 import Avatar from '../../components/Avatar';
 import { searchUsers, addMember, removeMember, updateGroup, leaveGroup } from '../../api';
 
 const GroupInfoView = ({ chat, onClose, onUpdate }) => {
+    const navigate = useNavigate();
     const [isAdding, setIsAdding] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [selectedMember, setSelectedMember] = useState(null);
@@ -165,7 +167,7 @@ const GroupInfoView = ({ chat, onClose, onUpdate }) => {
                                 <UserMinus size={18} /> Remove from Group
                             </button>
                         )}
-                        <button className="message-direct-btn" onClick={() => alert("Direct message coming soon!")}>
+                        <button className="message-direct-btn" onClick={() => navigate(`/chat?dm=${selectedMember._id}`)}>
                             Send Private Message
                         </button>
                     </div>
