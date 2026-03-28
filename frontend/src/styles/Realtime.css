@@ -507,10 +507,11 @@
     .chat-header {
         padding: 10px 14px;
         min-height: 64px;
-        position: sticky;
-        top: 0;
+        flex-shrink: 0;
         width: 100%;
         background: rgba(13, 13, 13, 0.95);
+        z-index: 100;
+        position: relative;
     }
 }
 
