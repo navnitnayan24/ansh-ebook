@@ -5,7 +5,7 @@ import { useSocket } from '../context/SocketContext';
 import { Phone, Video, MoreVertical, Pin, ArrowLeft } from 'lucide-react';
 import { fetchMessages } from '../../api';
 import { getAvatarUrl, maskEmail } from '../../config';
-import Avatar from '../../../components/Avatar';
+import Avatar from '../../components/Avatar';
 
 const ChatWindow = ({ chat, setSelectedChat }) => {
     const [messages, setMessages] = useState([]);

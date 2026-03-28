@@ -3,7 +3,7 @@ import { Search, Moon, Sun, Send, Users, UserPlus, Link, Plus, Check } from 'luc
 import { createGroupChat, joinGroupByCode } from '../../api';
 import { useSocket } from '../context/SocketContext';
 import { getAvatarUrl, maskEmail } from '../../config';
-import Avatar from '../../../components/Avatar';
+import Avatar from '../../components/Avatar';
 
 const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef }) => {
     const [search, setSearch] = useState('');

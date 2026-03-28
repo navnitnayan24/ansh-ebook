@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, UserPlus, Shield, UserMinus, LogOut, MoreVertical, Search, Check, Plus, Edit2, Save, Copy, Camera, Link } from 'lucide-react';
 import { getAvatarUrl, maskEmail } from '../../config';
-import Avatar from '../../../components/Avatar';
+import Avatar from '../../components/Avatar';
 import { searchUsers, addMember, removeMember, updateGroup, leaveGroup } from '../../api';
 
 const GroupInfoView = ({ chat, onClose, onUpdate }) => {
