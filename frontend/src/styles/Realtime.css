@@ -1265,3 +1265,14 @@
 }
 .group-avatar-large:hover .edit-icon-overlay { opacity: 1; }
 
+
+/* Invitation Styles */
+.sidebar-section-invites { background: rgba(233, 30, 140, 0.03); border-bottom: 1px solid rgba(233, 30, 140, 0.1); padding-bottom: 1rem; }
+.invite-item { padding: 12px 1rem; border-left: 3px solid var(--pink-primary); }
+.invite-actions { display: flex; gap: 8px; margin-top: 8px; }
+.btn-accept, .btn-reject { padding: 4px 12px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+.btn-accept { background: var(--pink-primary); color: white; border: none; }
+.btn-reject { background: rgba(255,255,255,0.05); color: #ccc; border: 1px solid rgba(255,255,255,0.1); }
+.btn-accept:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(233, 30, 140, 0.3); }
+.btn-reject:hover { background: rgba(255,255,255,0.1); color: #fff; }
+.group-avatar-main.invite { background: linear-gradient(135deg, var(--pink-primary), #9c27b0); display: flex; align-items: center; justify-content: center; border-radius: 50%; color: white; }

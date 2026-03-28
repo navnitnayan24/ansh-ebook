@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Moon, Sun, Send, Users, UserPlus, Link, Plus, Check } from 'lucide-react';
-import { createGroupChat, joinGroupByCode } from '../../api';
+import { createGroupChat, joinGroupByCode, acceptInvite, rejectInvite } from '../../api';
 import { useSocket } from '../context/SocketContext';
 import { getAvatarUrl, maskEmail } from '../../config';
 import Avatar from '../../components/Avatar';
@@ -61,6 +61,22 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
     useEffect(() => {
         if (!socket) return;
 
+        // Auto-DM handling: if ?dm=userId is in URL
+        const params = new URLSearchParams(window.location.search);
+        const dmUserId = params.get('dm');
+        if (dmUserId && users.length > 0) {
+            const targetUser = users.find(u => u._id === dmUserId);
+            if (targetUser) {
+                setSelectedChat({ 
+                    _id: `new-${dmUserId}`, 
+                    participants: [currentUser, targetUser],
+                    isGroup: false 
+                });
+                // Remove param from URL without reload
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        }
+
         socket.on('user-typing', (data) => {
             setTypingStatus(prev => ({
                 ...prev,
@@ -80,8 +96,17 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
 
     const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark');
 
+    // Filter pending invites
+    const pendingInvites = (chats || []).filter(chat => 
+        chat?.pendingParticipants?.some(p => p._id === currentUserId)
+    );
+
     // Filter active chats by search
-    const filteredChats = (chats || []).filter(chat => {
+    const activeChats = (chats || []).filter(chat => 
+        chat?.participants?.some(p => p._id === currentUserId)
+    );
+
+    const filteredChats = activeChats.filter(chat => {
         if (!chat) return false;
         const searchTerm = (search || '').toLowerCase();
         if (chat.isGroup) {
@@ -137,6 +162,27 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
             </div>
 
             <div className="user-list">
+                {/* Pending Invitations */}
+                {pendingInvites.length > 0 && (
+                    <div className="sidebar-section-invites">
+                        <div className="sidebar-section-title">New Invitations ({pendingInvites.length})</div>
+                        {pendingInvites.map((chat) => (
+                            <div key={chat._id} className="user-item invite-item">
+                                <div className="user-avatar-wrapper">
+                                    <div className="group-avatar-main invite" style={{ width: '40px', height: '40px', fontSize: '14px' }}>📩</div>
+                                </div>
+                                <div className="user-info">
+                                    <span className="user-name">{chat.name}</span>
+                                    <div className="invite-actions">
+                                        <button className="btn-accept" onClick={() => acceptInvite(chat._id).then(() => window.location.reload())}>Accept</button>
+                                        <button className="btn-reject" onClick={() => rejectInvite(chat._id).then(() => window.location.reload())}>Decline</button>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+
                 {/* Active Chats */}
                 {filteredChats.map((chat) => {
                     const otherParticipant = !chat.isGroup ? chat.participants.find(p => p._id !== currentUserId) : null;

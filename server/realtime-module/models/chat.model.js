@@ -42,7 +42,11 @@ const chatSchema = new mongoose.Schema({
         type: Map,
         of: Number,
         default: {}
-    }
+    },
+    pendingParticipants: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }]
 }, { timestamps: true });
 
 module.exports = mongoose.model('Chat', chatSchema);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Quote, Heart, Copy, Search, ArrowLeft, Share2, PenTool, MessageCircle, Send } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fetchContentByType, fetchCategories } from '../api';
@@ -15,6 +15,7 @@ const Shayari = () => {
     const [selectedCategory, setSelectedCategory] = useState('All');
     const [commentingOn, setCommentingOn] = useState(null);
     const [commentText, setCommentText] = useState('');
+    const navigate = useNavigate();
 
     const currentUser = (() => {
         try {
@@ -233,8 +234,22 @@ const Shayari = () => {
                                                             <div className="comments-list mb-3" style={{maxHeight: '150px', overflowY: 'auto'}}>
                                                                 {s.comments && s.comments.length > 0 ? s.comments.map((c, i) => (
                                                                     <div key={i} className="comment-item" style={{background: 'var(--bg-glass-light)', padding: '0.6rem', borderRadius: '8px', marginBottom: '0.5rem'}}>
-                                                                        <strong style={{color: 'var(--pink-primary)', fontSize: '0.85rem'}}>{c.username}</strong>
-                                                                        <p style={{margin: '0.3rem 0 0', fontSize: '0.9rem', color: 'var(--text-primary)'}}>{c.text}</p>
+                                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                                                            <div>
+                                                                                <strong style={{color: 'var(--pink-primary)', fontSize: '0.85rem'}}>{c.username}</strong>
+                                                                                <p style={{margin: '0.3rem 0 0', fontSize: '0.9rem', color: 'var(--text-primary)'}}>{c.text}</p>
+                                                                            </div>
+                                                                            {currentUser && c.user_id && (c.user_id !== currentUser._id && c.user_id !== currentUser.id) && (
+                                                                                <button 
+                                                                                    className="icon-btn-plain" 
+                                                                                    title="Message User"
+                                                                                    onClick={() => navigate(`/chat?dm=${c.user_id}`)}
+                                                                                    style={{ color: 'var(--pink-primary)', opacity: 0.8, padding: '2px' }}
+                                                                                >
+                                                                                    <MessageCircle size={14} fill="currentColor" />
+                                                                                </button>
+                                                                            )}
+                                                                        </div>
                                                                         <span style={{fontSize: '0.7rem', color: 'var(--text-muted)'}}>{new Date(c.createdAt).toLocaleDateString()}</span>
                                                                     </div>
                                                                 )) : <p className="text-muted" style={{fontSize: '0.85rem'}}>No comments yet. Be the first!</p>}

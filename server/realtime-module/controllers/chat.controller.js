@@ -5,8 +5,14 @@ const User = require('../../models/User');
 // Get all chats for the current user
 exports.getChats = async (req, res) => {
     try {
-        const chats = await Chat.find({ participants: req.user.id })
+        const chats = await Chat.find({ 
+            $or: [
+                { participants: req.user.id },
+                { pendingParticipants: req.user.id }
+            ]
+        })
             .populate('participants', 'username profile_pic _id')
+            .populate('pendingParticipants', 'username profile_pic _id')
             .populate('lastMessage')
             .sort({ updatedAt: -1 });
         res.json(chats);
@@ -116,19 +122,19 @@ exports.addMemberToGroup = async (req, res) => {
             return res.status(403).json({ error: 'Only admins can add members' });
         }
 
-        // Add if not already a participant
-        if (!chat.participants.includes(userId)) {
-            chat.participants.push(userId);
+        // Add to pending if not already a participant or pending
+        if (!chat.participants.includes(userId) && !chat.pendingParticipants.includes(userId)) {
+            chat.pendingParticipants.push(userId);
             await chat.save();
         }
         
-        const populatedChat = await chat.populate('participants', 'username profile_pic _id');
+        const populatedChat = await chat.populate('participants pendingParticipants', 'username profile_pic _id');
         
-        // Notify the added user via socket
+        // Notify the invited user via socket
         const { getIo } = require('../socket');
         const io = getIo();
         if (io) {
-            io.to(userId.toString()).emit('chat-added', populatedChat);
+            io.to(userId.toString()).emit('chat-invite', populatedChat);
         }
 
         res.json(populatedChat);
@@ -204,6 +210,55 @@ exports.leaveGroup = async (req, res) => {
         }
 
         await chat.save();
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// Accept an invitation
+exports.acceptInvite = async (req, res) => {
+    const { chatId } = req.params;
+    try {
+        const chat = await Chat.findById(chatId);
+        if (!chat) return res.status(404).json({ error: 'Chat not found' });
+        
+        const userId = req.user.id;
+        
+        // Move from pending to active participants
+        if (chat.pendingParticipants.includes(userId)) {
+            chat.pendingParticipants.push(userId); // ensure it's there? No, pull then push
+            chat.pendingParticipants = chat.pendingParticipants.filter(p => p?.toString() !== userId);
+            
+            if (!chat.participants.includes(userId)) {
+                chat.participants.push(userId);
+            }
+            await chat.save();
+        }
+
+        const populatedChat = await chat.populate('participants pendingParticipants', 'username profile_pic _id');
+        res.json(populatedChat);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// Reject/Cancel an invitation
+exports.rejectInvite = async (req, res) => {
+    const { chatId } = req.params;
+    try {
+        const chat = await Chat.findById(chatId);
+        if (!chat) return res.status(404).json({ error: 'Chat not found' });
+        
+        const userId = req.user.id;
+        
+        // Only allow rejection if user is pending OR is the admin canceling an invite
+        const isAdmin = chat.admin?.toString() === userId;
+        const targetUserId = req.body.userId || userId; // if admin is canceling, they send the userId
+        
+        chat.pendingParticipants = chat.pendingParticipants.filter(p => p?.toString() !== targetUserId);
+        await chat.save();
+        
         res.json({ success: true });
     } catch (err) {
         res.status(500).json({ error: err.message });
