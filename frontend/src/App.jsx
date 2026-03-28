@@ -8,24 +8,41 @@ import MobileFooter from './components/MobileFooter';
 import { SplashScreen } from '@capacitor/splash-screen';
 
 
-// Lazy loaded pages for performance (Goal 6)
-const Home = lazy(() => import('./pages/Home'));
-const Login = lazy(() => import('./pages/Login'));
-const Register = lazy(() => import('./pages/Register'));
-const Profile = lazy(() => import('./pages/Profile'));
-const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
-const Terms = lazy(() => import('./pages/Terms'));
-const Privacy = lazy(() => import('./pages/Privacy'));
-const Disclaimer = lazy(() => import('./pages/Disclaimer'));
-const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
-const ResetPassword = lazy(() => import('./pages/ResetPassword'));
-const Shayari = lazy(() => import('./pages/Shayari'));
-const Music = lazy(() => import('./pages/Music'));
-const Podcasts = lazy(() => import('./pages/Podcasts'));
-const Ebooks = lazy(() => import('./pages/Ebooks'));
-const ChatPage = lazy(() => import('./realtime-module/pages/ChatPage')); // Realtime Module Hook
-const Settings = lazy(() => import('./pages/Settings'));
-const NotFound = lazy(() => import('./pages/NotFound'));
+// Lazy Retry Utility: Automatically reloads the page if a chunk fails to load 
+// (happens when a new build is pushed and the old version is still in browser cache)
+const lazyRetry = (componentImport) => {
+    return lazy(async () => {
+        const hasRetried = window.sessionStorage.getItem('retry-lazy-' + window.location.pathname);
+        try {
+            return await componentImport();
+        } catch (error) {
+            if (!hasRetried && (error.message.includes('Failed to fetch') || error.message.includes('dynamically imported module'))) {
+                window.sessionStorage.setItem('retry-lazy-' + window.location.pathname, 'true');
+                window.location.reload();
+                return;
+            }
+            throw error;
+        }
+    });
+};
+
+const Home = lazyRetry(() => import('./pages/Home'));
+const Login = lazyRetry(() => import('./pages/Login'));
+const Register = lazyRetry(() => import('./pages/Register'));
+const Profile = lazyRetry(() => import('./pages/Profile'));
+const AdminDashboard = lazyRetry(() => import('./pages/AdminDashboard'));
+const Terms = lazyRetry(() => import('./pages/Terms'));
+const Privacy = lazyRetry(() => import('./pages/Privacy'));
+const Disclaimer = lazyRetry(() => import('./pages/Disclaimer'));
+const ForgotPassword = lazyRetry(() => import('./pages/ForgotPassword'));
+const ResetPassword = lazyRetry(() => import('./pages/ResetPassword'));
+const Shayari = lazyRetry(() => import('./pages/Shayari'));
+const Music = lazyRetry(() => import('./pages/Music'));
+const Podcasts = lazyRetry(() => import('./pages/Podcasts'));
+const Ebooks = lazyRetry(() => import('./pages/Ebooks'));
+const ChatPage = lazyRetry(() => import('./realtime-module/pages/ChatPage'));
+const Settings = lazyRetry(() => import('./pages/Settings'));
+const NotFound = lazyRetry(() => import('./pages/NotFound'));
 
 import Sidebar from './components/Sidebar';
 import BrandHeader from './components/BrandHeader';
