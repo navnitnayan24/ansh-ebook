@@ -86,12 +86,15 @@ const Layout = ({ children }) => {
             <BrandHeader isMobile={isMobile} toggleMenu={toggleMenu} isOpen={isMenuOpen} />
             <div className="layout-body-flex" style={{ marginTop: isMobile ? '80px' : '100px' }}>
                 {!isMobile && <Sidebar />}
-                <div className={`main-layout ${!isMobile ? 'desktop-with-sidebar' : ''}`}>
-                    <main className="content-fluid">{children}</main>
+                <div 
+                    className={`main-layout ${!isMobile ? 'desktop-with-sidebar' : ''}`}
+                    style={isChatPage ? { paddingBottom: 0 } : {}}
+                >
+                    <main className={isChatPage ? "" : "content-fluid"}>{children}</main>
                     {!isChatPage && <Footer />}
                 </div>
             </div>
-            {isMobile && <MobileFooter />}
+            {isMobile && !isChatPage && <MobileFooter />}
             {isMobile && <Navbar isOpen={isMenuOpen} setIsOpen={setIsMenuOpen} closeMenu={closeMenu} />}
         </div>
     );

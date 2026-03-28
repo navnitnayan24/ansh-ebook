@@ -46,7 +46,9 @@
 
 /* ─── Page Root ─── */
 .realtime-chat-page {
-    height: 100dvh; /* Use Dynamic Viewport Height for all screens */
+    height: calc(100vh - 100px);
+    height: calc(100dvh - 100px); /* Use Dynamic Viewport Height for perfectly precise fitting */
+    width: 100%;
     display: flex;
     background: var(--c-bg);
     position: relative;
@@ -56,9 +58,8 @@
 
 @media (max-width: 768px) {
     .realtime-chat-page {
-        height: 100dvh;
-        /* Ensure it covers browser bars on mobile */
-        min-height: -webkit-fill-available;
+        height: calc(100vh - 80px); /* Mobile Header Size */
+        height: calc(100dvh - 80px);
     }
 }
 
