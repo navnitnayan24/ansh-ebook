@@ -4,6 +4,7 @@ import { Menu, X, LogOut, Settings, Sun, Moon, Home, Book, Music, Mic, BookOpen,
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
 import { MEDIA_URL, getAvatarUrl } from '../config';
+import Avatar from './Avatar';
 import '../styles/Navbar.css';
 
 const Navbar = ({ isOpen, setIsOpen, closeMenu }) => {
@@ -211,14 +212,10 @@ const Navbar = ({ isOpen, setIsOpen, closeMenu }) => {
                                             <li>
                                                 <Link to="/profile" onClick={closeMenu} className="drawer-link profile-link-highlight">
                                                     <span className="drawer-icon">
-                                                        <img 
-                                                            src={getAvatarUrl(user.profile_pic, user.username)} 
-                                                            alt="" 
+                                                        <Avatar 
+                                                            pic={user.profile_pic} 
+                                                            username={user.username} 
                                                             style={{ width: '20px', height: '20px', borderRadius: '50%', objectFit: 'cover' }} 
-                                                            onError={(e) => { 
-                                                                e.target.onerror = null;
-                                                                e.target.src = getAvatarUrl(null, user.username); 
-                                                            }}
                                                         />
                                                     </span>
                                                     <span className="drawer-label">MY PROFILE</span>

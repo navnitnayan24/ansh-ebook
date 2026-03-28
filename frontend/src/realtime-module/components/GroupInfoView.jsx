@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, UserPlus, Shield, UserMinus, LogOut, MoreVertical, Search, Check, Plus, Edit2, Save, Copy, Camera, Link } from 'lucide-react';
 import { getAvatarUrl, maskEmail } from '../../config';
+import Avatar from '../../../components/Avatar';
 import { searchUsers, addMember, removeMember, updateGroup, leaveGroup } from '../../api';
 
 const GroupInfoView = ({ chat, onClose, onUpdate }) => {
@@ -134,13 +135,9 @@ const GroupInfoView = ({ chat, onClose, onUpdate }) => {
                     </div>
                     <div className="detail-main">
                         <div className="detail-avatar-container">
-                            <img 
-                                src={getAvatarUrl(selectedMember.profile_pic, selectedMember.username)} 
-                                alt="" 
-                                onError={(e) => { 
-                                    e.target.onerror = null;
-                                    e.target.src = getAvatarUrl(null, selectedMember.username); 
-                                }}
+                            <Avatar 
+                                pic={selectedMember.profile_pic} 
+                                username={selectedMember.username} 
                             />
                         </div>
                         <h2 className="detail-username">{maskEmail(selectedMember.username)}</h2>
@@ -191,13 +188,9 @@ const GroupInfoView = ({ chat, onClose, onUpdate }) => {
                         {isLoading ? <div className="loading-spinner-small">Searching...</div> : 
                          availableUsers.map(user => (
                             <div key={user._id} className="user-search-item" onClick={() => handleAddUser(user._id)}>
-                                <img 
-                                    src={getAvatarUrl(user.profile_pic, user.username)} 
-                                    alt="" 
-                                    onError={(e) => { 
-                                        e.target.onerror = null;
-                                        e.target.src = getAvatarUrl(null, user.username); 
-                                    }}
+                                <Avatar 
+                                    pic={user.profile_pic} 
+                                    username={user.username} 
                                 />
                                 <span>{maskEmail(user.username)}</span>
                                 <Plus size={16} className="add-icon-mini" />
@@ -290,13 +283,9 @@ const GroupInfoView = ({ chat, onClose, onUpdate }) => {
                         <div className="participants-list">
                             {chat.participants?.map((member) => (
                                 <div key={member._id} className="participant-item" onClick={() => setSelectedMember(member)}>
-                                    <img 
-                                        src={getAvatarUrl(member.profile_pic, member.username)} 
-                                        alt="" 
-                                        onError={(e) => { 
-                                            e.target.onerror = null;
-                                            e.target.src = getAvatarUrl(null, member.username); 
-                                        }}
+                                    <Avatar 
+                                        pic={member.profile_pic} 
+                                        username={member.username} 
                                     />
                                     <div className="participant-name">
                                         <span>{maskEmail(member.username)}</span>

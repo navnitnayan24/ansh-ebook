@@ -5,6 +5,7 @@ import { useSocket } from '../context/SocketContext';
 import { Phone, Video, MoreVertical, Pin, ArrowLeft } from 'lucide-react';
 import { fetchMessages } from '../../api';
 import { getAvatarUrl, maskEmail } from '../../config';
+import Avatar from '../../../components/Avatar';
 
 const ChatWindow = ({ chat, setSelectedChat }) => {
     const [messages, setMessages] = useState([]);
@@ -128,13 +129,9 @@ const ChatWindow = ({ chat, setSelectedChat }) => {
                             {chat.isGroup ? (
                                 <div className="group-avatar-main">💎</div>
                             ) : (
-                                <img 
-                                    src={getAvatarUrl(otherUser?.profile_pic, otherUser?.username)} 
-                                    alt="" 
-                                    onError={(e) => { 
-                                        e.target.onerror = null; // Prevent infinite loop
-                                        e.target.src = getAvatarUrl(null, otherUser?.username); 
-                                    }}
+                                <Avatar 
+                                    pic={otherUser?.profile_pic} 
+                                    username={otherUser?.username} 
                                     className="header-avatar"
                                 />
                             )}

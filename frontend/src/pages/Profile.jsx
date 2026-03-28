@@ -4,6 +4,7 @@ import { User, Mail, Shield, Calendar, LogOut, ArrowRight, Heart, BookOpen, Tras
 import { motion, AnimatePresence } from 'framer-motion';
 import { API } from '../api';
 import { MEDIA_URL, getAvatarUrl } from '../config';
+import Avatar from '../components/Avatar';
 import '../styles/Profile.css';
 
 const PREDEFINED_AVATARS = [
@@ -98,14 +99,10 @@ const Profile = () => {
                     <div className="profile-avatar-wrapper" style={{ position: 'relative' }}>
                         <div className="avatar-glow"></div>
                         <div className="main-avatar-container shadow-neon">
-                            <img 
-                                src={getAvatarUrl(user.profile_pic, user.username)} 
-                                alt="Profile Avatar" 
+                            <Avatar 
+                                pic={user.profile_pic} 
+                                username={user.username} 
                                 className="avatar-icon-large" 
-                                onError={(e) => { 
-                                    e.target.onerror = null;
-                                    e.target.src = getAvatarUrl(null, user.username); 
-                                }}
                             />
                             {uploading && <div className="upload-overlay"><div className="loader-mini"></div></div>}
                         </div>

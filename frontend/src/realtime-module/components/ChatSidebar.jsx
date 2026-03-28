@@ -3,6 +3,7 @@ import { Search, Moon, Sun, Send, Users, UserPlus, Link, Plus, Check } from 'luc
 import { createGroupChat, joinGroupByCode } from '../../api';
 import { useSocket } from '../context/SocketContext';
 import { getAvatarUrl, maskEmail } from '../../config';
+import Avatar from '../../../components/Avatar';
 
 const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef }) => {
     const [search, setSearch] = useState('');
@@ -154,13 +155,10 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
                                 {chat.isGroup ? (
                                     <div className="group-avatar-main" style={{ width: '44px', height: '44px', fontSize: '18px' }}>💎</div>
                                 ) : (
-                                    <img 
-                                        src={getAvatarUrl(otherParticipant?.profile_pic, otherParticipant?.username)} 
-                                        alt="" 
-                                        onError={(e) => { 
-                                            e.target.onerror = null;
-                                            e.target.src = getAvatarUrl(null, otherParticipant?.username); 
-                                        }}
+                                    <Avatar 
+                                        pic={otherParticipant?.profile_pic} 
+                                        username={otherParticipant?.username} 
+                                        className="user-avatar-img"
                                     />
                                 )}
                                 {!chat.isGroup && <span className={`status-dot ${isOnline ? 'online' : 'offline'}`}></span>}
@@ -195,13 +193,10 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
                                 })}
                             >
                                 <div className="user-avatar-wrapper">
-                                    <img 
-                                        src={getAvatarUrl(user.profile_pic, user.username)} 
-                                        alt="" 
-                                        onError={(e) => { 
-                                            e.target.onerror = null;
-                                            e.target.src = getAvatarUrl(null, user.username); 
-                                        }}
+                                    <Avatar 
+                                        pic={user.profile_pic} 
+                                        username={user.username} 
+                                        className="user-avatar-img"
                                     />
                                     <span className={`status-dot ${onlineUsers[user._id] === 'online' ? 'online' : 'offline'}`}></span>
                                 </div>
@@ -250,13 +245,10 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
                                         className={`participant-chip ${selectedUsers.find(s => s._id === u._id) ? 'active' : ''}`}
                                         onClick={() => toggleUserSelection(u)}
                                     >
-                                        <img 
-                                            src={getAvatarUrl(u.profile_pic, u.username)} 
-                                            alt="" 
-                                            onError={(e) => { 
-                                                e.target.onerror = null;
-                                                e.target.src = getAvatarUrl(null, u.username); 
-                                            }}
+                                        <Avatar 
+                                            pic={u.profile_pic} 
+                                            username={u.username} 
+                                            className="participant-chip-avatar"
                                         />
                                         <span>{maskEmail(u.username)}</span>
                                         {selectedUsers.find(s => s._id === u._id) && <Check size={12} />}

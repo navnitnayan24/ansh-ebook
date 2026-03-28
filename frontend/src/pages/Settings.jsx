@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getAvatarUrl } from '../config';
+import Avatar from '../components/Avatar';
 import '../styles/Settings.css';
 
 const Settings = () => {
@@ -86,14 +87,10 @@ const Settings = () => {
                                     <h3 className="section-title">Profile Settings</h3>
                                     <div className="profile-edit-header mb-4">
                                         <div className="settings-avatar-wrapper">
-                                            <img 
-                                                src={getAvatarUrl(user?.profile_pic, user?.username)} 
-                                                alt="" 
+                                            <Avatar 
+                                                pic={user?.profile_pic} 
+                                                username={user?.username} 
                                                 className="settings-large-avatar" 
-                                                onError={(e) => { 
-                                                    e.target.onerror = null;
-                                                    e.target.src = getAvatarUrl(null, user?.username); 
-                                                }}
                                             />
                                             <label className="avatar-edit-badge">
                                                 <Camera size={14} />

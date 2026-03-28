@@ -10,6 +10,7 @@ import {
 } from '../api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MEDIA_URL, getAvatarUrl } from '../config';
+import Avatar from '../components/Avatar';
 import '../styles/Dashboard.css';
 
 const AdminDashboard = () => {
@@ -405,21 +406,11 @@ const AdminDashboard = () => {
                         })()}
                     </div>
                     <div className="welcome-txt" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        {user?.profile_pic ? (
-                            <img 
-                                src={getAvatarUrl(user.profile_pic, user.username)} 
-                                alt="" 
-                                style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} 
-                                onError={(e) => { 
-                                    e.target.onerror = null;
-                                    e.target.src = getAvatarUrl(null, user.username); 
-                                }}
-                            />
-                        ) : (
-                            <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--gradient-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <span style={{ color: 'white', fontWeight: 'bold' }}>{user?.username?.charAt(0).toUpperCase()}</span>
-                            </div>
-                        )}
+                        <Avatar 
+                            pic={user?.profile_pic} 
+                            username={user?.username} 
+                            style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} 
+                        />
                         <div>
                             <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Welcome back,</span><br/>
                             <span style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>{user?.username}</span>
