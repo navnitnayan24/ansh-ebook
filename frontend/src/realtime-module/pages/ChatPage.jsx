@@ -6,6 +6,7 @@ import { useSocket } from '../context/SocketContext';
 import { searchUsers, fetchChats, joinGroupByCode } from '../../api';
 import { ArrowLeft } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import ErrorBoundary from '../../components/ErrorBoundary';
 import '../../styles/Realtime.css';
 
 const ChatPage = () => {
@@ -80,39 +81,43 @@ const ChatPage = () => {
     }, [socket]);
 
     return (
-        <div className="realtime-chat-page">
-            <div className={`chat-layout ${selectedChat ? 'has-selected-chat' : ''}`}>
-                <ChatSidebar 
-                    chats={chats}
-                    users={users} 
-                    setSelectedChat={setSelectedChat} 
-                    selectedChat={selectedChat} 
-                    searchRef={searchRef}
-                />
-                
-                <div className="chat-window-container">
-                    {selectedChat ? (
-                        <ChatWindow 
-                            chat={selectedChat} 
-                            setSelectedChat={setSelectedChat} 
-                        />
-                    ) : (
-                        <div className="no-chat-selected">
-                            <div className="chat-welcome-icon">💎</div>
-                            <h2>Kohinoor Premium</h2>
-                            <p className="muted-text">Real-time collaboration & private messaging</p>
-                            <button className="btn-premium-start" onClick={handleStartChatting}>
-                                Start a conversation
-                            </button>
-                        </div>
-                    )}
+        <ErrorBoundary>
+            <div className="realtime-chat-page">
+                <div className={`chat-layout ${selectedChat ? 'has-selected-chat' : ''}`}>
+                    <ChatSidebar 
+                        chats={chats}
+                        users={users} 
+                        setSelectedChat={setSelectedChat} 
+                        selectedChat={selectedChat} 
+                        searchRef={searchRef}
+                    />
+                    
+                    <div className="chat-window-container">
+                        {selectedChat ? (
+                            <ErrorBoundary>
+                                <ChatWindow 
+                                    chat={selectedChat} 
+                                    setSelectedChat={setSelectedChat} 
+                                />
+                            </ErrorBoundary>
+                        ) : (
+                            <div className="no-chat-selected">
+                                <div className="chat-welcome-icon">💎</div>
+                                <h2>Kohinoor Premium</h2>
+                                <p className="muted-text">Real-time collaboration & private messaging</p>
+                                <button className="btn-premium-start" onClick={handleStartChatting}>
+                                    Start a conversation
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </div>
-            </div>
 
-            {(call.isReceivingCall || call.isCalling) && !call.callEnded && (
-                <CallModal />
-            )}
-        </div>
+                {(call.isReceivingCall || call.isCalling) && !call.callEnded && (
+                    <CallModal />
+                )}
+            </div>
+        </ErrorBoundary>
     );
 };
 

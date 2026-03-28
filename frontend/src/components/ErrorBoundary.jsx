@@ -1,61 +1,35 @@
-import React, { Component } from 'react';
+import React from 'react';
 
-class ErrorBoundary extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false, error: null };
-  }
-
-  static getDerivedStateFromError(error) {
-    return { hasError: true, error };
-  }
-
-  componentDidCatch(error, errorInfo) {
-    console.error("CRITICAL UI CRASH:", error, errorInfo);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div className="error-fallback-container" style={{
-          height: '100vh',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: '#0a0110',
-          color: '#ff1493',
-          textAlign: 'center',
-          padding: '2rem'
-        }}>
-          <h1 style={{ fontSize: '3rem', marginBottom: '1rem' }}>Oops! <span className="text-gradient">Something went wrong</span></h1>
-          <p style={{ color: 'var(--text-secondary)', maxWidth: '600px', marginBottom: '2rem' }}>
-            The creative flow was interrupted by an unexpected event. We are working to restore the harmony.
-          </p>
-          <pre style={{ 
-            background: 'rgba(255, 20, 147, 0.1)', 
-            padding: '1rem', 
-            borderRadius: '10px',
-            fontSize: '0.8rem',
-            maxWidth: '90vw',
-            overflow: 'auto',
-            color: '#ff69b4'
-          }}>
-            {this.state.error?.message || "Unknown error occurred"}
-          </pre>
-          <button 
-            onClick={() => window.location.reload()}
-            className="btn btn-primary shadow-neon"
-            style={{ marginTop: '2rem' }}
-          >
-            RESTORE CONNECTION
-          </button>
-        </div>
-      );
+class ErrorBoundary extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { hasError: false, error: null, errorInfo: null };
     }
 
-    return this.props.children;
-  }
+    static getDerivedStateFromError(error) {
+        return { hasError: true, error };
+    }
+
+    componentDidCatch(error, errorInfo) {
+        this.setState({ errorInfo });
+        console.error("ErrorBoundary caught an error:", error, errorInfo);
+    }
+
+    render() {
+        if (this.state.hasError) {
+            return (
+                <div style={{ padding: '20px', background: '#ff3333', color: 'white', zIndex: 99999, position: 'absolute', inset: 0, overflow: 'auto' }}>
+                    <h2>React Crashed!</h2>
+                    <p style={{ fontWeight: 'bold' }}>{this.state.error && this.state.error.toString()}</p>
+                    <pre style={{ fontSize: '12px', background: '#111', padding: '10px', borderRadius: '5px' }}>
+                        {this.state.errorInfo && this.state.errorInfo.componentStack}
+                    </pre>
+                </div>
+            );
+        }
+
+        return this.props.children;
+    }
 }
 
 export default ErrorBoundary;
