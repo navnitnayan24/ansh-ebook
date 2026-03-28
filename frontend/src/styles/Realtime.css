@@ -419,6 +419,8 @@
     display: flex;
     flex-direction: column;
     height: 100%;
+    width: 100%;
+    flex: 1;
     overflow: hidden;
     position: relative;
 }
@@ -486,7 +488,9 @@
     display: flex;
     flex-direction: column;
     height: 100%;
-    background: #0a0a0a;
+    width: 100%;
+    flex: 1;
+    background: var(--c-bg);
     position: relative;
     overflow: hidden;
 }
