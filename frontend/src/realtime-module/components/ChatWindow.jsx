@@ -33,13 +33,13 @@ const ChatWindow = ({ chat, setSelectedChat }) => {
     };
 
     useEffect(() => {
-        if (chat._id && !chat._id.startsWith('new-') && socket) {
+        if (chat._id && chat._id.toString().startsWith('new-') === false && socket) {
             socket.emit('mark-seen', { chatId: chat._id });
         }
     }, [chat._id, messages.length]);
 
     useEffect(() => {
-        if (chat._id && !chat._id.startsWith('new-')) {
+        if (chat._id && chat._id.toString().startsWith('new-') === false) {
             const fetchHistory = async () => {
                 const res = await fetchMessages(chat._id);
                 setMessages(res.data);
@@ -54,7 +54,7 @@ const ChatWindow = ({ chat, setSelectedChat }) => {
         if (!socket) return;
         
         socket.on('receive-message', (message) => {
-            const isTempChat = chat._id?.toString().startsWith('new-');
+            const isTempChat = !!(chat._id && chat._id.toString().startsWith('new-'));
             const isSenderMe = message.sender?._id === currentId || message.sender === currentId;
             const otherPid = isSenderMe ? message.receiverId : (message.sender?._id || message.sender);
 
@@ -115,7 +115,7 @@ const ChatWindow = ({ chat, setSelectedChat }) => {
         return () => clearTimeout(timeout);
     }, [messages]);
 
-    const isKohinoor = chat.name?.toLowerCase().includes('kohinoor') || chat.isGroup;
+    const isKohinoor = (chat.name && typeof chat.name === 'string') ? chat.name.toLowerCase().includes('kohinoor') : chat.isGroup;
 
     return (
         <div className="chat-window">
@@ -148,13 +148,13 @@ const ChatWindow = ({ chat, setSelectedChat }) => {
                     </div>
                 </div>
                 <div className="chat-actions" onClick={(e) => e.stopPropagation()}>
-                    {!chat.isGroup && !chat._id?.toString().startsWith('new-') && (
+                    {!chat.isGroup && !(chat._id && chat._id.toString().startsWith('new-')) && (
                         <>
                             <button onClick={() => callUser(otherUser?._id, 'audio')}><Phone size={20}/></button>
                             <button onClick={() => callUser(otherUser?._id, 'video')}><Video size={20}/></button>
                         </>
                     )}
-                    {!chat._id?.toString().startsWith('new-') && (
+                    {!(chat._id && chat._id.toString().startsWith('new-')) && (
                         <button onClick={() => setShowInfo(true)}><MoreVertical size={20}/></button>
                     )}
                 </div>
