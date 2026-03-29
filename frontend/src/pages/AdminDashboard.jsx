@@ -192,14 +192,11 @@ const AdminDashboard = () => {
                 let resourceType = 'auto';
                 if (file.type.startsWith('audio/') || file.type.startsWith('video/')) {
                     resourceType = 'video';
-                }
-                // Changed from 'raw' to 'auto' for PDFs to allow better Cloudinary handling
-                if (file.type === 'application/pdf' || file.name?.toLowerCase().endsWith('.pdf')) {
-                    resourceType = 'auto'; 
+                } else if (file.type === 'application/pdf' || file.name?.toLowerCase().endsWith('.pdf')) {
+                    resourceType = 'raw';
                 }
 
-                // If file is small (< 1MB), do a standard upload
-                // Reverting to 512KB chunks as 2MB is too heavy for slow (100kb/s) connections
+                // Small chunks for 100kb/s stability
                 const CHUNK_SIZE = 512 * 1024; 
                 if (file.size <= 1024 * 1024) {
                     setUploadProgress({ active: true, percent: 10, currentChunk: 1, totalChunks: 1, status: 'starting' });
@@ -244,16 +241,16 @@ const AdminDashboard = () => {
 
                     let retryCount = 0;
                     let success = false;
-                    while (!success && retryCount < 5) {
+                    while (!success && retryCount < 10) { // Increased to 10 retries for ultra-slow connections
                         try {
                             if (retryCount > 0) {
                                 setUploadProgress(prev => ({ 
                                     ...prev, 
                                     status: `retrying-${retryCount}`,
-                                    message: `Network glitch? Retrying step ${i+1}...` 
+                                    message: `Network glitch at step ${i+1}? Retrying...` 
                                 }));
-                                // Exponential backoff
-                                await new Promise(r => setTimeout(r, 1000 * Math.pow(2, retryCount)));
+                                // Stronger exponential backoff
+                                await new Promise(r => setTimeout(r, 2000 * Math.pow(2, Math.min(retryCount, 4))));
                             }
                             
                             const fd = new FormData();
@@ -284,8 +281,8 @@ const AdminDashboard = () => {
                             success = true;
                         } catch (err) {
                             retryCount++;
-                            console.warn(`Chunk ${i+1} failed (Attempt ${retryCount}/5):`, err.message);
-                            if (retryCount >= 5) throw new Error(`Upload failed at step ${i+1}. Please check your internet connection and try again.`);
+                            console.warn(`Chunk ${i+1} failed (Attempt ${retryCount}/10):`, err.message);
+                            if (retryCount >= 10) throw new Error(`Upload failed after 10 retries at step ${i+1}. Please try a more stable connection if possible.`);
                         }
                     }
                 }
@@ -308,17 +305,11 @@ const AdminDashboard = () => {
                 dataToSend.file_url = url;
             }
 
-            if (thumbnailFile || audioFile) {
-                const formDataObj = new FormData();
-                Object.keys(dataToSend).forEach(key => {
-                    const val = dataToSend[key];
-                    if (val !== undefined && val !== null) {
-                        formDataObj.append(key, val);
-                    }
-                });
-                // Since we always bypass if files exist, we never append files to formData sent to Render
-                payload = formDataObj;
-            }
+            // --- FINAL SAVE TO BACKEND ---
+            // Note: We use the plain JSON object 'dataToSend' instead of FormData 
+            // because we've already uploaded files directly to Cloudinary.
+            // This is more stable and faster for 100kb/s connections.
+            payload = dataToSend; 
 
             if (isEditing) {
                 await updateContent(modelName, editId, payload);
