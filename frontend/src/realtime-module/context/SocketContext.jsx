@@ -73,7 +73,8 @@ export const SocketProvider = ({ children }) => {
             
             let peer;
             try {
-                peer = new Peer({ initiator: false, trickle: false, stream: currentStream });
+                const iceConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:global.stun.twilio.com:3478' }] };
+                peer = new Peer({ initiator: false, trickle: false, stream: currentStream, config: iceConfig });
             } catch (peerErr) {
                 console.error("Answer Call - Peer Constructor Failed:", peerErr);
                 alert("Call Library Error: " + peerErr.message);
@@ -142,7 +143,8 @@ export const SocketProvider = ({ children }) => {
 
             let peer;
             try {
-                peer = new Peer({ initiator: true, trickle: false, stream: currentStream });
+                const iceConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:global.stun.twilio.com:3478' }] };
+                peer = new Peer({ initiator: true, trickle: false, stream: currentStream, config: iceConfig });
             } catch (peerErr) {
                 console.error("Make Call - Peer Constructor Failed:", peerErr);
                 alert("Call Library Error: " + peerErr.message);
@@ -183,7 +185,8 @@ export const SocketProvider = ({ children }) => {
                     setStream(audioStream);
                     alert("Camera issues detected. Continuing with audio-only.");
                     
-                    const peer = new Peer({ initiator: true, trickle: false, stream: audioStream });
+                    const iceConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:global.stun.twilio.com:3478' }] };
+                    const peer = new Peer({ initiator: true, trickle: false, stream: audioStream, config: iceConfig });
                     const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
                     peer.on('signal', (data) => {
                         socket.emit('call-user', { 
