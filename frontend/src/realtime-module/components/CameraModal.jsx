@@ -4,8 +4,8 @@ import { Camera, X, RefreshCw } from 'lucide-react';
 const CameraModal = ({ isOpen, onClose, onCapture }) => {
     const videoRef = useRef(null);
     const canvasRef = useRef(null);
-    const [hasPhoto, setHasPhoto] = useState(false);
     const [stream, setStream] = useState(null);
+    const [facingMode, setFacingMode] = useState('user'); // Default to front camera
 
     useEffect(() => {
         if (isOpen) {
@@ -14,11 +14,15 @@ const CameraModal = ({ isOpen, onClose, onCapture }) => {
             stopCamera();
         }
         return () => stopCamera();
-    }, [isOpen]);
+    }, [isOpen, facingMode]); // Restart on flip
 
     const startCamera = async () => {
+        stopCamera(); // Ensure old stream stops before starting new
         try {
-            const s = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+            const s = await navigator.mediaDevices.getUserMedia({ 
+                video: { facingMode: facingMode }, 
+                audio: false 
+            });
             setStream(s);
             if (videoRef.current) videoRef.current.srcObject = s;
         } catch (err) {
@@ -33,6 +37,10 @@ const CameraModal = ({ isOpen, onClose, onCapture }) => {
             stream.getTracks().forEach(track => track.stop());
             setStream(null);
         }
+    };
+
+    const toggleCamera = () => {
+        setFacingMode(prev => prev === 'user' ? 'environment' : 'user');
     };
 
     const takePhoto = () => {
@@ -58,10 +66,13 @@ const CameraModal = ({ isOpen, onClose, onCapture }) => {
             <div className="camera-modal glass-card">
                 <div className="modal-header">
                     <h3>Take Photo</h3>
-                    <button onClick={onClose}><X size={20}/></button>
+                    <div style={{display: 'flex', gap: '15px'}}>
+                        <button onClick={toggleCamera} title="Flip Camera" style={{ background: 'transparent', border: 'none', color: '#fff' }}><RefreshCw size={20}/></button>
+                        <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: '#fff' }}><X size={20}/></button>
+                    </div>
                 </div>
-                <div className="video-container">
-                    <video ref={videoRef} autoPlay playsInline />
+                <div className="video-container" style={{ transform: facingMode === 'user' ? 'scaleX(-1)' : 'none', display: 'flex', justifyContent: 'center', alignItems: 'center', background: '#000', borderRadius: '12px', overflow: 'hidden', minHeight: '300px' }}>
+                    <video ref={videoRef} autoPlay playsInline style={{ maxWidth: '100%', maxHeight: '100%' }} />
                     <canvas ref={canvasRef} style={{ display: 'none' }} />
                 </div>
                 <div className="modal-footer">

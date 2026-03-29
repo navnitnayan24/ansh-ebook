@@ -2,8 +2,11 @@ const express = require('express');
 const router = express.Router();
 const chatController = require('../controllers/chat.controller');
 const { authenticate } = require('../../controllers/authMiddleware'); // Reusing existing auth middleware
+const adminController = require('../../controllers/adminController');
 
 router.use(authenticate); // All realtime routes require authentication
+
+router.get('/cloudinary-signature', adminController.getCloudinarySignature);
 
 router.get('/chats', chatController.getChats);
 router.get('/messages/:chatId', chatController.getMessages);

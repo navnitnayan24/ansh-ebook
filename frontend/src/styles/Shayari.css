@@ -222,3 +222,17 @@
         gap: 1rem;
     }
 }
+
+.icon-btn-plain {
+    background: transparent !important;
+    border: none !important;
+    color: var(--text-secondary);
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    transition: 0.3s;
+    padding: 0;
+}
+.icon-btn-plain:hover {
+    color: var(--text-primary);
+}

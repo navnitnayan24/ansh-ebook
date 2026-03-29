@@ -103,6 +103,7 @@
     
     .chat-layout.has-selected-chat .chat-window-container {
         display: flex !important;
+        margin-top: 15px; /* Adds space for the App Navbar on mobile */
     }
     
     .mobile-back-btn {

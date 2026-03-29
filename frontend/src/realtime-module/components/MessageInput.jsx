@@ -161,7 +161,7 @@ const MessageInput = ({ chatId, receiverId, setMessages }) => {
                         <div className="recording-indicator">Recording...</div>
                     ) : (
                         <>
-                            <Mic size={20} className="input-action-icon" onMouseDown={startRecording} onMouseUp={stopRecording} />
+                            <Mic size={20} className="input-action-icon" onMouseDown={startRecording} onMouseUp={stopRecording} onTouchStart={startRecording} onTouchEnd={stopRecording} />
                             <Image size={20} className="input-action-icon" onClick={() => fileInputRef.current?.click()} />
                             <Smile size={20} className="input-action-icon" />
                             <Plus size={20} className="input-action-icon" onClick={() => fileInputRef.current?.click()} />
