@@ -126,32 +126,28 @@ const ChatWindow = ({ chat, setSelectedChat }) => {
 
     return (
         <div className="chat-window">
-            <div className="chat-header" onClick={() => setShowInfo(true)} style={{ cursor: 'pointer' }}>
-                <div className="chat-header-title">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <button className="mobile-back-btn" onClick={handleBack}>
-                            <ArrowLeft size={24} />
-                        </button>
-                        <div className="other-user-info">
-                            {chat.isGroup ? (
-                                <div className="group-avatar-main">💎</div>
-                            ) : (
-                                <Avatar 
-                                    pic={otherUser?.profile_pic} 
-                                    username={otherUser?.username} 
-                                    className="header-avatar"
-                                />
-                            )}
-                            <div className="chat-header-title-text">
-                                <h4 className="header-username">
-                                    {chat.isGroup ? (isKohinoor ? '🔥 🌹 Kohinoor 🌹 🔥' : chat.name) : maskEmail(otherUser?.username)}
-                                </h4>
-                                <span className="user-status-text">
-                                    {chat.isGroup ? `${chat.participants?.length || 0} members` : (onlineUsers[otherUser?._id] === 'online' ? 'Online' : 'Offline')}
-                                    {isTyping.length > 0 && ` • typing...`}
-                                </span>
-                            </div>
-                        </div>
+            <div className="chat-header" onClick={() => setShowInfo(true)} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px', justifyContent: 'flex-start' }}>
+                <button className="mobile-back-btn" onClick={(e) => { e.stopPropagation(); handleBack(); }} style={{ flexShrink: 0, border: 'none', background: 'transparent' }}>
+                    <ArrowLeft size={24} color="#fff" />
+                </button>
+                <div className="other-user-info" style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    {chat.isGroup ? (
+                        <div className="group-avatar-main">💎</div>
+                    ) : (
+                        <Avatar 
+                            pic={otherUser?.profile_pic} 
+                            username={otherUser?.username} 
+                            className="header-avatar"
+                        />
+                    )}
+                    <div className="chat-header-title-text" style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                        <h4 className="header-username" style={{ margin: '0 0 2px 0', fontSize: '1rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: '#fff' }}>
+                            {chat.isGroup ? (isKohinoor ? '🔥 🌹 Kohinoor 🌹 🔥' : chat.name) : maskEmail(otherUser?.username)}
+                        </h4>
+                        <span className="user-status-text" style={{ fontSize: '0.75rem', color: '#ff69b4', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {chat.isGroup ? `${chat.participants?.length || 0} members` : (onlineUsers[otherUser?._id] === 'online' ? 'Online' : 'Offline')}
+                            {isTyping.length > 0 && ` • typing...`}
+                        </span>
                     </div>
                 </div>
                 <div className="chat-actions" onClick={(e) => e.stopPropagation()}>
