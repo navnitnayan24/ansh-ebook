@@ -11,8 +11,8 @@ exports.getChats = async (req, res) => {
                 { pendingParticipants: req.user.id }
             ]
         })
-            .populate('participants', 'username profile_pic _id')
-            .populate('pendingParticipants', 'username profile_pic _id')
+            .populate('participants', 'username profile_pic bio _id')
+            .populate('pendingParticipants', 'username profile_pic bio _id')
             .populate('lastMessage')
             .sort({ updatedAt: -1 });
         res.json(chats);
@@ -25,7 +25,7 @@ exports.getChats = async (req, res) => {
 exports.getMessages = async (req, res) => {
     try {
         const messages = await Message.find({ chat: req.params.chatId })
-            .populate('sender', 'username profile_pic _id')
+            .populate('sender', 'username profile_pic bio _id')
             .sort({ createdAt: 1 });
         res.json(messages);
     } catch (err) {
@@ -41,7 +41,7 @@ exports.findOrCreateChat = async (req, res) => {
             isGroup: false,
             participants: { $all: [req.user.id, userId], $size: 2 }
         })
-        .populate('participants', 'username profile_pic _id')
+        .populate('participants', 'username profile_pic bio _id')
         .populate('lastMessage');
 
         if (!chat) {
@@ -49,7 +49,7 @@ exports.findOrCreateChat = async (req, res) => {
                 participants: [req.user.id, userId],
                 isGroup: false
             });
-            chat = await chat.populate('participants', 'username profile_pic _id');
+            chat = await chat.populate('participants', 'username profile_pic bio _id');
         }
         res.json(chat);
     } catch (err) {
@@ -71,7 +71,7 @@ exports.createGroupChat = async (req, res) => {
             joinCode,
             admin: req.user.id
         });
-        const populatedChat = await chat.populate('participants', 'username profile_pic _id');
+        const populatedChat = await chat.populate('participants', 'username profile_pic bio _id');
         res.json(populatedChat);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -90,7 +90,7 @@ exports.joinGroupByCode = async (req, res) => {
             await chat.save();
         }
 
-        const populatedChat = await chat.populate('participants', 'username profile_pic _id');
+        const populatedChat = await chat.populate('participants', 'username profile_pic bio _id');
         res.json(populatedChat);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -103,7 +103,7 @@ exports.pinMessage = async (req, res) => {
     try {
         const chat = await Chat.findByIdAndUpdate(chatId, { pinnedMessage: messageId }, { new: true })
             .populate('pinnedMessage')
-            .populate('participants', 'username profile_pic _id');
+            .populate('participants', 'username profile_pic bio _id');
         res.json(chat);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -128,7 +128,7 @@ exports.addMemberToGroup = async (req, res) => {
             await chat.save();
         }
         
-        const populatedChat = await chat.populate('participants pendingParticipants', 'username profile_pic _id');
+        const populatedChat = await chat.populate('participants pendingParticipants', 'username profile_pic bio _id');
         
         // Notify the invited user via socket
         const { getIo } = require('../socket');
@@ -157,7 +157,7 @@ exports.removeMemberFromGroup = async (req, res) => {
         chat.participants = chat.participants.filter(p => p.toString() !== userId);
         await chat.save();
 
-        const populatedChat = await chat.populate('participants', 'username profile_pic _id');
+        const populatedChat = await chat.populate('participants', 'username profile_pic bio _id');
         
         // Notify the removed user via socket so their sidebar updates
         const { getIo } = require('../socket');
@@ -188,7 +188,7 @@ exports.updateGroupDetails = async (req, res) => {
         if (req.body.groupIcon) chat.groupIcon = req.body.groupIcon;
         await chat.save();
 
-        const populatedChat = await chat.populate('participants', 'username profile_pic _id');
+        const populatedChat = await chat.populate('participants', 'username profile_pic bio _id');
         res.json(populatedChat);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -236,7 +236,7 @@ exports.acceptInvite = async (req, res) => {
             await chat.save();
         }
 
-        const populatedChat = await chat.populate('participants pendingParticipants', 'username profile_pic _id');
+        const populatedChat = await chat.populate('participants pendingParticipants', 'username profile_pic bio _id');
         res.json(populatedChat);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -271,7 +271,7 @@ exports.getUsers = async (req, res) => {
     try {
         const { q } = req.query;
         const query = q ? { username: { $regex: q, $options: 'i' } } : {};
-        const users = await User.find(query, 'username profile_pic _id')
+        const users = await User.find(query, 'username profile_pic bio _id')
             .limit(100);
         res.json(users);
     } catch (err) {
