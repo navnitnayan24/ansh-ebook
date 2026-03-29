@@ -14,6 +14,7 @@
 .realtime-chat-page,
 .group-info-sidebar,
 .call-modal-overlay {
+    /* DEFAULT DARK THEME */
     --c-bg:          #0d0d0d;
     --c-sidebar:     #111111;
     --c-border:      rgba(255, 255, 255, 0.07);
@@ -30,6 +31,55 @@
     --c-hover:       rgba(255, 255, 255, 0.055);
     --c-active:      rgba(233, 30, 140, 0.12);
     --c-glow:        0 0 20px rgba(233, 30, 140, 0.25);
+    --c-online:      #22c55e;
+    --c-offline:     #9ca3af;
+}
+
+/* ─────────────────────────────────────────────
+   LIGHT THEME OVERRIDES
+   ───────────────────────────────────────────── */
+[data-chat-theme="light"] .realtime-chat-page,
+[data-chat-theme="light"] .group-info-sidebar,
+[data-chat-theme="light"] .call-modal-overlay {
+    --c-bg:          #f0f2f5;
+    --c-sidebar:     #ffffff;
+    --c-border:      rgba(0, 0, 0, 0.08);
+    --c-recv:        #ffffff;
+    --c-glass:       rgba(0, 0, 0, 0.03);
+    --c-glassborder: rgba(0, 0, 0, 0.06);
+    --c-txt:         #1c1e21;
+    --c-muted:       #65676b;
+    --c-hover:       rgba(0, 0, 0, 0.05);
+    --c-active:      rgba(233, 30, 140, 0.08);
+    --c-glow:        0 0 15px rgba(233, 30, 140, 0.15);
+    scrollbar-color: rgba(0,0,0,0.15) transparent;
+}
+
+[data-chat-theme="light"] .chat-header {
+    background: rgba(255, 255, 255, 0.9);
+}
+
+[data-chat-theme="light"] .message-bubble.received {
+    background: #ffffff;
+    border: 1px solid rgba(0,0,0,0.08);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+[data-chat-theme="light"] .message-input-form {
+    background: rgba(255, 255, 255, 0.9);
+}
+
+[data-chat-theme="light"] .input-field-container {
+    background: #f0f2f5;
+    border-color: rgba(0,0,0,0.05);
+}
+
+[data-chat-theme="light"] .main-chat-input {
+    color: #1c1e21;
+}
+
+[data-chat-theme="light"] .user-item:hover {
+    background: #f5f6f7;
 }
 
 /* ─── Scrollbar ─── */
@@ -303,8 +353,8 @@
     border: 2px solid var(--c-sidebar);
     display: block;
 }
-.status-dot.online  { background: #22c55e; box-shadow: 0 0 6px rgba(34,197,94,0.6); }
-.status-dot.offline { background: #4b5563; }
+.status-dot.online  { background: var(--c-online); box-shadow: 0 0 6px rgba(34,197,94,0.6); }
+.status-dot.offline { background: var(--c-offline); }
 
 /* Group avatar */
 .group-avatar-main {

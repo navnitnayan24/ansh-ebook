@@ -119,7 +119,12 @@ const ChatWindow = ({ chat, setSelectedChat }) => {
         if (document.activeElement && typeof document.activeElement.blur === 'function') {
             document.activeElement.blur(); // Dismiss mobile keyboard
         }
-        setSelectedChat(null);
+        // If there's a hash, remove it to update history
+        if (window.location.hash.includes('chat')) {
+            window.history.back();
+        } else {
+            setSelectedChat(null);
+        }
     };
 
     const isKohinoor = (chat.name && typeof chat.name === 'string') ? chat.name.toLowerCase().includes('kohinoor') : chat.isGroup;

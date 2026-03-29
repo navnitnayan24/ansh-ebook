@@ -45,12 +45,13 @@ export const SocketProvider = ({ children }) => {
             Notification.requestPermission();
         }
 
-        const showNotification = (message) => {
-            if (document.visibilityState === 'visible') return; // Don't notify if user is looking at the app
+        const showNotification = (title, body, type = 'message') => {
+            if (document.visibilityState === 'visible') return; 
             if ("Notification" in window && Notification.permission === "granted") {
-                const notification = new Notification("New Message from Ansh Ebook", {
-                    body: `${message.sender?.username || 'Someone'}: ${message.text}`,
-                    icon: '/logo192.png'
+                const notification = new Notification(title, {
+                    body,
+                    icon: '/logo192.png',
+                    tag: type // prevents stacking too many call alerts
                 });
                 notification.onclick = () => {
                     window.focus();
@@ -59,15 +60,19 @@ export const SocketProvider = ({ children }) => {
         };
 
         newSocket.on('receive-message', (data) => {
-            showNotification(data.message);
+            showNotification(
+                `New Message from ${data.message.sender?.username || 'Ansh Ebook'}`,
+                data.message.text
+            );
         });
 
-        newSocket.on('user-status', (data) => {
-            setOnlineUsers(prev => ({ ...prev, [data.userId]: data.status }));
-        });
-
-        newSocket.on('hey-calling', ({ from, name: callerName, profile_pic, signal, type }) => {
-            setCall({ isReceivingCall: true, from, name: callerName, fromProfile: profile_pic, signal, type });
+        newSocket.on('hey-calling', ({ from, name: callerName, type }) => {
+            setCall({ isReceivingCall: true, from, name: callerName, type });
+            showNotification(
+                `Incoming ${type === 'video' ? 'Video' : 'Voice'} Call`,
+                `${callerName} is calling you...`,
+                'call'
+            );
         });
 
         return () => {

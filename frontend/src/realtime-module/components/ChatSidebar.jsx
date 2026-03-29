@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Moon, Sun, Send, Users, UserPlus, Link, Plus, Check } from 'lucide-react';
+import { Search, Moon, Sun, Send, Users, UserPlus, Link, Plus, Check, Bell, BellOff } from 'lucide-react';
 import { createGroupChat, joinGroupByCode, acceptInvite, rejectInvite } from '../../api';
 import { useSocket } from '../context/SocketContext';
 import { getAvatarUrl, maskEmail } from '../../config';
@@ -17,6 +17,7 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
     const [selectedUsers, setSelectedUsers] = useState([]);
     const [joinCode, setJoinCode] = useState('');
     const [loading, setLoading] = useState(false);
+    const [notificationsEnabled, setNotificationsEnabled] = useState(Notification.permission === 'granted');
 
     const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
     const currentUserId = currentUser.id || currentUser._id;
@@ -47,6 +48,16 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
             alert(err.response?.data?.error || "Invalid join code");
         } finally {
             setLoading(false);
+        }
+    };
+
+    const toggleNotifications = async () => {
+        if (Notification.permission === 'default' || Notification.permission === 'denied') {
+            const permission = await Notification.requestPermission();
+            setNotificationsEnabled(permission === 'granted');
+        } else {
+            // Browser doesn't allow 'programmatic' revoking, we just toggle local state for UI feedback
+            setNotificationsEnabled(!notificationsEnabled);
         }
     };
 
@@ -94,6 +105,25 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
         localStorage.setItem('chat-theme', theme);
     }, [theme]);
 
+    // SMART BACK NAVIGATION: Support mobile back button to close chat
+    useEffect(() => {
+        const handleHashChange = () => {
+            if (!window.location.hash.includes('chat') && selectedChat) {
+                setSelectedChat(null);
+            }
+        };
+        window.addEventListener('hashchange', handleHashChange);
+        return () => window.removeEventListener('hashchange', handleHashChange);
+    }, [selectedChat, setSelectedChat]);
+
+    const selectChatWithHash = (chat) => {
+        setSelectedChat(chat);
+        // On mobile, add hash for back support
+        if (window.innerWidth <= 768) {
+            window.location.hash = 'chat';
+        }
+    };
+
     const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark');
 
     // Filter pending invites
@@ -130,8 +160,10 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
         return !chats?.some(c => !c.isGroup && c.participants?.some(p => p._id === user._id));
     });
 
-    // Separate "Recent" from "Discovery"
+    // Separate "Recent" into Groups and Messages
     const recentChats = filteredChats.filter(c => c.lastMessage || c.isGroup);
+    const groupConversations = recentChats.filter(c => c.isGroup);
+    const directConversations = recentChats.filter(c => !c.isGroup);
 
     return (
         <div className="chat-sidebar">
@@ -146,6 +178,9 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
                         </button>
                         <button className="theme-toggle-btn" title="Join Group" onClick={() => setIsJoinModalOpen(true)}>
                             <Link size={20}/>
+                        </button>
+                        <button className="theme-toggle-btn" title={notificationsEnabled ? "Notifications On" : "Notifications Off"} onClick={toggleNotifications}>
+                            {notificationsEnabled ? <Bell size={20} className="text-pink" /> : <BellOff size={20} />}
                         </button>
                         <button className="theme-toggle-btn" onClick={toggleTheme}>
                             {theme === 'dark' ? <Sun size={20}/> : <Moon size={20}/>}
@@ -186,14 +221,12 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
                     </div>
                 )}
 
-                {/* Recent Conversations */}
-                {recentChats.length > 0 && (
+                {/* Group Conversations */}
+                {groupConversations.length > 0 && (
                     <>
-                        <div className="sidebar-section-title">{search ? 'Search Results' : 'Recent Conversations'}</div>
-                        {recentChats.map((chat) => {
-                            const otherParticipant = !chat.isGroup ? chat.participants.find(p => p._id !== currentUserId) : null;
+                        <div className="sidebar-section-title">Groups</div>
+                        {groupConversations.map((chat) => {
                             const isSelected = selectedChat?._id === chat._id;
-                            const isOnline = !chat.isGroup && onlineUsers[otherParticipant?._id] === 'online';
                             const unreadCount = chat.unreadCount?.[currentUserId] || 0;
                             const isTyping = typingStatus[chat._id];
 
@@ -201,29 +234,58 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
                                 <div 
                                     key={chat._id} 
                                     className={`user-item ${isSelected ? 'active' : ''}`}
-                                    onClick={() => setSelectedChat(chat)}
+                                    onClick={() => selectChatWithHash(chat)}
                                 >
                                     <div className="user-avatar-wrapper">
-                                        {chat.isGroup ? (
-                                            <div className="group-avatar-main" style={{ width: '44px', height: '44px', fontSize: '18px' }}>💎</div>
-                                        ) : (
-                                            <Avatar 
-                                                pic={otherParticipant?.profile_pic} 
-                                                username={otherParticipant?.username} 
-                                                className="user-avatar-img"
-                                            />
-                                        )}
-                                        {!chat.isGroup && <span className={`status-dot ${isOnline ? 'online' : 'offline'}`}></span>}
+                                        <div className="group-avatar-main" style={{ width: '44px', height: '44px', fontSize: '18px' }}>💎</div>
                                     </div>
                                     <div className="user-info">
                                         <div className="user-name-row">
-                                            <span className="user-name">
-                                                {chat.isGroup ? (chat.name || 'Kohinoor Group') : maskEmail(otherParticipant?.username)}
-                                            </span>
+                                            <span className="user-name">{chat.name || 'Kohinoor Group'}</span>
                                             {unreadCount > 0 && <span className="unread-badge">{unreadCount}</span>}
                                         </div>
                                         <span className={`last-message-preview ${isTyping ? 'is-typing' : ''}`}>
-                                            {isTyping ? 'typing...' : (chat.lastMessage?.text || (chat.isGroup ? 'Group Chat' : 'Start chatting'))}
+                                            {isTyping ? 'typing...' : (chat.lastMessage?.text || 'Group Chat')}
+                                        </span>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </>
+                )}
+
+                {/* Direct Conversations */}
+                {directConversations.length > 0 && (
+                    <>
+                        <div className="sidebar-section-title">Messages</div>
+                        {directConversations.map((chat) => {
+                            const otherParticipant = chat.participants.find(p => p._id !== currentUserId) || chat.participants[0];
+                            const isSelected = selectedChat?._id === chat._id;
+                            const isOnline = onlineUsers[otherParticipant?._id] === 'online';
+                            const unreadCount = chat.unreadCount?.[currentUserId] || 0;
+                            const isTyping = typingStatus[chat._id];
+
+                            return (
+                                <div 
+                                    key={chat._id} 
+                                    className={`user-item ${isSelected ? 'active' : ''}`}
+                                    onClick={() => selectChatWithHash(chat)}
+                                >
+                                    <div className="user-avatar-wrapper">
+                                        <Avatar 
+                                            pic={otherParticipant?.profile_pic} 
+                                            username={otherParticipant?.username} 
+                                            className="user-avatar-img"
+                                        />
+                                        <span className={`status-dot ${isOnline ? 'online' : 'offline'}`}></span>
+                                    </div>
+                                    <div className="user-info">
+                                        <div className="user-name-row">
+                                            <span className="user-name">{maskEmail(otherParticipant?.username)}</span>
+                                            {unreadCount > 0 && <span className="unread-badge">{unreadCount}</span>}
+                                        </div>
+                                        <span className={`last-message-preview ${isTyping ? 'is-typing' : ''}`}>
+                                            {isTyping ? 'typing...' : (chat.lastMessage?.text || 'Start chatting')}
                                         </span>
                                     </div>
                                 </div>
@@ -240,7 +302,7 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
                             <div 
                                 key={user._id} 
                                 className={`user-item discovery ${user._id === currentUserId ? 'is-self' : ''}`}
-                                onClick={() => setSelectedChat({ 
+                                onClick={() => selectChatWithHash({ 
                                     _id: `new-${user._id}`, 
                                     participants: [currentUser, user],
                                     isGroup: false 
