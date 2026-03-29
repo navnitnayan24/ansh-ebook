@@ -77,7 +77,7 @@ const Footer = () => {
                             <a href="https://youtube.com/@vibexmusicx?si=-h93up_MiovLiyS8" target="_blank" rel="noopener noreferrer" className="social-icon-v2" title="VIBEX MUSICX"><Youtube size={20} /></a>
                             <a href="https://youtube.com/@vibexmusicx2.0?si=ayi0mTYKrqq1WhKO" target="_blank" rel="noopener noreferrer" className="social-icon-v2" title="VIBEX MUSICX 2.0"><MonitorPlay size={20} /></a>
                             <a href="https://youtube.com/@vibexmusicx3.0?si=ayi0mTYKrqq1WhKO" target="_blank" rel="noopener noreferrer" className="social-icon-v2" title="VIBEX MUSICX 3.0"><PlayCircle size={20} /></a>
-                            <a href="https://youtube.com/@ToonXIndia-24?si=ayi0mTYKrqq1WhKO" target="_blank" rel="noopener noreferrer" className="social-icon-v2" title="TOONXINDIA-24"><Tv size={20} /></a>
+                            <a href="https://youtube.com/@ShadowXploits?si=ayi0mTYKrqq1WhKO" target="_blank" rel="noopener noreferrer" className="social-icon-v2" title="ShadowXploits"><Tv size={20} /></a>
                             <a href="https://www.linkedin.com/in/navnit-nayan-14b4b9278?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank" rel="noopener noreferrer" className="social-icon-v2" title="LinkedIn"><Linkedin size={20} /></a>
                         </div>
                     </div>

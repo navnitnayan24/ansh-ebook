@@ -170,8 +170,8 @@ const Music = () => {
                         <a href="https://youtube.com/@vibexmusicx3.0?si=ayi0mTYKrqq1WhKO" target="_blank" rel="noopener noreferrer" className="btn btn-dark-outline btn-sm btn-pill d-flex align-items-center" style={{ gap: '8px', padding: '0.8rem 1.5rem', textDecoration: 'none' }}>
                             <Youtube size={18} color="#FF0000" /> VIBEX MUSICX 3.0
                         </a>
-                        <a href="https://youtube.com/@ToonXIndia-24?si=ayi0mTYKrqq1WhKO" target="_blank" rel="noopener noreferrer" className="btn btn-dark-outline btn-sm btn-pill d-flex align-items-center" style={{ gap: '8px', padding: '0.8rem 1.5rem', textDecoration: 'none' }}>
-                            <Youtube size={18} color="#FF0000" /> TOONXINDIA-24
+                        <a href="https://youtube.com/@ShadowXploits?si=ayi0mTYKrqq1WhKO" target="_blank" rel="noopener noreferrer" className="btn btn-dark-outline btn-sm btn-pill d-flex align-items-center" style={{ gap: '8px', padding: '0.8rem 1.5rem', textDecoration: 'none' }}>
+                            <Youtube size={18} color="#FF0000" /> ShadowXploits
                         </a>
                     </motion.div>
                 </div>
