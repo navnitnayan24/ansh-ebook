@@ -39,6 +39,7 @@ exports.login = async (req, res) => {
             role: 'user',
             profile_pic: user.profile_pic,
             bio: user.bio,
+            link: user.link,
             createdAt: user.createdAt
         });
     } catch (err) {
@@ -169,7 +170,7 @@ exports.changePassword = async (req, res) => {
 // Update Profile Picture
 exports.updateProfile = async (req, res) => {
     try {
-        const { remove, avatarUrl, bio, username } = req.body;
+        const { remove, avatarUrl, bio, username, link } = req.body;
         const AccountModel = req.user.role === 'admin' ? Admin : User;
         const account = await AccountModel.findById(req.user.id);
         
@@ -177,6 +178,7 @@ exports.updateProfile = async (req, res) => {
 
         if (username) account.username = username;
         if (bio) account.bio = bio;
+        if (link !== undefined) account.link = link;
 
         if (remove === 'true' || remove === true) {
             account.profile_pic = null;
@@ -197,6 +199,7 @@ exports.updateProfile = async (req, res) => {
                 role: req.user.role,
                 profile_pic: account.profile_pic,
                 bio: account.bio,
+                link: account.link,
                 profile_name: account.profile_name,
                 createdAt: account.createdAt
             }

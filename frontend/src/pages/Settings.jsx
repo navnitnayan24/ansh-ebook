@@ -17,6 +17,12 @@ const Settings = () => {
     const [isUpdatingAvatar, setIsUpdatingAvatar] = useState(false);
     const [editUsername, setEditUsername] = useState('');
     const [editBio, setEditBio] = useState('');
+    const [editLink, setEditLink] = useState('');
+    
+    // Password change state
+    const [oldPassword, setOldPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [isChangingPassword, setIsChangingPassword] = useState(false);
     
     // Privacy Toggles
     const [privacy, setPrivacy] = useState({
@@ -39,6 +45,7 @@ const Settings = () => {
             setUser(parsedUser);
             setEditUsername(parsedUser.username || '');
             setEditBio(parsedUser.bio || '');
+            setEditLink(parsedUser.link || '');
         }
     }, []);
 
@@ -92,12 +99,30 @@ const Settings = () => {
 
     const handleProfileUpdate = async () => {
         try {
-            const res = await updateProfile({ username: editUsername, bio: editBio });
+            const res = await updateProfile({ username: editUsername, bio: editBio, link: editLink });
             setUser(res.data.user);
             localStorage.setItem('user', JSON.stringify(res.data.user));
             alert("Profile updated successfully!");
         } catch (err) {
             alert("Failed to update profile info");
+        }
+    };
+
+    const handleChangePassword = async () => {
+        if (!oldPassword || !newPassword) {
+            alert("Please fill in both password fields");
+            return;
+        }
+        setIsChangingPassword(true);
+        try {
+            await API.post('auth/change-password', { oldPassword, newPassword });
+            alert("Password updated successfully!");
+            setOldPassword('');
+            setNewPassword('');
+        } catch (err) {
+            alert(err.response?.data?.error || "Failed to change password");
+        } finally {
+            setIsChangingPassword(false);
         }
     };
 
@@ -184,7 +209,22 @@ const Settings = () => {
                                                 placeholder="Tell us about yourself..." 
                                                 value={editBio}
                                                 onChange={(e) => setEditBio(e.target.value)}
+                                                rows={3}
                                             ></textarea>
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Personal Link / Website</label>
+                                            <div style={{ position: 'relative' }}>
+                                                <Globe size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--c-muted)' }} />
+                                                <input 
+                                                    type="url" 
+                                                    placeholder="https://yourlink.com" 
+                                                    className="glass-input" 
+                                                    style={{ paddingLeft: '40px' }}
+                                                    value={editLink}
+                                                    onChange={(e) => setEditLink(e.target.value)}
+                                                />
+                                            </div>
                                         </div>
                                         <button className="btn btn-primary btn-pill shadow-neon mt-3" onClick={handleProfileUpdate}>
                                             <Save size={18} className="me-2" /> Save Profile
@@ -203,8 +243,27 @@ const Settings = () => {
                                                 <p>Update your password to stay secure.</p>
                                             </div>
                                             <div className="form-group mb-0" style={{ maxWidth: '300px' }}>
-                                                <input type="password" placeholder="New Password" className="glass-input mb-2" />
-                                                <button className="btn btn-dark-outline btn-sm w-100">Update Password</button>
+                                                <input 
+                                                    type="password" 
+                                                    placeholder="Current Password" 
+                                                    className="glass-input mb-2" 
+                                                    value={oldPassword}
+                                                    onChange={(e) => setOldPassword(e.target.value)}
+                                                />
+                                                <input 
+                                                    type="password" 
+                                                    placeholder="New Password" 
+                                                    className="glass-input mb-2" 
+                                                    value={newPassword}
+                                                    onChange={(e) => setNewPassword(e.target.value)}
+                                                />
+                                                <button 
+                                                    className="btn btn-dark-outline btn-sm w-100" 
+                                                    onClick={handleChangePassword}
+                                                    disabled={isChangingPassword}
+                                                >
+                                                    {isChangingPassword ? 'Updating...' : 'Update Password'}
+                                                </button>
                                             </div>
                                         </div>
                                         <div className="settings-action-card border-danger">

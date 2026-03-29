@@ -278,6 +278,23 @@ const GroupInfoView = ({ chat, onClose, onUpdate }) => {
                                 {otherUser?.bio || 'Premium Ansh Ebook User'}
                             </p>
                         </div>
+
+                        {otherUser?.link && (
+                            <div className="detail-info-group">
+                                <label>Website / Link</label>
+                                <a 
+                                    href={otherUser.link.startsWith('http') ? otherUser.link : `https://${otherUser.link}`} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--accent)', fontSize: '0.85rem', textDecoration: 'none', background: 'rgba(255,20,147,0.1)', padding: '8px 12px', borderRadius: '8px', marginTop: '5px' }}
+                                >
+                                    <Globe size={14} />
+                                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                        {otherUser.link.replace(/^https?:\/\//, '')}
+                                    </span>
+                                </a>
+                            </div>
+                        )}
                         
                         <div className="detail-info-group privacy-note" style={{ marginTop: '15px' }}>
                             <Shield size={14} />
