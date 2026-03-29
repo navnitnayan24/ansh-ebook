@@ -22,6 +22,14 @@ const GroupInfoView = ({ chat, onClose, onUpdate }) => {
     const currentId = currentUser.id || currentUser._id;
     const isAdmin = chat.admin === currentId || chat.admin?._id === currentId;
 
+    const otherUser = !chat.isGroup ? (
+        chat.participants?.find(p => (p._id || p.id)?.toString() !== currentId?.toString()) || 
+        chat.participants?.[0] || 
+        {}
+    ) : null;
+
+    const [isViewingAvatar, setIsViewingAvatar] = useState(false);
+
     const formatUsername = (name) => {
         if (!name) return 'User';
         if (typeof name === 'string' && name.includes('@')) return name.split('@')[0];
@@ -126,8 +134,23 @@ const GroupInfoView = ({ chat, onClose, onUpdate }) => {
         <div className="group-info-sidebar">
             <div className="group-info-header">
                 <button className="close-info-btn" onClick={onClose}><X size={20}/></button>
-                <h3>{isAdding ? 'Add Member' : isEditing ? 'Edit Group' : 'Group Info'}</h3>
+                <h3>{!chat.isGroup ? 'User Profile' : isAdding ? 'Add Member' : isEditing ? 'Edit Group' : 'Group Info'}</h3>
             </div>
+
+            {/* FULL SCREEN AVATAR VIEWER */}
+            {isViewingAvatar && (
+                <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.95)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
+                    <button onClick={() => setIsViewingAvatar(false)} style={{ position: 'absolute', top: '20px', right: '20px', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '50%', padding: '10px', color: '#fff', cursor: 'pointer' }}>
+                        <X size={28} />
+                    </button>
+                    <img 
+                        src={getAvatarUrl(chat.isGroup ? chat.groupIcon : (selectedMember?.profile_pic || otherUser?.profile_pic), chat.isGroup ? chat.name : (selectedMember?.username || otherUser?.username))} 
+                        alt="Avatar" 
+                        style={{ maxWidth: '90%', maxHeight: '80%', objectFit: 'contain', borderRadius: '10px', boxShadow: '0 10px 40px rgba(0,0,0,0.5)' }} 
+                        onError={(e) => e.target.style.display = 'none'}
+                    />
+                </div>
+            )}
 
             {selectedMember ? (
                 <div className="member-detail-overlay">
@@ -136,7 +159,7 @@ const GroupInfoView = ({ chat, onClose, onUpdate }) => {
                         <h3>User Profile</h3>
                     </div>
                     <div className="detail-main">
-                        <div className="detail-avatar-container">
+                        <div className="detail-avatar-container" onClick={() => setIsViewingAvatar(true)} style={{ cursor: 'pointer' }}>
                             <Avatar 
                                 pic={selectedMember.profile_pic} 
                                 username={selectedMember.username} 
@@ -232,11 +255,36 @@ const GroupInfoView = ({ chat, onClose, onUpdate }) => {
                         </div>
                     </div>
                 </div>
+            ) : !chat.isGroup ? (
+                // 1-on-1 Private Chat Profile View
+                <div className="member-detail-overlay" style={{ position: 'relative', height: '100%' }}>
+                    <div className="detail-main">
+                        <div className="detail-avatar-container" onClick={() => setIsViewingAvatar(true)} style={{ cursor: 'pointer' }}>
+                            <Avatar 
+                                pic={otherUser?.profile_pic} 
+                                username={otherUser?.username} 
+                            />
+                        </div>
+                        <h2 className="detail-username">{maskEmail(otherUser?.username)}</h2>
+                        
+                        <div className="detail-info-group">
+                            <label>System ID</label>
+                            <div className="id-pill-container">
+                                <code className="system-id-pill">{otherUser?._id}</code>
+                            </div>
+                        </div>
+
+                        <div className="detail-info-group privacy-note">
+                            <Shield size={14} />
+                            <span>Privacy protected: Email fully hidden by default</span>
+                        </div>
+                    </div>
+                </div>
             ) : (
-                // Main info view...
+                // Main info view for GROUPS...
                 <>
                     <div className="group-info-main">
-                        <div className="group-avatar-large" style={{ position: 'relative' }}>
+                        <div className="group-avatar-large" style={{ position: 'relative', cursor: chat.groupIcon ? 'pointer' : 'default' }} onClick={() => chat.groupIcon && setIsViewingAvatar(true)}>
                             {chat.groupIcon ? (
                                 <img src={chat.groupIcon} alt="" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
                             ) : '💎'}
