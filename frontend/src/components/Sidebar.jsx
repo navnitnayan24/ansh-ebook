@@ -112,7 +112,13 @@ const Sidebar = () => {
             </ul>
 
             <div className="sidebar-footer" style={{ marginTop: 'auto', padding: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                {/* Native Bar Sidebar Slot */}
+                <div style={{ marginBottom: '1.5rem', width: '100%', overflow: 'hidden' }}>
+                    <div id="container-fc31d37af05da68c422a1508c61daeb3"></div>
+                </div>
+                
                 <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '1rem', letterSpacing: '1px' }}>CONNECT</p>
+
                 <div className="sidebar-socials" style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
                     <a href="https://whatsapp.com/channel/0029VaFlezo3QxSA5zNTQF0b" target="_blank" rel="noopener noreferrer" className="sidebar-social-icon" title="WhatsApp"><MessageCircle size={18} /></a>
                     <a href="https://youtube.com/@vibexmusicx" target="_blank" rel="noopener noreferrer" className="sidebar-social-icon" title="YouTube"><Youtube size={18} /></a>

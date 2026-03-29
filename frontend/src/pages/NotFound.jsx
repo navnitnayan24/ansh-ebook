@@ -54,7 +54,13 @@ const NotFound = () => {
                         <ArrowLeft size={18} /> GO BACK
                     </button>
                 </div>
+
+                {/* Native Bar 404 Slot */}
+                <div style={{ marginTop: '3rem', width: '100%', maxWidth: '400px', opacity: 0.6 }}>
+                    <div id="container-fc31d37af05da68c422a1508c61daeb3"></div>
+                </div>
             </motion.div>
+
         </div>
     );
 };

@@ -84,7 +84,13 @@ const Footer = () => {
                 </div>
 
                 <div className="footer-credits-v2">
+                    {/* Native Bar Ad Slot */}
+                    <div style={{ marginBottom: '20px', width: '100%', display: 'flex', justifyContent: 'center' }}>
+                        <div id="container-fc31d37af05da68c422a1508c61daeb3"></div>
+                    </div>
+                    
                     <p>@2026 Ansh Ebook All Rights Reserved.</p>
+
                     <div className="legal-v2">
                         <Link to="/about">About Us</Link>
                         <Link to="/contact">Contact</Link>

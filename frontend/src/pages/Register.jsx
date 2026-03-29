@@ -79,7 +79,13 @@ const Register = () => {
                         </button>
                     </form>
 
+                    {/* Native Bar Auth Slot */}
+                    <div style={{ marginTop: '1.5rem', width: '100%', opacity: 0.8 }}>
+                        <div id="container-fc31d37af05da68c422a1508c61daeb3"></div>
+                    </div>
+
                     <div className="auth-footer-v2">
+
                         <p>Already have an account? <Link to="/login" className="pink-link">Login Here</Link></p>
                     </div>
                 </div>

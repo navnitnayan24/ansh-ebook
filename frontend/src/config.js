@@ -10,10 +10,12 @@ if (import.meta.env.DEV) {
 }
 export const MEDIA_URL = parsedMediaUrl;
 
-export const maskEmail = (name) => {
-    if (!name) return 'User';
-    if (typeof name === 'string' && name.includes('@')) return name.split('@')[0];
-    return name;
+export const maskEmail = (email) => {
+    if (!email) return 'User';
+    if (typeof email !== 'string' || !email.includes('@')) return email;
+    const [user, domain] = email.split('@');
+    if (user.length <= 2) return `${user}***@${domain}`;
+    return `${user.substring(0, 2)}***${user.substring(user.length - 1)}@${domain}`;
 };
 
 export const getAvatarUrl = (pic, username = 'U') => {

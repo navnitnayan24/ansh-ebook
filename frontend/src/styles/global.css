@@ -334,12 +334,18 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Ad Space Styles */
 .ad-wrapper {
-    margin: 4rem 0;
+    margin: 2rem auto;
     width: 100%;
+    max-width: 1280px;
+    padding: 0 1.5rem;
 }
 
-.ad-wrapper.horizontal .ad-box-inner {
-    height: 150px;
+.ad-wrapper.horizontal {
+    min-height: 120px;
+}
+
+.ad-wrapper.square {
+    min-height: 250px;
 }
 
 .ad-box-inner {
@@ -347,15 +353,82 @@ h1, h2, h3, h4, h5, h6 {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    border: 1px dashed var(--border-color) !important;
-    background: rgba(255, 20, 147, 0.02) !important;
+    position: relative;
+    overflow: hidden;
+    min-height: 100px;
+    padding: 0.5rem !important;
+    border: 1px dashed rgba(255, 20, 147, 0.15) !important;
+    background: rgba(10, 1, 16, 0.3) !important;
 }
 
-.ad-label {
-    font-size: 0.65rem;
-    letter-spacing: 2px;
+.ad-box-horizontal {
+    min-height: 120px;
+}
+
+.ad-box-square {
+    min-height: 250px;
+}
+
+.ad-label-tag {
+    position: absolute;
+    top: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.55rem;
+    letter-spacing: 2.5px;
     color: var(--text-muted);
-    margin-bottom: 0.5rem;
+    opacity: 0.3;
+    text-transform: uppercase;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.ad-content {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: inherit;
+}
+
+.injected-ad-container {
+    width: 100%;
+    min-height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+/* Ensure AdSense iframes fill the container */
+.injected-ad-container ins.adsbygoogle {
+    width: 100% !important;
+    min-height: 90px;
+}
+
+.injected-ad-container iframe {
+    max-width: 100%;
+}
+
+.ad-fallback-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 0;
+}
+
+.ad-fallback-text p {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    opacity: 0.25;
+    letter-spacing: 1px;
+}
+
+/* Light theme adjustments */
+[data-theme='light'] .ad-box-inner {
+    background: rgba(240, 240, 245, 0.5) !important;
+    border-color: rgba(216, 27, 96, 0.1) !important;
 }
 
 .ad-placeholder-text {

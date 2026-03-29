@@ -26,12 +26,6 @@ const ChatWindow = ({ chat, setSelectedChat }) => {
     // Reliable public notification sound
     const notificationSound = new Audio('https://res.cloudinary.com/dhpwp898n/video/upload/v1711516000/notification_vqc6vz.mp3'); 
 
-    const formatUsername = (name) => {
-        if (!name) return 'User';
-        if (name.includes('@')) return name.split('@')[0];
-        return name;
-    };
-
     useEffect(() => {
         if (chat._id && chat._id.toString().startsWith('new-') === false && socket) {
             socket.emit('mark-seen', { chatId: chat._id });
@@ -229,6 +223,11 @@ const ChatWindow = ({ chat, setSelectedChat }) => {
                     </div>
                 ))}
                 <div ref={scrollRef}></div>
+            </div>
+
+            {/* Native Bar Chat Window Slot */}
+            <div className="chat-window-ad-slot" style={{ padding: '8px', borderTop: '1px solid var(--border-color)', opacity: 0.7 }}>
+                <div id="container-fc31d37af05da68c422a1508c61daeb3"></div>
             </div>
 
             <MessageInput chatId={chat._id} receiverId={otherUser?._id} setMessages={setMessages} />

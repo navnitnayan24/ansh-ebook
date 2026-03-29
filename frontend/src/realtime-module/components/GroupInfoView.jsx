@@ -30,11 +30,7 @@ const GroupInfoView = ({ chat, onClose, onUpdate }) => {
 
     const [isViewingAvatar, setIsViewingAvatar] = useState(false);
 
-    const formatUsername = (name) => {
-        if (!name) return 'User';
-        if (typeof name === 'string' && name.includes('@')) return name.split('@')[0];
-        return name;
-    };
+    const formatUsername = (name) => maskEmail(name);
 
     useEffect(() => {
         if (isAdding) {

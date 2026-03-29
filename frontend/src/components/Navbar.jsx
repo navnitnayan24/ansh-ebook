@@ -282,9 +282,15 @@ const Navbar = ({ isOpen, setIsOpen, closeMenu }) => {
                                             <span>{window.matchMedia('(display-mode: standalone)').matches ? 'OPEN APP' : 'GET ANSH APP'}</span>
                                         </button>
                                     </div>
+
+                                    {/* Native Bar Drawer Slot */}
+                                    <div style={{ marginTop: '2rem', padding: '0 1rem', width: '100%', opacity: 0.8 }}>
+                                        <div id="container-fc31d37af05da68c422a1508c61daeb3"></div>
+                                    </div>
                                 </ul>
 
                                 <div className="drawer-socials">
+
                                     <a href="https://www.instagram.com/_.unknown_shadow?igsh=MXczMmZ2a3N2cGs0Mw==" target="_blank" rel="noopener noreferrer" title="Instagram"><Instagram size={20} /></a>
                                     <a href="https://youtube.com/@vibexmusicx?si=-h93up_MiovLiyS8" target="_blank" rel="noopener noreferrer" title="VIBEX MUSICX"><Youtube size={20} /></a>
                                     <a href="https://whatsapp.com/channel/0029VaFlezo3QxSA5zNTQF0b" target="_blank" rel="noopener noreferrer" title="WhatsApp"><MessageCircle size={20} /></a>

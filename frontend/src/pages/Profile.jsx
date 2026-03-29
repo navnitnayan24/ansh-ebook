@@ -119,10 +119,10 @@ const Profile = () => {
 
                     <div className="profile-main-info flex-grow-1 text-center text-md-start">
                         <motion.h1 className="username-display mb-2" variants={itemVariants}>
-                            {user?.username} <span className="role-badge">{user?.role}</span>
+                            {maskEmail(user?.username)} <span className="role-badge">{user?.role}</span>
                         </motion.h1>
                         <motion.p className="email-display muted-text mb-0" variants={itemVariants}>
-                            <Mail size={16} className="me-2" /> {user?.email}
+                            <Mail size={16} className="me-2" /> {maskEmail(user?.email)}
                         </motion.p>
                     </div>
 
@@ -139,7 +139,8 @@ const Profile = () => {
                             animate={{ height: 'auto', opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}
                         >
-                            <h4 className="mb-3 pink-text" style={{fontSize: '1rem'}}>Pick a <span className="text-gradient">Bitmoji Avatar</span></h4>
+                            <h4 className="mb-3 pink-text" style={{fontSize: '1rem'}}>Pick a <span className="text-gradient">Bitmoji Avatar</span> ({maskEmail(user?.username)})</h4>
+
                             <div className="avatar-grid">
                                 {PREDEFINED_AVATARS.map((url, idx) => (
                                     <motion.img 
