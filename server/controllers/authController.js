@@ -38,6 +38,7 @@ exports.login = async (req, res) => {
             email: user.email, 
             role: 'user',
             profile_pic: user.profile_pic,
+            bio: user.bio,
             createdAt: user.createdAt
         });
     } catch (err) {
@@ -168,11 +169,14 @@ exports.changePassword = async (req, res) => {
 // Update Profile Picture
 exports.updateProfile = async (req, res) => {
     try {
-        const { remove, avatarUrl } = req.body;
+        const { remove, avatarUrl, bio, username } = req.body;
         const AccountModel = req.user.role === 'admin' ? Admin : User;
         const account = await AccountModel.findById(req.user.id);
         
         if (!account) return res.status(404).json({ error: 'User not found' });
+
+        if (username) account.username = username;
+        if (bio) account.bio = bio;
 
         if (remove === 'true' || remove === true) {
             account.profile_pic = null;
@@ -192,6 +196,7 @@ exports.updateProfile = async (req, res) => {
                 email: account.email,
                 role: req.user.role,
                 profile_pic: account.profile_pic,
+                bio: account.bio,
                 profile_name: account.profile_name,
                 createdAt: account.createdAt
             }

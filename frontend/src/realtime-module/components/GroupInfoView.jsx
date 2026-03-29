@@ -173,10 +173,10 @@ const GroupInfoView = ({ chat, onClose, onUpdate }) => {
                         <h2 className="detail-username">{maskEmail(selectedMember.username)}</h2>
                         
                         <div className="detail-info-group">
-                            <label>System ID</label>
-                            <div className="id-pill-container">
-                                <code className="system-id-pill">{selectedMember._id}</code>
-                            </div>
+                            <label>About / Bio</label>
+                            <p className="bio-text" style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.7)', lineHeight: '1.4', fontStyle: 'italic' }}>
+                                {selectedMember.bio || 'Premium Ansh Ebook User'}
+                            </p>
                         </div>
 
                         <div className="detail-info-group">
@@ -270,18 +270,18 @@ const GroupInfoView = ({ chat, onClose, onUpdate }) => {
                                 username={otherUser?.username} 
                             />
                         </div>
-                        <h2 className="detail-username">{maskEmail(otherUser?.username)}</h2>
+                        <h2 className="detail-username" style={{ marginBottom: '5px' }}>{maskEmail(otherUser?.username)}</h2>
                         
                         <div className="detail-info-group">
-                            <label>System ID</label>
-                            <div className="id-pill-container">
-                                <code className="system-id-pill">{otherUser?._id}</code>
-                            </div>
+                            <label>About / Bio</label>
+                            <p className="bio-text" style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.7)', lineHeight: '1.4', fontStyle: 'italic', margin: '8px 0' }}>
+                                {otherUser?.bio || 'Premium Ansh Ebook User'}
+                            </p>
                         </div>
-
-                        <div className="detail-info-group privacy-note">
+                        
+                        <div className="detail-info-group privacy-note" style={{ marginTop: '15px' }}>
                             <Shield size={14} />
-                            <span>Privacy protected: Email fully hidden by default</span>
+                            <span>Privacy protected: Email fully hidden</span>
                         </div>
                     </div>
                 </div>

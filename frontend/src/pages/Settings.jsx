@@ -15,6 +15,8 @@ const Settings = () => {
     const [user, setUser] = useState(null);
     const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
     const [isUpdatingAvatar, setIsUpdatingAvatar] = useState(false);
+    const [editUsername, setEditUsername] = useState('');
+    const [editBio, setEditBio] = useState('');
     
     // Privacy Toggles
     const [privacy, setPrivacy] = useState({
@@ -33,7 +35,10 @@ const Settings = () => {
     useEffect(() => {
         const savedUser = localStorage.getItem('user');
         if (savedUser && savedUser !== 'undefined') {
-            setUser(JSON.parse(savedUser));
+            const parsedUser = JSON.parse(savedUser);
+            setUser(parsedUser);
+            setEditUsername(parsedUser.username || '');
+            setEditBio(parsedUser.bio || '');
         }
     }, []);
 
@@ -82,6 +87,17 @@ const Settings = () => {
         } finally {
             setIsUpdatingAvatar(false);
             e.target.value = '';
+        }
+    };
+
+    const handleProfileUpdate = async () => {
+        try {
+            const res = await updateProfile({ username: editUsername, bio: editBio });
+            setUser(res.data.user);
+            localStorage.setItem('user', JSON.stringify(res.data.user));
+            alert("Profile updated successfully!");
+        } catch (err) {
+            alert("Failed to update profile info");
         }
     };
 
@@ -149,7 +165,12 @@ const Settings = () => {
                                         <div className="form-row">
                                             <div className="form-group">
                                                 <label>Username</label>
-                                                <input type="text" defaultValue={user?.username} className="glass-input" />
+                                                <input 
+                                                    type="text" 
+                                                    value={editUsername} 
+                                                    onChange={(e) => setEditUsername(e.target.value)} 
+                                                    className="glass-input" 
+                                                />
                                             </div>
                                             <div className="form-group">
                                                 <label>Email Address</label>
@@ -158,9 +179,14 @@ const Settings = () => {
                                         </div>
                                         <div className="form-group">
                                             <label>Bio</label>
-                                            <textarea className="glass-input" placeholder="Tell us about yourself..." defaultValue="Premium Ansh Ebook User"></textarea>
+                                            <textarea 
+                                                className="glass-input" 
+                                                placeholder="Tell us about yourself..." 
+                                                value={editBio}
+                                                onChange={(e) => setEditBio(e.target.value)}
+                                            ></textarea>
                                         </div>
-                                        <button className="btn btn-primary btn-pill shadow-neon mt-3" onClick={() => alert('Profile Details updated! (Changes pending backend link)')}>
+                                        <button className="btn btn-primary btn-pill shadow-neon mt-3" onClick={handleProfileUpdate}>
                                             <Save size={18} className="me-2" /> Save Profile
                                         </button>
                                     </div>

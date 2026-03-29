@@ -5,6 +5,7 @@ const userSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     profile_pic: { type: String },
+    bio: { type: String, default: 'Premium Ansh Ebook User' },
     favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Music' }],
     playlists: [{
         name: { type: String, required: true },
