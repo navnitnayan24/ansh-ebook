@@ -58,8 +58,15 @@
 
 @media (max-width: 768px) {
     .realtime-chat-page {
-        height: calc(100vh - 80px); /* Mobile Header Size */
-        height: calc(100dvh - 80px);
+        position: fixed !important;
+        top: 80px; /* Start exactly below BrandHeader */
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: auto !important; /* Override calc() */
+        width: 100%;
+        margin-top: 0 !important;
+        z-index: 50;
     }
 }
 
@@ -103,7 +110,6 @@
     
     .chat-layout.has-selected-chat .chat-window-container {
         display: flex !important;
-        margin-top: 15px; /* Adds space for the App Navbar on mobile */
     }
     
     .mobile-back-btn {

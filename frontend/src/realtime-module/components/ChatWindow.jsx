@@ -115,6 +115,13 @@ const ChatWindow = ({ chat, setSelectedChat }) => {
         return () => clearTimeout(timeout);
     }, [messages]);
 
+    const handleBack = () => {
+        if (document.activeElement && typeof document.activeElement.blur === 'function') {
+            document.activeElement.blur(); // Dismiss mobile keyboard
+        }
+        setSelectedChat(null);
+    };
+
     const isKohinoor = (chat.name && typeof chat.name === 'string') ? chat.name.toLowerCase().includes('kohinoor') : chat.isGroup;
 
     return (
@@ -122,7 +129,7 @@ const ChatWindow = ({ chat, setSelectedChat }) => {
             <div className="chat-header" onClick={() => setShowInfo(true)} style={{ cursor: 'pointer' }}>
                 <div className="chat-header-title">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <button className="mobile-back-btn" onClick={() => setSelectedChat(null)}>
+                        <button className="mobile-back-btn" onClick={handleBack}>
                             <ArrowLeft size={24} />
                         </button>
                         <div className="other-user-info">
