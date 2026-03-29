@@ -5,22 +5,38 @@ import { ThemeProvider } from './context/ThemeContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import MobileFooter from './components/MobileFooter';
-import { SplashScreen } from '@capacitor/splash-screen';
+// SplashScreen import - safe fallback for non-native environments
+let SplashScreen;
+try {
+    SplashScreen = require('@capacitor/splash-screen').SplashScreen;
+} catch (e) {
+    SplashScreen = { hide: () => Promise.resolve() };
+}
 
 
 // Lazy Retry Utility: Automatically reloads the page if a chunk fails to load 
 // (happens when a new build is pushed and the old version is still in browser cache)
 const lazyRetry = (componentImport) => {
     return lazy(async () => {
-        const hasRetried = window.sessionStorage.getItem('retry-lazy-' + window.location.pathname);
+        const pageKey = 'retry-lazy-' + window.location.pathname;
+        const hasRetried = window.sessionStorage.getItem(pageKey);
         try {
-            return await componentImport();
-        } catch (error) {
-            if (!hasRetried && (error.message.includes('Failed to fetch') || error.message.includes('dynamically imported module'))) {
-                window.sessionStorage.setItem('retry-lazy-' + window.location.pathname, 'true');
-                window.location.reload();
-                return;
+            const module = await componentImport();
+            // Verify the module has a default export (prevents 'reading default' error)
+            if (!module || !module.default) {
+                throw new Error('Module loaded but has no default export');
             }
+            // Clear retry flag on success
+            window.sessionStorage.removeItem(pageKey);
+            return module;
+        } catch (error) {
+            if (!hasRetried) {
+                // On ANY chunk loading error, reload once to get fresh assets
+                window.sessionStorage.setItem(pageKey, 'true');
+                window.location.reload();
+                return { default: () => null }; // Fallback while reloading
+            }
+            // Already retried once — throw to ErrorBoundary
             throw error;
         }
     });
