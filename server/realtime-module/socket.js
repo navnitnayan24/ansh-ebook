@@ -10,7 +10,11 @@ const setupSocket = (server) => {
         pingTimeout: 60000,
         pingInterval: 25000,
         cors: {
-            origin: "*",
+            origin: [
+                'http://localhost:5173',
+                'http://localhost:3000',
+                'https://ansh-ebook.onrender.com'
+            ],
             methods: ["GET", "POST"]
         }
     });
@@ -20,7 +24,8 @@ const setupSocket = (server) => {
         const token = socket.handshake.auth.token;
         if (!token) return next(new Error("Authentication error"));
 
-        const secret = process.env.JWT_SECRET || 'ansh_ebook_internal_fallback_secure_2026_@#$';
+        const secret = process.env.JWT_SECRET;
+        if (!secret) return next(new Error("Internal Security Server Error: Missing JWT Secret"));
         jwt.verify(token, secret, (err, decoded) => {
             if (err) return next(new Error("Authentication error"));
             socket.user = decoded;

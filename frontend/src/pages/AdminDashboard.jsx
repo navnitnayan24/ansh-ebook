@@ -195,9 +195,9 @@ const AdminDashboard = () => {
                     resourceType = 'raw';
                 }
 
-                // If file is small (< 5MB), do a standard upload
-                const CHUNK_SIZE = 5 * 1024 * 1024; // 5MB
-                if (file.size <= CHUNK_SIZE) {
+                // If file is small (< 1MB), do a standard upload
+                const CHUNK_SIZE = 512 * 1024; // 512KB (Stronger for slow Jio KB/s internet)
+                if (file.size <= 1024 * 1024) {
                     setUploadProgress({ active: true, percent: 10, currentChunk: 1, totalChunks: 1 });
                     const fd = new FormData();
                     fd.append('file', file);
@@ -230,12 +230,21 @@ const AdminDashboard = () => {
                     const end = Math.min(start + CHUNK_SIZE, file.size);
                     const chunk = file.slice(start, end);
 
-                    setUploadProgress({ active: true, percent: Math.round((i / totalChunks) * 100), currentChunk: i + 1, totalChunks });
+                    setUploadProgress({ 
+                        active: true, 
+                        percent: Math.round((i / totalChunks) * 100), 
+                        currentChunk: i + 1, 
+                        totalChunks,
+                        status: 'uploading'
+                    });
 
                     let retryCount = 0;
                     let success = false;
-                    while (!success && retryCount < 3) {
+                    while (!success && retryCount < 5) {
                         try {
+                            if (retryCount > 0) {
+                                setUploadProgress(prev => ({ ...prev, status: `retrying-${retryCount}` }));
+                            }
                             const fd = new FormData();
                             fd.append('file', chunk);
                             fd.append('api_key', apiKey);
@@ -444,7 +453,11 @@ const AdminDashboard = () => {
                             </div>
                             <div className="progress-details">
                                 <span className="percent">{uploadProgress.percent}%</span>
-                                <span className="chunks">Chunk {uploadProgress.currentChunk} / {uploadProgress.totalChunks}</span>
+                                <span className="chunks">
+                                    {uploadProgress.status?.includes('retrying') ? 
+                                        `⚠️ Retrying Chunk ${uploadProgress.currentChunk} (${uploadProgress.status.split('-')[1]}/5)...` : 
+                                        `Piece ${uploadProgress.currentChunk} / ${uploadProgress.totalChunks}`}
+                                </span>
                             </div>
                             <p className="slow-internet-note">Keep your browser open, especially on slow internet. We're retrying automatically if needed! 💎</p>
                         </div>

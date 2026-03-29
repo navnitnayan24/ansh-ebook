@@ -1,11 +1,16 @@
 require('dotenv').config();
 
-// FORCED PERMANENT STORAGE FIX (Render strips .env files)
-if (!process.env.CLOUDINARY_CLOUD_NAME) {
-    process.env.CLOUDINARY_CLOUD_NAME = 'datao7ela';
-    process.env.CLOUDINARY_API_KEY = '367996669885499';
-    process.env.CLOUDINARY_API_SECRET = '2eH_KFosTqgBvhlZruG-2kbKIBA';
+// FAIL-SAFE: The app must NOT start if critical secrets are missing
+function checkEnv() {
+    const required = ['JWT_SECRET', 'MONGODB_URI', 'CLOUDINARY_CLOUD_NAME', 'CLOUDINARY_API_KEY', 'CLOUDINARY_API_SECRET'];
+    const missing = required.filter(k => !process.env[k]);
+    if (missing.length > 0) {
+        console.error(`💥 CRITICAL ERROR: Missing environment variables: ${missing.join(', ')}`);
+        console.error('🚀 FIX: Add these to your Render Dashboard settings.');
+        process.exit(1);
+    }
 }
+checkEnv();
 
 const express = require('express');
 const mongoose = require('mongoose');
@@ -56,8 +61,32 @@ const apiLimiter = rateLimit({
 app.use('/api/auth/login', apiLimiter);
 app.use('/api/auth/admin/login', apiLimiter);
 
+// Global API Limiter (Protects against DDoS/Spam)
+const globalApiLimiter = rateLimit({
+    windowMs: 60 * 1000, // 1 minute
+    max: 60, // 60 requests per minute per IP
+    message: { error: 'Too many requests. Please slow down.' }
+});
+app.use('/api', globalApiLimiter);
+
 // Middleware
-app.use(cors());
+const allowedOrigins = [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'https://ansh-ebook.onrender.com'
+];
+
+app.use(cors({
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Cross-Origin Access Blocked by Security Shield'));
+        }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+}));
 app.use(express.json({ limit: '200mb' }));
 app.use(express.urlencoded({ limit: '200mb', extended: true }));
 
