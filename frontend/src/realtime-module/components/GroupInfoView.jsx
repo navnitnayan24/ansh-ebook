@@ -143,12 +143,17 @@ const GroupInfoView = ({ chat, onClose, onUpdate }) => {
                     <button onClick={() => setIsViewingAvatar(false)} style={{ position: 'absolute', top: '20px', right: '20px', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '50%', padding: '10px', color: '#fff', cursor: 'pointer' }}>
                         <X size={28} />
                     </button>
-                    <img 
-                        src={getAvatarUrl(chat.isGroup ? chat.groupIcon : (selectedMember?.profile_pic || otherUser?.profile_pic), chat.isGroup ? chat.name : (selectedMember?.username || otherUser?.username))} 
-                        alt="Avatar" 
-                        style={{ maxWidth: '90%', maxHeight: '80%', objectFit: 'contain', borderRadius: '10px', boxShadow: '0 10px 40px rgba(0,0,0,0.5)' }} 
-                        onError={(e) => e.target.style.display = 'none'}
-                    />
+                    <div style={{ width: '85vw', height: '85vw', maxWidth: '350px', maxHeight: '350px' }}>
+                        {chat.isGroup && !chat.groupIcon ? (
+                            <div className="group-avatar-main" style={{ width: '100%', height: '100%', fontSize: '80px', boxShadow: '0 10px 40px rgba(0,0,0,0.5)' }}>💎</div>
+                        ) : (
+                            <Avatar 
+                                pic={chat.isGroup ? chat.groupIcon : (selectedMember?.profile_pic || otherUser?.profile_pic)}
+                                username={chat.isGroup ? chat.name : (selectedMember?.username || otherUser?.username)}
+                                style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover', boxShadow: '0 10px 40px rgba(0,0,0,0.5)', display: 'block' }}
+                            />
+                        )}
+                    </div>
                 </div>
             )}
 
