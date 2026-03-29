@@ -134,7 +134,7 @@ const GroupInfoView = ({ chat, onClose, onUpdate }) => {
         <div className="group-info-sidebar">
             <div className="group-info-header">
                 <button className="close-info-btn" onClick={onClose}><X size={20}/></button>
-                <h3>{!chat.isGroup ? 'User Profile' : isAdding ? 'Add Member' : isEditing ? 'Edit Group' : 'Group Info'}</h3>
+                <h3>{!chat.isGroup ? (otherUser?.username || 'User Profile') : isAdding ? 'Add Member' : isEditing ? 'Edit Group' : 'Group Info'}</h3>
             </div>
 
             {/* FULL SCREEN AVATAR VIEWER */}
