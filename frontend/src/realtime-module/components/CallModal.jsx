@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSocket } from '../context/SocketContext';
 import { PhoneOff, Mic, MicOff, Video, VideoOff } from 'lucide-react';
+import Avatar from '../../components/Avatar';
 
 const CallModal = () => {
     const { call, answerCall, leaveCall, callAccepted, myVideoRef, userVideoRef } = useSocket();
@@ -9,8 +10,14 @@ const CallModal = () => {
         <div className="call-overlay flex-center">
             <div className="call-modal glass-card text-center">
                 <div className="call-info mb-4">
-                    <img src={call.fromProfile || '/default-avatar.png'} alt="caller" className="caller-avatar" />
-                    <h2>{call.name || "Unknown User"}</h2>
+                    <div className="flex-center mb-3">
+                        <Avatar 
+                            pic={call.fromProfile} 
+                            username={call.name} 
+                            style={{ width: '100px', height: '100px', borderRadius: '50%', border: '4px solid var(--accent)' }}
+                        />
+                    </div>
+                    <h2 style={{ color: '#fff', fontSize: '1.5rem', fontWeight: '700' }}>{call.name || "Unknown User"}</h2>
                     <p className="ringing-animation">
                         {callAccepted ? 'CONVERSING...' : (call.isCalling ? 'CALLING...' : 'INCOMING CALL...')}
                     </p>

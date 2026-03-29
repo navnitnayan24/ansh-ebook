@@ -95,6 +95,7 @@ export const fetchCloudinarySignature = () => API.get('realtime/cloudinary-signa
 export const login = (data) => API.post('auth/login', data);
 export const register = (data) => API.post('auth/register', data);
 export const adminLogin = (data) => API.post('auth/admin/login', data);
+export const updateProfile = (data) => API.put('auth/profile', data);
 
 // Categories
 export const addCategory = (data) => API.post('admin/categories', data);

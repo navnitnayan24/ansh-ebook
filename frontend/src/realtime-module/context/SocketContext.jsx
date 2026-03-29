@@ -44,8 +44,8 @@ export const SocketProvider = ({ children }) => {
             setOnlineUsers(prev => ({ ...prev, [data.userId]: data.status }));
         });
 
-        newSocket.on('hey-calling', ({ from, name: callerName, signal, type }) => {
-            setCall({ isReceivingCall: true, from, name: callerName, signal, type });
+        newSocket.on('hey-calling', ({ from, name: callerName, profile_pic, signal, type }) => {
+            setCall({ isReceivingCall: true, from, name: callerName, fromProfile: profile_pic, signal, type });
         });
 
         return () => newSocket.close();
@@ -160,6 +160,7 @@ export const SocketProvider = ({ children }) => {
                     signalData: data, 
                     from: currentUserId,
                     name: currentUser.username, 
+                    profile_pic: currentUser.profile_pic,
                     type 
                 });
             });
@@ -190,7 +191,7 @@ export const SocketProvider = ({ children }) => {
                     const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
                     peer.on('signal', (data) => {
                         socket.emit('call-user', { 
-                            userToCall: id, signalData: data, from: currentUser.id || currentUser._id, name: currentUser.username, type: 'audio' 
+                            userToCall: id, signalData: data, from: currentUser.id || currentUser._id, name: currentUser.username, profile_pic: currentUser.profile_pic, type: 'audio' 
                         });
                     });
                     peer.on('stream', (remoteStream) => { if (userVideoRef.current) userVideoRef.current.srcObject = remoteStream; });

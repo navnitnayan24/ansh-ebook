@@ -5,7 +5,8 @@ import {
     Mail, Phone, Globe, Trash2, Save
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { getAvatarUrl } from '../config';
+// Add imports for Avatar Updates
+import { fetchCloudinarySignature, updateProfile } from '../api';
 import Avatar from '../components/Avatar';
 import '../styles/Settings.css';
 
@@ -13,6 +14,7 @@ const Settings = () => {
     const [activeSection, setActiveSection] = useState('profile');
     const [user, setUser] = useState(null);
     const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
+    const [isUpdatingAvatar, setIsUpdatingAvatar] = useState(false);
     
     // Privacy Toggles
     const [privacy, setPrivacy] = useState({
@@ -42,6 +44,46 @@ const Settings = () => {
         { id: 'notifications', label: 'Notifications', icon: <Bell size={20} /> },
         { id: 'appearance', label: 'Appearance', icon: <Palette size={20} /> },
     ];
+
+    const handleAvatarUpdate = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        setIsUpdatingAvatar(true);
+        try {
+            // Fetch signature
+            const sigRes = await fetchCloudinarySignature();
+            const { signature, timestamp, cloudName, apiKey } = sigRes.data;
+
+            const fd = new FormData();
+            fd.append('file', file);
+            fd.append('api_key', apiKey);
+            fd.append('timestamp', timestamp);
+            fd.append('signature', signature);
+            fd.append('access_mode', 'public');
+
+            // Upload directly to Cloudinary
+            const cloudRes = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+                method: 'POST',
+                body: fd
+            });
+            const cloudData = await cloudRes.json();
+
+            // Notify backend wrapper
+            const updateRes = await updateProfile({ avatarUrl: cloudData.secure_url });
+            
+            // Update local state and auth token
+            setUser(updateRes.data.user);
+            localStorage.setItem('user', JSON.stringify(updateRes.data.user));
+            alert("Profile picture updated successfully!");
+        } catch (error) {
+            console.error("Failed to update avatar:", error);
+            alert("Failed to update avatar. Please try again.");
+        } finally {
+            setIsUpdatingAvatar(false);
+            e.target.value = '';
+        }
+    };
 
     const containerVariants = {
         hidden: { opacity: 0, x: 20 },
@@ -86,15 +128,15 @@ const Settings = () => {
                                 <section className="settings-section">
                                     <h3 className="section-title">Profile Settings</h3>
                                     <div className="profile-edit-header mb-4">
-                                        <div className="settings-avatar-wrapper">
+                                        <div className="settings-avatar-wrapper" style={{ opacity: isUpdatingAvatar ? 0.5 : 1 }}>
                                             <Avatar 
                                                 pic={user?.profile_pic} 
                                                 username={user?.username} 
                                                 className="settings-large-avatar" 
                                             />
-                                            <label className="avatar-edit-badge">
+                                            <label className="avatar-edit-badge" style={{ cursor: 'pointer' }}>
                                                 <Camera size={14} />
-                                                <input type="file" hidden />
+                                                <input type="file" hidden accept="image/*" onChange={handleAvatarUpdate} disabled={isUpdatingAvatar}/>
                                             </label>
                                         </div>
                                         <div className="profile-quick-info">
@@ -118,7 +160,7 @@ const Settings = () => {
                                             <label>Bio</label>
                                             <textarea className="glass-input" placeholder="Tell us about yourself..." defaultValue="Premium Ansh Ebook User"></textarea>
                                         </div>
-                                        <button className="btn btn-primary btn-pill shadow-neon mt-3">
+                                        <button className="btn btn-primary btn-pill shadow-neon mt-3" onClick={() => alert('Profile Details updated! (Changes pending backend link)')}>
                                             <Save size={18} className="me-2" /> Save Profile
                                         </button>
                                     </div>
