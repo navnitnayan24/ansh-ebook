@@ -130,6 +130,9 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
         return !chats?.some(c => !c.isGroup && c.participants?.some(p => p._id === user._id));
     });
 
+    // Separate "Recent" from "Discovery"
+    const recentChats = filteredChats.filter(c => c.lastMessage || c.isGroup);
+
     return (
         <div className="chat-sidebar">
             <div className="sidebar-header">
@@ -183,46 +186,51 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
                     </div>
                 )}
 
-                {/* Active Chats */}
-                {filteredChats.map((chat) => {
-                    const otherParticipant = !chat.isGroup ? chat.participants.find(p => p._id !== currentUserId) : null;
-                    const isSelected = selectedChat?._id === chat._id;
-                    const isOnline = !chat.isGroup && onlineUsers[otherParticipant?._id] === 'online';
-                    const unreadCount = chat.unreadCount?.[currentUserId] || 0;
-                    const isTyping = typingStatus[chat._id];
+                {/* Recent Conversations */}
+                {recentChats.length > 0 && (
+                    <>
+                        <div className="sidebar-section-title">{search ? 'Search Results' : 'Recent Conversations'}</div>
+                        {recentChats.map((chat) => {
+                            const otherParticipant = !chat.isGroup ? chat.participants.find(p => p._id !== currentUserId) : null;
+                            const isSelected = selectedChat?._id === chat._id;
+                            const isOnline = !chat.isGroup && onlineUsers[otherParticipant?._id] === 'online';
+                            const unreadCount = chat.unreadCount?.[currentUserId] || 0;
+                            const isTyping = typingStatus[chat._id];
 
-                    return (
-                        <div 
-                            key={chat._id} 
-                            className={`user-item ${isSelected ? 'active' : ''}`}
-                            onClick={() => setSelectedChat(chat)}
-                        >
-                            <div className="user-avatar-wrapper">
-                                {chat.isGroup ? (
-                                    <div className="group-avatar-main" style={{ width: '44px', height: '44px', fontSize: '18px' }}>💎</div>
-                                ) : (
-                                    <Avatar 
-                                        pic={otherParticipant?.profile_pic} 
-                                        username={otherParticipant?.username} 
-                                        className="user-avatar-img"
-                                    />
-                                )}
-                                {!chat.isGroup && <span className={`status-dot ${isOnline ? 'online' : 'offline'}`}></span>}
-                            </div>
-                            <div className="user-info">
-                                <div className="user-name-row">
-                                    <span className="user-name">
-                                        {chat.isGroup ? (chat.name || 'Kohinoor Group') : maskEmail(otherParticipant?.username)}
-                                    </span>
-                                    {unreadCount > 0 && <span className="unread-badge">{unreadCount}</span>}
+                            return (
+                                <div 
+                                    key={chat._id} 
+                                    className={`user-item ${isSelected ? 'active' : ''}`}
+                                    onClick={() => setSelectedChat(chat)}
+                                >
+                                    <div className="user-avatar-wrapper">
+                                        {chat.isGroup ? (
+                                            <div className="group-avatar-main" style={{ width: '44px', height: '44px', fontSize: '18px' }}>💎</div>
+                                        ) : (
+                                            <Avatar 
+                                                pic={otherParticipant?.profile_pic} 
+                                                username={otherParticipant?.username} 
+                                                className="user-avatar-img"
+                                            />
+                                        )}
+                                        {!chat.isGroup && <span className={`status-dot ${isOnline ? 'online' : 'offline'}`}></span>}
+                                    </div>
+                                    <div className="user-info">
+                                        <div className="user-name-row">
+                                            <span className="user-name">
+                                                {chat.isGroup ? (chat.name || 'Kohinoor Group') : maskEmail(otherParticipant?.username)}
+                                            </span>
+                                            {unreadCount > 0 && <span className="unread-badge">{unreadCount}</span>}
+                                        </div>
+                                        <span className={`last-message-preview ${isTyping ? 'is-typing' : ''}`}>
+                                            {isTyping ? 'typing...' : (chat.lastMessage?.text || (chat.isGroup ? 'Group Chat' : 'Start chatting'))}
+                                        </span>
+                                    </div>
                                 </div>
-                                <span className={`last-message-preview ${isTyping ? 'is-typing' : ''}`}>
-                                    {isTyping ? 'typing...' : (chat.lastMessage?.text || (chat.isGroup ? 'Group Chat' : 'Start chatting'))}
-                                </span>
-                            </div>
-                        </div>
-                    );
-                })}
+                            );
+                        })}
+                    </>
+                )}
 
                 {/* User Discovery (only when searching or if no chats) */}
                 {(search.length > 0 || filteredUsers.length > 0) && (

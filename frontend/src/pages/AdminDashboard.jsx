@@ -11,6 +11,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { MEDIA_URL, getAvatarUrl } from '../config';
 import Avatar from '../components/Avatar';
+import SkeletonLoader from '../components/SkeletonLoader';
 import '../styles/Dashboard.css';
 
 const AdminDashboard = () => {
@@ -186,19 +187,22 @@ const AdminDashboard = () => {
             
             const uploadDirectlyToCloudinary = async (file) => {
                 const sigRes = await fetchCloudinarySignature();
-                const { signature, timestamp, cloudName, apiKey, uploadPreset } = sigRes.data;
+                const { signature, timestamp, cloudName, apiKey } = sigRes.data;
 
                 let resourceType = 'auto';
                 if (file.type.startsWith('audio/') || file.type.startsWith('video/')) {
                     resourceType = 'video';
-                } else if (file.type === 'application/pdf' || file.name?.toLowerCase().endsWith('.pdf')) {
-                    resourceType = 'raw';
+                }
+                // Changed from 'raw' to 'auto' for PDFs to allow better Cloudinary handling
+                if (file.type === 'application/pdf' || file.name?.toLowerCase().endsWith('.pdf')) {
+                    resourceType = 'auto'; 
                 }
 
                 // If file is small (< 1MB), do a standard upload
-                const CHUNK_SIZE = 512 * 1024; // 512KB (Stronger for slow Jio KB/s internet)
+                // Reverting to 512KB chunks as 2MB is too heavy for slow (100kb/s) connections
+                const CHUNK_SIZE = 512 * 1024; 
                 if (file.size <= 1024 * 1024) {
-                    setUploadProgress({ active: true, percent: 10, currentChunk: 1, totalChunks: 1 });
+                    setUploadProgress({ active: true, percent: 10, currentChunk: 1, totalChunks: 1, status: 'starting' });
                     const fd = new FormData();
                     fd.append('file', file);
                     fd.append('api_key', apiKey);
@@ -216,7 +220,7 @@ const AdminDashboard = () => {
                         throw new Error(errorObj.error?.message || 'Upload failed');
                     }
                     const resData = await res.json();
-                    setUploadProgress({ active: false, percent: 100, currentChunk: 1, totalChunks: 1 });
+                    setUploadProgress({ active: false, percent: 100, currentChunk: 1, totalChunks: 1, status: 'complete' });
                     return resData.secure_url;
                 }
 
@@ -243,18 +247,21 @@ const AdminDashboard = () => {
                     while (!success && retryCount < 5) {
                         try {
                             if (retryCount > 0) {
-                                setUploadProgress(prev => ({ ...prev, status: `retrying-${retryCount}` }));
+                                setUploadProgress(prev => ({ 
+                                    ...prev, 
+                                    status: `retrying-${retryCount}`,
+                                    message: `Network glitch? Retrying step ${i+1}...` 
+                                }));
+                                // Exponential backoff
+                                await new Promise(r => setTimeout(r, 1000 * Math.pow(2, retryCount)));
                             }
+                            
                             const fd = new FormData();
                             fd.append('file', chunk);
                             fd.append('api_key', apiKey);
                             fd.append('timestamp', timestamp);
                             fd.append('signature', signature);
                             fd.append('access_mode', 'public');
-                            
-                            // Important: Use the same signature/timestamp for all chunks in unsigned-like signed uploads
-                            // or fetch a fresh signature for each if Cloudinary requires it.
-                            // For simplicity and speed, we reuse.
                             
                             const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`, {
                                 method: 'POST',
@@ -265,7 +272,11 @@ const AdminDashboard = () => {
                                 body: fd
                             });
 
-                            if (!res.ok) throw new Error('Chunk failed');
+                            if (!res.ok) {
+                                const errBody = await res.json();
+                                throw new Error(errBody.error?.message || 'Chunk failed');
+                            }
+                            
                             const resData = await res.json();
                             if (i === totalChunks - 1) {
                                 secureUrl = resData.secure_url;
@@ -273,13 +284,13 @@ const AdminDashboard = () => {
                             success = true;
                         } catch (err) {
                             retryCount++;
-                            if (retryCount >= 3) throw new Error(`Failed to upload chunk ${i+1} after 3 retries.`);
-                            await new Promise(r => setTimeout(r, 2000)); // Wait before retry
+                            console.warn(`Chunk ${i+1} failed (Attempt ${retryCount}/5):`, err.message);
+                            if (retryCount >= 5) throw new Error(`Upload failed at step ${i+1}. Please check your internet connection and try again.`);
                         }
                     }
                 }
 
-                setUploadProgress({ active: false, percent: 100, currentChunk: totalChunks, totalChunks });
+                setUploadProgress({ active: false, percent: 100, currentChunk: totalChunks, totalChunks, status: 'complete' });
                 return secureUrl;
             };
 
@@ -497,7 +508,22 @@ const AdminDashboard = () => {
                     </div>
                 </div>
 
-                {loading ? <div className="loader">Updating...</div> : (
+                {loading ? (
+                    <div className="table-wrapper animate-fade-in">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Title / Name</th>
+                                    <th className="hide-mobile">Category / Info</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <SkeletonLoader type="table-row" count={5} />
+                            </tbody>
+                        </table>
+                    </div>
+                ) : (
                     <div className="table-wrapper animate-fade-in">
                         {activeTab === 'advertisements' ? (
                             <div className="settings-grid">

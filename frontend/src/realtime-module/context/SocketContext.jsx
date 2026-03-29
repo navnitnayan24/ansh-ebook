@@ -40,6 +40,28 @@ export const SocketProvider = ({ children }) => {
 
         setSocket(newSocket);
 
+        // --- BROWSER NOTIFICATIONS ---
+        if ("Notification" in window && Notification.permission === "default") {
+            Notification.requestPermission();
+        }
+
+        const showNotification = (message) => {
+            if (document.visibilityState === 'visible') return; // Don't notify if user is looking at the app
+            if ("Notification" in window && Notification.permission === "granted") {
+                const notification = new Notification("New Message from Ansh Ebook", {
+                    body: `${message.sender?.username || 'Someone'}: ${message.text}`,
+                    icon: '/logo192.png'
+                });
+                notification.onclick = () => {
+                    window.focus();
+                };
+            }
+        };
+
+        newSocket.on('receive-message', (data) => {
+            showNotification(data.message);
+        });
+
         newSocket.on('user-status', (data) => {
             setOnlineUsers(prev => ({ ...prev, [data.userId]: data.status }));
         });
@@ -48,7 +70,12 @@ export const SocketProvider = ({ children }) => {
             setCall({ isReceivingCall: true, from, name: callerName, fromProfile: profile_pic, signal, type });
         });
 
-        return () => newSocket.close();
+        return () => {
+            newSocket.off('receive-message');
+            newSocket.off('user-status');
+            newSocket.off('hey-calling');
+            newSocket.close();
+        };
     }, []);
 
     const answerCall = async () => {
@@ -73,7 +100,14 @@ export const SocketProvider = ({ children }) => {
             
             let peer;
             try {
-                const iceConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:global.stun.twilio.com:3478' }] };
+                const iceConfig = { 
+                    iceServers: [
+                        { urls: 'stun:stun.l.google.com:19302' }, 
+                        { urls: 'stun:stun1.l.google.com:19302' },
+                        { urls: 'stun:stun2.l.google.com:19302' },
+                        { urls: 'stun:global.stun.twilio.com:3478' }
+                    ] 
+                };
                 peer = new Peer({ initiator: false, trickle: false, stream: currentStream, config: iceConfig });
             } catch (peerErr) {
                 console.error("Answer Call - Peer Constructor Failed:", peerErr);
@@ -87,6 +121,11 @@ export const SocketProvider = ({ children }) => {
 
             peer.on('stream', (remoteStream) => {
                 if (userVideoRef.current) userVideoRef.current.srcObject = remoteStream;
+            });
+
+            peer.on('error', (err) => {
+                console.error("Peer Connection Error:", err);
+                leaveCall();
             });
 
             peer.signal(call.signal);
@@ -143,7 +182,14 @@ export const SocketProvider = ({ children }) => {
 
             let peer;
             try {
-                const iceConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:global.stun.twilio.com:3478' }] };
+                const iceConfig = { 
+                    iceServers: [
+                        { urls: 'stun:stun.l.google.com:19302' }, 
+                        { urls: 'stun:stun1.l.google.com:19302' },
+                        { urls: 'stun:stun2.l.google.com:19302' },
+                        { urls: 'stun:global.stun.twilio.com:3478' }
+                    ] 
+                };
                 peer = new Peer({ initiator: true, trickle: false, stream: currentStream, config: iceConfig });
             } catch (peerErr) {
                 console.error("Make Call - Peer Constructor Failed:", peerErr);
@@ -169,6 +215,11 @@ export const SocketProvider = ({ children }) => {
                 if (userVideoRef.current) userVideoRef.current.srcObject = remoteStream;
             });
 
+            peer.on('error', (err) => {
+                console.error("Peer Connection Error (Caller):", err);
+                leaveCall();
+            });
+
             socket.on('call-accepted', (signal) => {
                 setCallAccepted(true);
                 peer.signal(signal);
@@ -181,12 +232,18 @@ export const SocketProvider = ({ children }) => {
             
             if (type === 'video') {
                 try {
-                    console.log("Attempting audio-only fallback after video failure...");
                     const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
                     setStream(audioStream);
                     alert("Camera issues detected. Continuing with audio-only.");
                     
-                    const iceConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:global.stun.twilio.com:3478' }] };
+                    const iceConfig = { 
+                        iceServers: [
+                            { urls: 'stun:stun.l.google.com:19302' }, 
+                            { urls: 'stun:stun1.l.google.com:19302' },
+                            { urls: 'stun:stun2.l.google.com:19302' },
+                            { urls: 'stun:global.stun.twilio.com:3478' }
+                        ] 
+                    };
                     const peer = new Peer({ initiator: true, trickle: false, stream: audioStream, config: iceConfig });
                     const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
                     peer.on('signal', (data) => {

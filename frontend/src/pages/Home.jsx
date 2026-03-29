@@ -6,6 +6,7 @@ import { fetchHomeContent, fetchReviews, addReview, updateReviewReaction, API } 
 import { MEDIA_URL } from '../config';
 import AdSpace from '../components/AdSpace';
 import SEO from '../components/SEO';
+import SkeletonLoader from '../components/SkeletonLoader';
 import '../styles/Home.css';
 
 const Home = () => {
@@ -63,10 +64,11 @@ const Home = () => {
     useEffect(() => {
         const getHomeData = async () => {
             try {
-                const homeRes = await fetchHomeContent();
+                const [homeRes, reviewsRes] = await Promise.all([
+                    fetchHomeContent(),
+                    fetchReviews()
+                ]);
                 setContent(homeRes.data);
-                
-                const reviewsRes = await fetchReviews();
                 setReviews(reviewsRes.data);
             } catch (err) {
                 console.error('Error fetching home data:', err);
@@ -261,12 +263,6 @@ const Home = () => {
         visible: { y: 0, opacity: 1 }
     };
 
-    if (loading) return (
-        <div className="premium-loader-container">
-            <div className="premium-loader"></div>
-            <p className="loading-text">UNFOLDING CREATIVITY...</p>
-        </div>
-    );
 
     return (
         <motion.div 
@@ -345,7 +341,10 @@ const Home = () => {
                     <Link to="/shayari" className="view-all-link">View All <ArrowRight size={16} /></Link>
                 </motion.div>
                 <div className="grid-3">
-                    {content?.latest_shayari?.slice(0, 6).map((item, idx) => (
+                    {loading ? (
+                        <SkeletonLoader type="shayari" count={3} />
+                    ) : (
+                        content?.latest_shayari?.slice(0, 6).map((item, idx) => (
                         <motion.div key={item?._id || idx} className="glass-card shayari-card-premium hover-tilt" variants={itemVariants}>
                             <div className="shayari-header">
                                 <Quote className="quote-icon" size={28} />
@@ -424,9 +423,10 @@ const Home = () => {
                                 )}
                             </AnimatePresence>
                         </motion.div>
-                    ))}
-                </div>
-            </section>
+                    ))
+                )}
+            </div>
+        </section>
 
             {/* PREMIUM SECTION — Music, Podcast, E-Books (Login Required) */}
             <section id="premium" className="featured-section container">
@@ -438,37 +438,44 @@ const Home = () => {
                     <div id="music-section" className="premium-sub-section mb-5">
                         <h3 className="premium-sub-title mb-4"><PlayCircle size={20} className="mr-2"/> Music & Melodies</h3>
                         <div className="grid-3">
-                            {content?.latest_music?.map((track, idx) => (
-                                <motion.div key={track?._id || idx} className={`glass-card music-card-mini ${!user ? 'restricted-content' : ''}`} variants={itemVariants} style={{ cursor: 'pointer' }}>
-                                    <div className="music-thumb" onClick={(e) => checkPremiumAccess(e, '/music')}>
-                                        {(() => {
-                                            const albumArt = track?.thumbnail || track?.cover_url || track?.thumbnail_url;
-                                            const imgSrc = albumArt?.startsWith('/uploads') ? `${MEDIA_URL}${albumArt}` : (albumArt || '/default-music.png');
-                                            return <img src={imgSrc} alt={`${track?.title} - Ansh Ebook Music`} loading="lazy" />;
-                                        })()}
-                                        {!user && <div className="lock-overlay"><div className="lock-circle">🔒</div></div>}
-                                    </div>
-                                    <div className="music-info" onClick={(e) => checkPremiumAccess(e, '/music')}>
-                                        <h3>{track?.title}</h3>
-                                        <p>{track?.artist || 'Original Mix'}</p>
-                                    </div>
-                                    {user && (
-                                        <div className="play-overlay-mini">
-                                            <button className="play-mini-btn" onClick={() => navigate('/music')}>
-                                                <Play size={16} fill="white" /> Play
-                                            </button>
+                            {loading ? (
+                                <SkeletonLoader type="list" count={3} />
+                            ) : (
+                                content?.latest_music?.map((track, idx) => (
+                                    <motion.div key={track?._id || idx} className={`glass-card music-card-mini ${!user ? 'restricted-content' : ''}`} variants={itemVariants} style={{ cursor: 'pointer' }}>
+                                        <div className="music-thumb" onClick={(e) => checkPremiumAccess(e, '/music')}>
+                                            {(() => {
+                                                const albumArt = track?.thumbnail || track?.cover_url || track?.thumbnail_url;
+                                                const imgSrc = albumArt?.startsWith('/uploads') ? `${MEDIA_URL}${albumArt}` : (albumArt || '/default-music.png');
+                                                return <img src={imgSrc} alt={`${track?.title} - Ansh Ebook Music`} loading="lazy" />;
+                                            })()}
+                                            {!user && <div className="lock-overlay"><div className="lock-circle">🔒</div></div>}
                                         </div>
-                                    )}
-                                </motion.div>
-                            ))}
+                                        <div className="music-info" onClick={(e) => checkPremiumAccess(e, '/music')}>
+                                            <h3>{track?.title}</h3>
+                                            <p>{track?.artist || 'Original Mix'}</p>
+                                        </div>
+                                        {user && (
+                                            <div className="play-overlay-mini">
+                                                <button className="play-mini-btn" onClick={() => navigate('/music')}>
+                                                    <Play size={16} fill="white" /> Play
+                                                </button>
+                                            </div>
+                                        )}
+                                    </motion.div>
+                                ))
+                            )}
                         </div>
                     </div>
 
-                    <div id="podcast-section" className="premium-sub-section mb-5">
-                        <h3 className="premium-sub-title mb-4"><Mic size={20} className="mr-2"/> Podcasts</h3>
-                        <div className="grid-2">
-                            {content?.latest_podcasts?.map((pod, idx) => (
-                                <motion.div key={pod?._id || idx} className={`glass-card podcast-card-mini ${!user ? 'restricted-content' : ''}`} onClick={(e) => checkPremiumAccess(e, '/podcasts')} variants={itemVariants} style={{ cursor: 'pointer' }}>
+                    <div id="podcasts-section" className="premium-sub-section mb-5">
+                        <h3 className="premium-sub-title mb-4"><Mic size={20} className="mr-2"/> Inspiring Podcasts</h3>
+                        <div className="grid-3">
+                            {loading ? (
+                                <SkeletonLoader type="list" count={3} />
+                            ) : (
+                                content?.latest_podcasts?.map((pod, idx) => (
+                                    <motion.div key={pod?._id || idx} className={`glass-card podcast-card-mini ${!user ? 'restricted-content' : ''}`} onClick={(e) => checkPremiumAccess(e, '/podcasts')} variants={itemVariants} style={{ cursor: 'pointer' }}>
                                         <div className="podcast-thumb">
                                             {(() => {
                                                 const albumArt = pod?.thumbnail || pod?.cover_url || pod?.thumbnail_url;
@@ -477,40 +484,45 @@ const Home = () => {
                                             })()}
                                             {!user && <div className="lock-overlay"><div className="lock-circle">🔒</div></div>}
                                         </div>
-                                    <div className="podcast-info">
-                                        <h3>{pod?.title}</h3>
-                                        <p>{pod?.description?.substring(0, 80)}...</p>
-                                    </div>
-                                </motion.div>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div id="ebook-section" className="premium-sub-section">
-                        <h3 className="premium-sub-title mb-4"><BookOpen size={20} className="mr-2"/> E-Books</h3>
-                        <div className="grid-4">
-                            {content?.featured_ebooks?.length > 0 ? (
-                                content.featured_ebooks.map((book, idx) => (
-                                    <motion.div key={book?._id || idx} className={`glass-card ebook-card-mini ${!user ? 'restricted-content' : ''}`} onClick={(e) => checkPremiumAccess(e, '/ebooks')} variants={itemVariants} style={{ cursor: 'pointer' }}>
-                                        <div className="ebook-cover">
-                                            {(() => {
-                                                const albumArt = book?.cover_url || book?.thumbnail || book?.thumbnail_url;
-                                                const imgSrc = albumArt?.startsWith('/uploads') ? `${MEDIA_URL}${albumArt}` : (albumArt || '/default-ebook.png');
-                                                return <img src={imgSrc} alt={`${book?.title} - Ansh Ebook`} loading="lazy" />;
-                                            })()}
-                                            {!user && <div className="lock-overlay"><div className="lock-circle">🔒</div></div>}
-                                        </div>
-                                        <div className="ebook-info">
-                                            <h3>{book?.title}</h3>
+                                        <div className="podcast-info">
+                                            <h3>{pod?.title}</h3>
+                                            <p>{pod?.description?.substring(0, 80)}...</p>
                                         </div>
                                     </motion.div>
                                 ))
+                            )}
+                        </div>
+                    </div>
+
+                    <div id="ebooks-section" className="premium-sub-section">
+                        <h3 className="premium-sub-title mb-4"><BookOpen size={20} className="mr-2"/> E-Books & Literary Gems</h3>
+                        <div className="grid-4">
+                            {loading ? (
+                                <SkeletonLoader type="card" count={4} />
                             ) : (
-                                <div className="glass-card text-center w-100 placeholder-card-premium" style={{ gridColumn: '1/-1', padding: '4rem 2rem' }}>
-                                    <BookOpen size={48} className="pink-text mb-3" style={{ opacity: 0.3 }} />
-                                    <h4 className="text-muted">Coming Soon</h4>
-                                    <p className="text-muted" style={{ fontSize: '0.85rem' }}>We are crafting some extraordinary literary gems. Stay tuned!</p>
-                                </div>
+                                content?.featured_ebooks?.length > 0 ? (
+                                    content.featured_ebooks.map((book, idx) => (
+                                        <motion.div key={book?._id || idx} className={`glass-card ebook-card-mini ${!user ? 'restricted-content' : ''}`} onClick={(e) => checkPremiumAccess(e, '/ebooks')} variants={itemVariants} style={{ cursor: 'pointer' }}>
+                                            <div className="ebook-cover">
+                                                {(() => {
+                                                    const albumArt = book?.cover_url || book?.thumbnail || book?.thumbnail_url;
+                                                    const imgSrc = albumArt?.startsWith('/uploads') ? `${MEDIA_URL}${albumArt}` : (albumArt || '/default-ebook.png');
+                                                    return <img src={imgSrc} alt={`${book?.title} - Ansh Ebook`} loading="lazy" />;
+                                                })()}
+                                                {!user && <div className="lock-overlay"><div className="lock-circle">🔒</div></div>}
+                                            </div>
+                                            <div className="ebook-info">
+                                                <h3>{book?.title}</h3>
+                                            </div>
+                                        </motion.div>
+                                    ))
+                                ) : (
+                                    <div className="glass-card text-center w-100 placeholder-card-premium" style={{ gridColumn: '1/-1', padding: '4rem 2rem' }}>
+                                        <BookOpen size={48} className="pink-text mb-3" style={{ opacity: 0.3 }} />
+                                        <h4 className="text-muted">Coming Soon</h4>
+                                        <p className="text-muted" style={{ fontSize: '0.85rem' }}>We are crafting some extraordinary literary gems. Stay tuned!</p>
+                                    </div>
+                                )
                             )}
                         </div>
                     </div>
