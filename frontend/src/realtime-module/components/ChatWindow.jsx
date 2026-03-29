@@ -129,7 +129,7 @@ const ChatWindow = ({ chat, setSelectedChat }) => {
             <div className="chat-header" onClick={() => setShowInfo(true)} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px' }}>
                 
                 {/* Left Side: Back + Avatar + Text */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flex: 1, minWidth: 0 }}>
+                <div className="other-user-info" style={{ display: 'flex', alignItems: 'center', gap: '14px', flex: 1, minWidth: 0 }}>
                     
                     {/* Back Button Wrapper container */}
                     <div style={{ flexShrink: 0 }}>
