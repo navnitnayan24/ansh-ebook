@@ -5,8 +5,9 @@ async function connectDB() {
         const uri = process.env.MONGODB_URI;
 
         if (!uri) {
-            console.error('❌ FATAL ERROR: MONGODB_URI is not defined!');
-            throw new Error('MONGODB_URI is missing. Set it in Render dashboard.');
+            console.error('❌ FATAL ERROR: MONGODB_URI is not defined in your Render settings!');
+            console.error('🚀 Please add MONGODB_URI to your Environment Variables.');
+            return; // Don't throw, let the app start (though it will have DB errors)
         }
 
         console.log('🔗 Connecting to MongoDB...');
