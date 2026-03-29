@@ -11,12 +11,14 @@ const MessageInput = ({ chatId, receiverId, setMessages }) => {
     const [isRecording, setIsRecording] = useState(false);
     const [isCameraOpen, setIsCameraOpen] = useState(false);
     const [mediaRecorder, setMediaRecorder] = useState(null);
+    const [recordingTime, setRecordingTime] = useState(0);
     const [selectedFile, setSelectedFile] = useState(null);
     const [previewUrl, setPreviewUrl] = useState(null);
     const [showPicker, setShowPicker] = useState(false);
     const { socket } = useSocket();
     const fileInputRef = useRef();
     const audioChunksRef = useRef([]);
+    const recordingTimerRef = useRef(null);
 
     const uploadFile = async (file) => {
         if (file.size > 100 * 1024 * 1024) {
@@ -125,17 +127,36 @@ const MessageInput = ({ chatId, receiverId, setMessages }) => {
             audioChunksRef.current = [];
             
             recorder.ondataavailable = (e) => audioChunksRef.current.push(e.data);
-            recorder.onstop = async () => {
+            recorder.onstop = () => {
                 const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+                // We fake a generic name. On send, it uploads and gets mediaUrl
                 const file = new File([audioBlob], 'voice-message.webm', { type: 'audio/webm' });
-                const media = await uploadFile(file);
-                if (media) handleSend(null, media);
+                
+                clearInterval(recordingTimerRef.current);
+                setRecordingTime(0);
+                setIsRecording(false);
+                
+                setSelectedFile(file);
+                setPreviewUrl('placeholder'); // Forces 'FILE' icon in preview
+                
                 stream.getTracks().forEach(track => track.stop());
             };
 
             setMediaRecorder(recorder);
             recorder.start();
             setIsRecording(true);
+            setRecordingTime(0);
+
+            recordingTimerRef.current = setInterval(() => {
+                setRecordingTime(prev => {
+                    if (prev >= 59) {
+                        recorder.stop();
+                        return 60;
+                    }
+                    return prev + 1;
+                });
+            }, 1000);
+
         } catch (err) {
             console.error("Recording error:", err);
             alert("Microphone access needed!");
@@ -143,9 +164,8 @@ const MessageInput = ({ chatId, receiverId, setMessages }) => {
     };
 
     const stopRecording = () => {
-        if (mediaRecorder) {
+        if (mediaRecorder && mediaRecorder.state === 'recording') {
             mediaRecorder.stop();
-            setIsRecording(false);
         }
     };
 
@@ -215,10 +235,17 @@ const MessageInput = ({ chatId, receiverId, setMessages }) => {
 
                 <div className="input-actions-right">
                     {isRecording ? (
-                        <div className="recording-indicator">Recording...</div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <span style={{ color: '#ff1493', fontWeight: 'bold', fontSize: '0.9rem' }}>
+                                00:{recordingTime.toString().padStart(2, '0')}
+                            </span>
+                            <div onClick={stopRecording} style={{ background: '#ff1493', borderRadius: '50%', width: '30px', height: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 0 10px rgba(255,20,147,0.5)' }}>
+                                <div style={{ width: '10px', height: '10px', background: '#fff', borderRadius: '2px' }} />
+                            </div>
+                        </div>
                     ) : (
                         <>
-                            <Mic size={20} className="input-action-icon" onMouseDown={startRecording} onMouseUp={stopRecording} onTouchStart={startRecording} onTouchEnd={stopRecording} />
+                            <Mic size={20} className="input-action-icon" onClick={startRecording} />
                             <Image size={20} className="input-action-icon" onClick={() => fileInputRef.current?.click()} />
                             <Smile size={20} className="input-action-icon" onClick={() => setShowPicker(prev => !prev)} />
                             <Plus size={20} className="input-action-icon" onClick={() => fileInputRef.current?.click()} />
