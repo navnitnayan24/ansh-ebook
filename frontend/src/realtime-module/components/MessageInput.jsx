@@ -3,6 +3,7 @@ import { Send, Image, Mic, Paperclip, Camera, Smile, Plus, X } from 'lucide-reac
 import { useSocket } from '../context/SocketContext';
 import { findOrCreateChat, fetchCloudinarySignature } from '../../api';
 import CameraModal from './CameraModal';
+import EmojiPicker from 'emoji-picker-react';
 
 const MessageInput = ({ chatId, receiverId, setMessages }) => {
     const [text, setText] = useState('');
@@ -12,6 +13,7 @@ const MessageInput = ({ chatId, receiverId, setMessages }) => {
     const [mediaRecorder, setMediaRecorder] = useState(null);
     const [selectedFile, setSelectedFile] = useState(null);
     const [previewUrl, setPreviewUrl] = useState(null);
+    const [showPicker, setShowPicker] = useState(false);
     const { socket } = useSocket();
     const fileInputRef = useRef();
     const audioChunksRef = useRef([]);
@@ -89,6 +91,7 @@ const MessageInput = ({ chatId, receiverId, setMessages }) => {
         socket.emit('send-message', messageData);
         setText('');
         clearFile(); // Clear preview after sending
+        setShowPicker(false); // Hide picker on send
     };
 
     const clearFile = () => {
@@ -154,7 +157,17 @@ const MessageInput = ({ chatId, receiverId, setMessages }) => {
     };
 
     return (
-        <form className="message-input-form" onSubmit={handleSend}>
+        <form className="message-input-form" onSubmit={handleSend} style={{ position: 'relative' }}>
+            {showPicker && (
+                <div style={{ position: 'absolute', bottom: 'calc(100% + 10px)', right: '16px', zIndex: 50, boxShadow: '0 5px 15px rgba(0,0,0,0.5)' }}>
+                    <EmojiPicker 
+                        onEmojiClick={(emojiObj) => setText(prev => prev + emojiObj.emoji)} 
+                        theme="dark" 
+                        searchDisabled={false}
+                        skinTonesDisabled={true}
+                    />
+                </div>
+            )}
             {selectedFile && (
                 <div className="file-preview-banner" style={{
                     position: 'absolute', bottom: '100%', left: '16px', right: '16px', 
@@ -207,7 +220,7 @@ const MessageInput = ({ chatId, receiverId, setMessages }) => {
                         <>
                             <Mic size={20} className="input-action-icon" onMouseDown={startRecording} onMouseUp={stopRecording} onTouchStart={startRecording} onTouchEnd={stopRecording} />
                             <Image size={20} className="input-action-icon" onClick={() => fileInputRef.current?.click()} />
-                            <Smile size={20} className="input-action-icon" />
+                            <Smile size={20} className="input-action-icon" onClick={() => setShowPicker(prev => !prev)} />
                             <Plus size={20} className="input-action-icon" onClick={() => fileInputRef.current?.click()} />
                         </>
                     )}
