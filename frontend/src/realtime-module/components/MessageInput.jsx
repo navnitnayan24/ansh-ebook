@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Send, Image, Mic, Paperclip, Camera, Smile, Plus } from 'lucide-react';
+import { Send, Image, Mic, Paperclip, Camera, Smile, Plus, X } from 'lucide-react';
 import { useSocket } from '../context/SocketContext';
 import { findOrCreateChat, fetchCloudinarySignature } from '../../api';
 import CameraModal from './CameraModal';
@@ -10,6 +10,8 @@ const MessageInput = ({ chatId, receiverId, setMessages }) => {
     const [isRecording, setIsRecording] = useState(false);
     const [isCameraOpen, setIsCameraOpen] = useState(false);
     const [mediaRecorder, setMediaRecorder] = useState(null);
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [previewUrl, setPreviewUrl] = useState(null);
     const { socket } = useSocket();
     const fileInputRef = useRef();
     const audioChunksRef = useRef([]);
@@ -50,8 +52,20 @@ const MessageInput = ({ chatId, receiverId, setMessages }) => {
         }
     };
 
-    const handleSend = async (e, mediaData = null) => {
+    const handleSend = async (e, directMedia = null) => {
         if (e) e.preventDefault();
+        
+        let mediaData = directMedia;
+        
+        // If there's a file queued, upload it first
+        if (selectedFile) {
+            mediaData = await uploadFile(selectedFile);
+            if (!mediaData && !text.trim()) {
+                clearFile(); // clear everything if upload failed and no text
+                return;
+            }
+        }
+
         if (!text.trim() && !mediaData) return;
 
         if (!chatId) return;
@@ -74,23 +88,31 @@ const MessageInput = ({ chatId, receiverId, setMessages }) => {
 
         socket.emit('send-message', messageData);
         setText('');
+        clearFile(); // Clear preview after sending
     };
 
-    const handleFileSelect = async (e) => {
+    const clearFile = () => {
+        setSelectedFile(null);
+        setPreviewUrl(null);
+        if (fileInputRef.current) fileInputRef.current.value = '';
+    };
+
+    const handleFileSelect = (e) => {
         const file = e.target.files[0];
         if (!file) return;
 
-        const media = await uploadFile(file);
-        if (media) {
-            handleSend(null, media);
+        setSelectedFile(file);
+        if (file.type.startsWith('image/')) {
+            setPreviewUrl(URL.createObjectURL(file));
+        } else {
+            setPreviewUrl('placeholder');
         }
+        e.target.value = ''; // Reset the input physically
     };
 
-    const handleCameraCapture = async (file) => {
-        const media = await uploadFile(file);
-        if (media) {
-            handleSend(null, media);
-        }
+    const handleCameraCapture = (file) => {
+        setSelectedFile(file);
+        setPreviewUrl(URL.createObjectURL(file));
     };
 
     const startRecording = async () => {
@@ -133,7 +155,29 @@ const MessageInput = ({ chatId, receiverId, setMessages }) => {
 
     return (
         <form className="message-input-form" onSubmit={handleSend}>
-            <div className="input-field-container">
+            {selectedFile && (
+                <div className="file-preview-banner" style={{
+                    position: 'absolute', bottom: '100%', left: '16px', right: '16px', 
+                    background: 'var(--c-sidebar)', padding: '10px 14px', borderRadius: '12px 12px 0 0',
+                    display: 'flex', alignItems: 'center', gap: '12px',
+                    border: '1px solid var(--c-border)', borderBottom: 'none',
+                    zIndex: 20
+                }}>
+                    {previewUrl && previewUrl !== 'placeholder' ? (
+                        <img src={previewUrl} alt="Preview" style={{ width: '45px', height: '45px', objectFit: 'cover', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }} />
+                    ) : (
+                        <div style={{ width: '45px', height: '45px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'10px', color: '#fff' }}>FILE</div>
+                    )}
+                    <div style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '0.85rem', color: 'var(--c-txt)', fontWeight: '500' }}>
+                        {selectedFile.name}
+                        <div style={{ fontSize: '0.7rem', color: 'var(--c-muted)', marginTop: '2px' }}>{(selectedFile.size / 1024).toFixed(1)} KB</div>
+                    </div>
+                    <button type="button" onClick={clearFile} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', cursor: 'pointer', display:'flex', padding:'6px', borderRadius:'50%' }}>
+                        <X size={16} />
+                    </button>
+                </div>
+            )}
+            <div className="input-field-container" style={{ borderTopLeftRadius: selectedFile ? '0' : '28px', borderTopRightRadius: selectedFile ? '0' : '28px' }}>
                 <input 
                     type="file" 
                     hidden 
@@ -168,8 +212,8 @@ const MessageInput = ({ chatId, receiverId, setMessages }) => {
                         </>
                     )}
                     
-                    {text.trim() && (
-                        <button type="submit" className="send-btn-minimal" style={{ marginLeft: '5px' }}>
+                    {(text.trim() || selectedFile) && (
+                        <button type="submit" className="send-btn-minimal" style={{ marginLeft: '5px' }} disabled={isUploading}>
                             <Send size={18} />
                         </button>
                     )}

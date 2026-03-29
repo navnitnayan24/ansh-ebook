@@ -110,6 +110,7 @@
     
     .chat-layout.has-selected-chat .chat-window-container {
         display: flex !important;
+        padding-top: 80px !important; /* FOOLPROOF clearance for BrandHeader */
     }
     
     .mobile-back-btn {
@@ -694,7 +695,15 @@
 .status-icon.delivered { color: rgba(255,255,255,0.5); }
 .status-icon.sent      { color: rgba(255,255,255,0.35); }
 
-.message-media       { max-width: 100%; border-radius: 10px; display: block; cursor: pointer; }
+.message-media { 
+    max-width: 100%; 
+    max-height: 400px; /* Don't allow enormous vertical scrolling images on desktop */
+    width: auto; 
+    border-radius: 10px; 
+    display: block; 
+    cursor: pointer; 
+    object-fit: contain; /* ensures whole image fits beautifully */
+}
 .message-media-audio { width: 100%; border-radius: 8px; }
 
 /* ================================================================
