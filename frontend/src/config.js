@@ -13,9 +13,8 @@ export const MEDIA_URL = parsedMediaUrl;
 export const maskEmail = (email) => {
     if (!email) return 'User';
     if (typeof email !== 'string' || !email.includes('@')) return email;
-    const [user, domain] = email.split('@');
-    if (user.length <= 2) return `${user}***@${domain}`;
-    return `${user.substring(0, 2)}***${user.substring(user.length - 1)}@${domain}`;
+    const [user] = email.split('@');
+    return user;
 };
 
 export const getAvatarUrl = (pic, username = 'U') => {
