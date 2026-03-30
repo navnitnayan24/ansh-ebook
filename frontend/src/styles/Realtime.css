@@ -1,3 +1,15 @@
+/* ============================================================ */
+/* Chat Page GLOBAL OVERFLOW LOCK - ENSURE NO PAGE SCROLLBAR */
+/* ============================================================ */
+html:has(.realtime-chat-page), 
+body:has(.realtime-chat-page) {
+    overflow: hidden !important;
+    height: 100dvh !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
 /* ============================================================
    ANSH EBOOK – PREMIUM REALTIME CHAT UI
    Fixed: sidebar layout, avatar images, message bubbles,
