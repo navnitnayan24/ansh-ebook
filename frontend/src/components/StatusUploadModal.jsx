@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import ReactDOM from 'react-dom';
 import { Camera, Image as ImageIcon, X, Send, Loader2 } from 'lucide-react';
 import { createStatus } from '../api';
 
@@ -36,7 +37,7 @@ const StatusUploadModal = ({ onClose, onSuccess }) => {
         }
     };
 
-    return (
+    return ReactDOM.createPortal(
         <div className="status-upload-overlay" onClick={onClose}>
             <div className="status-upload-card" onClick={e => e.stopPropagation()}>
                 <div className="upload-card-header">
@@ -93,7 +94,8 @@ const StatusUploadModal = ({ onClose, onSuccess }) => {
                     </button>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 };
 

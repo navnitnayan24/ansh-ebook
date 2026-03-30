@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
+import ReactDOM from 'react-dom';
 import { X, ChevronLeft, ChevronRight, Heart, Send, Share2, Trash2 } from 'lucide-react';
 import { viewStatus, toggleStatusLike, replyToStatus, deleteStatus } from '../api';
 import Avatar from './Avatar';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const StoryViewer = ({ group, onClose, onComplete }) => {
+    // ... logic remains same ...
     const [currentIndex, setCurrentIndex] = useState(0);
     const [progress, setProgress] = useState(0);
     const [replyText, setReplyText] = useState('');
@@ -62,7 +64,6 @@ const StoryViewer = ({ group, onClose, onComplete }) => {
         if (!myId) return window.location.href = '/login';
         try {
             await toggleStatusLike(currentStory._id);
-            // Local update for UI feedback
             if (currentStory.likes.includes(myId)) {
                 currentStory.likes = currentStory.likes.filter(id => id !== myId);
             } else {
@@ -113,7 +114,7 @@ const StoryViewer = ({ group, onClose, onComplete }) => {
         }
     };
 
-    return (
+    return ReactDOM.createPortal(
         <div className="story-viewer-overlay" onClick={onClose}>
             <div className="story-viewer-content" onClick={e => e.stopPropagation()}>
                 {/* Progress Bars */}
@@ -160,7 +161,7 @@ const StoryViewer = ({ group, onClose, onComplete }) => {
                         <motion.div 
                             key={currentStory._id}
                             initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 0.9 }} // Made smaller (90% scale)
+                            animate={{ opacity: 1, scale: 0.9 }} 
                             exit={{ opacity: 0, scale: 1.05 }}
                             className="media-wrapper"
                         >
@@ -203,7 +204,8 @@ const StoryViewer = ({ group, onClose, onComplete }) => {
                     </button>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 };
 
