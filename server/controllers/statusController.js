@@ -169,3 +169,27 @@ exports.replyToStatus = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+
+exports.deleteStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const status = await Status.findById(id);
+        if (!status) return res.status(404).json({ error: 'Status not found' });
+
+        if (status.user.toString() !== req.user.id) {
+            return res.status(401).json({ error: 'Unauthorized to delete this status' });
+        }
+
+        await Status.findByIdAndDelete(id);
+
+        // Notify all users about status change (to update rings)
+        const io = getIo();
+        if (io) {
+            io.emit('new-status', { userId: req.user.id });
+        }
+
+        res.json({ message: 'Status deleted successfully' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};

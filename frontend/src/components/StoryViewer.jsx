@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, ChevronLeft, ChevronRight, Heart, Send } from 'lucide-react';
-import { viewStatus, toggleStatusLike, replyToStatus } from '../api';
+import { X, ChevronLeft, ChevronRight, Heart, Send, Share2, Trash2 } from 'lucide-react';
+import { viewStatus, toggleStatusLike, replyToStatus, deleteStatus } from '../api';
 import Avatar from './Avatar';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -15,6 +15,8 @@ const StoryViewer = ({ group, onClose, onComplete }) => {
     const currentStory = stories[currentIndex];
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     const myId = user.id || user._id;
+
+    const isOwner = group.user._id === myId;
 
     const nextStory = () => {
         if (currentIndex < stories.length - 1) {
@@ -46,17 +48,18 @@ const StoryViewer = ({ group, onClose, onComplete }) => {
                 }
                 return prev + 1;
             });
-        }, 50); // Adjust for story duration (approx 5s per story)
+        }, 50);
 
-        // Mark as viewed when story changes
-        if (currentStory && !currentStory.views.some(v => v.user === myId)) {
+        // Mark as viewed when story changes (Only if logged in)
+        if (myId && currentStory && !currentStory.views.some(v => v.user === myId)) {
             viewStatus(currentStory._id);
         }
 
         return () => clearInterval(progressInterval.current);
-    }, [currentIndex, isPaused]);
+    }, [currentIndex, isPaused, myId]);
 
     const handleLike = async () => {
+        if (!myId) return window.location.href = '/login';
         try {
             await toggleStatusLike(currentStory._id);
             // Local update for UI feedback
@@ -72,6 +75,7 @@ const StoryViewer = ({ group, onClose, onComplete }) => {
 
     const handleReply = async (e) => {
         e.preventDefault();
+        if (!myId) return window.location.href = '/login';
         if (!replyText.trim()) return;
         try {
             await replyToStatus(currentStory._id, replyText);
@@ -79,6 +83,33 @@ const StoryViewer = ({ group, onClose, onComplete }) => {
             alert('Reply sent to inbox!');
         } catch (err) {
             console.error('Reply failed:', err);
+        }
+    };
+
+    const handleDelete = async () => {
+        if (!window.confirm('Delete this status?')) return;
+        try {
+            await deleteStatus(currentStory._id);
+            if (stories.length === 1) {
+                onComplete();
+            } else {
+                nextStory();
+            }
+        } catch (err) {
+            alert('Delete failed');
+        }
+    };
+
+    const handleShare = () => {
+        if (navigator.share) {
+            navigator.share({
+                title: 'Story from ' + group.user.username,
+                text: currentStory.caption || 'Check out my story on Ansh Ebook!',
+                url: window.location.origin
+            }).catch(console.error);
+        } else {
+            navigator.clipboard.writeText(window.location.origin);
+            alert('Link copied to clipboard!');
         }
     };
 
@@ -103,10 +134,18 @@ const StoryViewer = ({ group, onClose, onComplete }) => {
                 <div className="story-viewer-header">
                     <div className="story-user-info">
                         <Avatar pic={group.user.profile_pic} username={group.user.username} className="header-avatar-small" />
-                        <span className="header-username">{group.user.username}</span>
-                        <span className="story-time">{new Date(currentStory.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                        <div className="user-text-meta">
+                            <span className="header-username">{group.user.username}</span>
+                            <span className="story-time">{new Date(currentStory.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                        </div>
                     </div>
-                    <button className="close-story-btn" onClick={onClose}><X size={24} /></button>
+                    <div className="story-header-actions">
+                        <button className="story-action-btn share" onClick={handleShare} title="Share"><Share2 size={20} /></button>
+                        {isOwner && (
+                            <button className="story-action-btn delete" onClick={handleDelete} title="Delete"><Trash2 size={20} /></button>
+                        )}
+                        <button className="close-story-btn" onClick={onClose}><X size={24} /></button>
+                    </div>
                 </div>
 
                 {/* Media Content */}
@@ -121,7 +160,7 @@ const StoryViewer = ({ group, onClose, onComplete }) => {
                         <motion.div 
                             key={currentStory._id}
                             initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
+                            animate={{ opacity: 1, scale: 0.9 }} // Made smaller (90% scale)
                             exit={{ opacity: 0, scale: 1.05 }}
                             className="media-wrapper"
                         >

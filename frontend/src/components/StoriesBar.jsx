@@ -44,22 +44,24 @@ const StoriesBar = () => {
     return (
         <div className="stories-container-outer">
             <div className="stories-scroll-wrapper">
-                {/* My Status / Upload Button */}
-                <div className="story-item-wrapper" onClick={() => myGroup ? setSelectedGroup(myGroup) : setIsUploadOpen(true)}>
-                    <div className={`story-ring ${myGroup ? 'has-story' : 'no-story'}`}>
-                        <Avatar 
-                            pic={user.profile_pic} 
-                            username={user.username} 
-                            className="story-avatar"
-                        />
-                        {!myGroup && (
-                            <div className="plus-icon-badge">
-                                <Plus size={12} strokeWidth={3} />
-                            </div>
-                        )}
+                {/* My Status / Upload Button (Only if logged in) */}
+                {userId && (
+                    <div className="story-item-wrapper" onClick={() => myGroup ? setSelectedGroup(myGroup) : setIsUploadOpen(true)}>
+                        <div className={`story-ring ${myGroup ? 'has-story' : 'no-story'}`}>
+                            <Avatar 
+                                pic={user.profile_pic} 
+                                username={user.username} 
+                                className="story-avatar"
+                            />
+                            {!myGroup && (
+                                <div className="plus-icon-badge">
+                                    <Plus size={12} strokeWidth={3} />
+                                </div>
+                            )}
+                        </div>
+                        <span className="story-username">My Status</span>
                     </div>
-                    <span className="story-username">My Status</span>
-                </div>
+                )}
 
                 {/* Other Users' Stories */}
                 {otherGroups.map((group) => {
