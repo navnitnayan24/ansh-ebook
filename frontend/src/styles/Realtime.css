@@ -96,24 +96,38 @@
 
 /* ─── Page Root ─── */
 .realtime-chat-page {
-    height: calc(100dvh - 100px); /* Desktop: 100vh - header */
-    width: 100%;
+    position: fixed;
+    top: 100px;
+    left: 250px;
+    right: 0;
+    bottom: 0;
     display: flex;
     background: var(--c-bg);
-    position: relative;
     z-index: 50;
     overflow: hidden;
 }
+@media (max-width: 1200px) {
+    .realtime-chat-page {
+        left: 0; /* Align with layout changes */
+    }
+}
+@media (max-width: 768px) {
+    .realtime-chat-page {
+        top: 80px;
+        left: 0;
+    }
+}
 
+/* Mobile Root Fixed Above Sidebar */
 @media (max-width: 768px) {
     .realtime-chat-page {
         position: fixed !important;
-        top: 80px; 
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: calc(100dvh - 80px) !important;
-        width: 100%;
+        top: 80px !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        height: auto !important;
+        width: 100% !important;
         margin-top: 0 !important;
         z-index: 50;
     }

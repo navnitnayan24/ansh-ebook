@@ -100,15 +100,20 @@ const Layout = ({ children }) => {
     const isChatPage = location.pathname === '/chat';
 
     return (
-        <div className="app-wrapper">
+        <div className="app-wrapper" style={isChatPage ? { height: '100dvh', overflow: 'hidden' } : {}}>
             <BrandHeader isMobile={isMobile} toggleMenu={toggleMenu} isOpen={isMenuOpen} />
-            <div className="layout-body-flex" style={{ marginTop: isChatPage ? '0' : (isMobile ? '80px' : '100px') }}>
+            <div 
+                className="layout-body-flex" 
+                style={{ 
+                    marginTop: isMobile ? '80px' : '100px'
+                }}
+            >
                 {!isMobile && <Sidebar />}
                 <div 
-                    className={`main-layout ${!isMobile ? 'desktop-with-sidebar' : ''}`}
+                    className={`main-layout ${!isMobile ? 'desktop-with-sidebar' : ''} ${isChatPage ? 'height-full-flex' : ''}`}
                     style={isChatPage ? { paddingBottom: 0 } : {}}
                 >
-                    <main className={isChatPage ? "" : "content-fluid"}>{children}</main>
+                    <main className={isChatPage ? "height-full-flex" : "content-fluid"}>{children}</main>
                     {!isChatPage && <Footer />}
                 </div>
             </div>
