@@ -113,7 +113,7 @@ const Layout = ({ children }) => {
                 {!isMobile && <Sidebar />}
                 <div 
                     className={`main-layout ${!isMobile ? 'desktop-with-sidebar' : ''} ${isChatPage ? 'height-full-flex' : ''}`}
-                    style={isChatPage ? { paddingBottom: 0, minHeight: '100%', height: '100%' } : {}}
+                    style={isChatPage ? { paddingBottom: 0, minHeight: 'unset', height: '100%', overflow: 'hidden' } : {}}
                 >
                     <main className={isChatPage ? "height-full-flex" : "content-fluid"}>{children}</main>
                     {!isChatPage && <Footer />}

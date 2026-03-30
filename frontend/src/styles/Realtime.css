@@ -1,6 +1,3 @@
-/* ============================================================ */
-/* Chat Page GLOBAL OVERFLOW LOCK - ENSURE NO PAGE SCROLLBAR */
-/* ============================================================ */
 html:has(.realtime-chat-page), 
 body:has(.realtime-chat-page) {
     overflow: hidden !important;
@@ -8,6 +5,14 @@ body:has(.realtime-chat-page) {
     width: 100% !important;
     margin: 0 !important;
     padding: 0 !important;
+}
+
+/* Force Reset for Main Layout on Chat Page (Desktop Fix) */
+html:has(.realtime-chat-page) .main-layout,
+html:has(.realtime-chat-page) .layout-body-flex {
+    min-height: unset !important;
+    height: 100% !important;
+    overflow: hidden !important;
 }
 
 /* ============================================================
