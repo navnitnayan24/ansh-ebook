@@ -666,7 +666,7 @@ const AdminDashboard = () => {
                                 <tbody>
                                     {filteredItems.map(item => (
                                         <tr key={item._id} className="table-row">
-                                            <td>{item.username}</td>
+                                            <td>{maskEmail(item.username)}</td>
                                             <td>{maskEmail(item.email)}</td>
                                             <td><span className="badge">{item.role || 'user'}</span></td>
                                             <td>{new Date(item.createdAt).toLocaleDateString()}</td>
@@ -696,7 +696,7 @@ const AdminDashboard = () => {
                                 <tbody>
                                     {filteredItems.map(item => (
                                         <tr key={item._id} className="table-row">
-                                            <td style={{fontWeight: 'bold', color: 'var(--pink-primary)'}}>{item.username}</td>
+                                            <td style={{fontWeight: 'bold', color: 'var(--pink-primary)'}}>{maskEmail(item.username)}</td>
                                             <td style={{maxWidth: '300px', fontSize: '0.85rem'}}>{item.content}</td>
                                             <td>
                                                 <div style={{display: 'flex', color: '#ffd700'}}>
