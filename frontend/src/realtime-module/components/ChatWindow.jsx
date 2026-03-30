@@ -227,7 +227,7 @@ const ChatWindow = ({ chat, setSelectedChat }) => {
             </div>
 
             {/* Native Bar Chat Window Slot */}
-            <AdSpace type="horizontal" id="chat-window-ad" />
+            <AdSpace type="horizontal" id="chat-window-ad" minimal={true} />
 
             <MessageInput chatId={chat._id} receiverId={otherUser?._id} setMessages={setMessages} />
 

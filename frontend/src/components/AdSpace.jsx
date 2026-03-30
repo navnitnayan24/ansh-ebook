@@ -16,9 +16,9 @@ import { motion } from 'framer-motion';
 // Track if the Native Bar script has been injected already
 let nativeBarInjected = false;
 
-const AdSpace = ({ type = 'horizontal', id }) => {
+const AdSpace = ({ type = 'horizontal', id, minimal = false }) => {
     const containerRef = useRef(null);
-    const stableId = useRef(id || `ad-${Math.random().toString(36).substr(2, 9)}`);
+    const stableId = useRef(id || `ad-${Math.random().toString(36).substring(2, 9)}`);
     const initialized = useRef(false);
 
     useEffect(() => {
@@ -26,39 +26,38 @@ const AdSpace = ({ type = 'horizontal', id }) => {
         initialized.current = true;
 
         const el = containerRef.current;
-        const currentContainerId = stableId.current;
 
         // === HilltopAds Native Bar ===
-        // Note: Global scripts like HilltopAds often look for a specific ID.
-        // We try to inject it provided it's the first one or if we're in a clear state.
-        if (!nativeBarInjected) {
-            nativeBarInjected = true;
-            const nativeDiv = document.createElement('div');
-            // Hardcoded ID required by the script
-            nativeDiv.id = 'container-fc31d37af05da68c422a1508c61daeb3';
-            el.appendChild(nativeDiv);
+        const injectHilltop = () => {
+            if (!document.getElementById('hilltop-native-script')) {
+                const script = document.createElement('script');
+                script.id = 'hilltop-native-script';
+                script.async = true;
+                script.setAttribute('data-cfasync', 'false');
+                script.src = 'https://doubtfulimpatient.com/fc31d37af05da68c422a1508c61daeb3/invoke.js';
+                document.head.appendChild(script);
+            }
 
-            const script = document.createElement('script');
-            script.async = true;
-            script.setAttribute('data-cfasync', 'false');
-            script.src = 'https://doubtfulimpatient.com/fc31d37af05da68c422a1508c61daeb3/invoke.js';
-            el.appendChild(script);
-        }
+            // Ensure the specific container div exists
+            if (!document.getElementById('container-fc31d37af05da68c422a1508c61daeb3')) {
+                const nativeDiv = document.createElement('div');
+                nativeDiv.id = 'container-fc31d37af05da68c422a1508c61daeb3';
+                el.appendChild(nativeDiv);
+            }
+        };
 
-        // === Google AdSense auto ad ===
-        const tryAdSense = () => {
-            if (!el) return;
+        // === Google AdSense push ===
+        const injectAdSense = () => {
             try {
                 const ins = document.createElement('ins');
                 ins.className = 'adsbygoogle';
                 ins.style.display = 'block';
-                ins.style.minHeight = '90px';
+                ins.style.minHeight = '50px';
                 ins.setAttribute('data-ad-client', 'ca-pub-3458226027310065');
                 ins.setAttribute('data-ad-format', type === 'square' ? 'rectangle' : 'auto');
                 ins.setAttribute('data-full-width-responsive', 'true');
                 el.appendChild(ins);
 
-                // Push only if adsbygoogle is available
                 if (window.adsbygoogle) {
                     (window.adsbygoogle = window.adsbygoogle || []).push({});
                 }
@@ -67,16 +66,23 @@ const AdSpace = ({ type = 'horizontal', id }) => {
             }
         };
 
-        // Wait for DOM to be stable
-        const timer = setTimeout(tryAdSense, 1000);
+        // Initialize based on type/id if needed, or just both for maximum coverage
+        injectHilltop();
+        const timer = setTimeout(injectAdSense, 1500);
 
-        return () => {
-            clearTimeout(timer);
-            // Optional: reset nativeBarInjected if we want it to reload on other pages
-            // nativeBarInjected = false; 
-        };
-
+        return () => clearTimeout(timer);
     }, [type]);
+
+    if (minimal) {
+        return (
+            <div 
+                ref={containerRef} 
+                className={`ad-minimal-container ${type}`} 
+                id={stableId.current}
+                style={{ width: '100%', minHeight: '50px', overflow: 'hidden', margin: '5px 0' }}
+            />
+        );
+    }
 
     return (
         <motion.div 

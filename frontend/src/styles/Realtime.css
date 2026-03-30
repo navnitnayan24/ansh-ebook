@@ -197,6 +197,8 @@
     padding: 18px 16px 14px;
     background: rgba(255, 255, 255, 0.02);
     border-bottom: 1px solid var(--c-border);
+    position: relative;
+    z-index: 10;
 }
 
 .header-top-row {
@@ -251,6 +253,7 @@
 .search-container-modern {
     position: relative;
     width: 100%;
+    margin-top: 4px;
 }
 .search-icon-chat {
     position: absolute;
