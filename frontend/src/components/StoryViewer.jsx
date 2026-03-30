@@ -114,6 +114,18 @@ const StoryViewer = ({ group, onClose, onComplete }) => {
         }
     };
 
+    const audioRef = useRef(null);
+
+    useEffect(() => {
+        if (audioRef.current) {
+            audioRef.current.pause();
+            audioRef.current.currentTime = 0;
+            if (currentStory.audioUrl && !isPaused && !showStats && !showComments) {
+                audioRef.current.play().catch(e => console.log('Audio autoplay blocked'));
+            }
+        }
+    }, [currentIndex, isPaused, showStats, showComments, currentStory.audioUrl]);
+
     const handleShare = () => {
         if (navigator.share) {
             navigator.share({
@@ -129,6 +141,11 @@ const StoryViewer = ({ group, onClose, onComplete }) => {
 
     return ReactDOM.createPortal(
         <div className="story-viewer-overlay" onClick={onClose}>
+            {/* Hidden Background Audio */}
+            {currentStory.audioUrl && (
+                <audio ref={audioRef} src={currentStory.audioUrl} loop />
+            )}
+
             <div className="story-viewer-content" onClick={e => e.stopPropagation()}>
                 {/* Progress Bars */}
                 <div className="story-progress-container">
@@ -179,10 +196,19 @@ const StoryViewer = ({ group, onClose, onComplete }) => {
                             className="media-wrapper"
                         >
                             {currentStory.mediaType === 'video' ? (
-                                <video src={currentStory.mediaUrl} autoPlay muted playsInline />
+                                <video src={currentStory.mediaUrl} autoPlay muted={currentStory.isMuted} playsInline />
                             ) : (
                                 <img src={currentStory.mediaUrl} alt="story" />
                             )}
+
+                            {/* Music Badge in Viewer */}
+                            {currentStory.audioUrl && (
+                                <div className="viewer-music-badge">
+                                    <MusicIcon size={14} className="animate-pulse" />
+                                    <span>Background Music Playing</span>
+                                </div>
+                            )}
+
                             {currentStory.caption && (
                                 <div className="story-caption-overlay">
                                     <p>{currentStory.caption}</p>

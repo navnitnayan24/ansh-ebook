@@ -33,6 +33,14 @@ const statusSchema = new mongoose.Schema({
         text: { type: String, required: true },
         createdAt: { type: Date, default: Date.now }
     }],
+    audioUrl: {
+        type: String,
+        default: ''
+    },
+    isMuted: {
+        type: Boolean,
+        default: false
+    },
     // TTL Index: expires after 24 hours (86400 seconds)
     createdAt: {
         type: Date,

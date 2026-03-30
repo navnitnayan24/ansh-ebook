@@ -6,7 +6,7 @@ const { getIo } = require('../realtime-module/socket');
 
 exports.createStatus = async (req, res) => {
     try {
-        const { caption } = req.body;
+        const { caption, audioUrl, isMuted } = req.body;
         let mediaUrl = '';
         let mediaType = 'image';
 
@@ -28,7 +28,9 @@ exports.createStatus = async (req, res) => {
             user: req.user.id,
             mediaUrl,
             mediaType,
-            caption
+            caption,
+            audioUrl: audioUrl || '',
+            isMuted: isMuted === 'true' || isMuted === true
         });
 
         await newStatus.save();

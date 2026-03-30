@@ -118,6 +118,7 @@ export const subscribeUser = (email) => API.post('subscribe', { email });
 export const fetchUsers = () => API.get('admin/users');
 export const deleteUser = (id) => API.delete(`admin/users/${id}`);
 export const searchUsers = (q) => API.get('realtime/users', { params: { q } });
+export const searchMusic = (q) => API.get('music', { params: { q } });
 
 // Reviews
 export const fetchReviews = () => API.get('reviews');
