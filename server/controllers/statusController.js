@@ -49,9 +49,13 @@ exports.createStatus = async (req, res) => {
 
 exports.getAllStories = async (req, res) => {
     try {
-        // Find all active statuses and group them by user
-        // MongoDB TTL index handles the 24h deletion automatically
-        const statuses = await Status.find()
+        const currentUser = await User.findById(req.user.id);
+        const followingIds = currentUser.following || [];
+        
+        // Find active statuses from self or followed users
+        const statuses = await Status.find({
+            user: { $in: [...followingIds, req.user.id] }
+        })
             .populate('user', 'username profile_pic')
             .populate('views.user', 'username profile_pic')
             .populate('likes', 'username profile_pic')

@@ -96,8 +96,7 @@
 
 /* ─── Page Root ─── */
 .realtime-chat-page {
-    height: calc(100vh - 100px);
-    height: calc(100dvh - 100px); /* Use Dynamic Viewport Height for perfectly precise fitting */
+    height: calc(100dvh - 100px); /* Desktop: 100vh - header */
     width: 100%;
     display: flex;
     background: var(--c-bg);
@@ -109,11 +108,11 @@
 @media (max-width: 768px) {
     .realtime-chat-page {
         position: fixed !important;
-        top: 80px; /* Start exactly below BrandHeader */
+        top: 80px; 
         bottom: 0;
         left: 0;
         right: 0;
-        height: auto !important; /* Override calc() */
+        height: calc(100dvh - 80px) !important;
         width: 100%;
         margin-top: 0 !important;
         z-index: 50;
@@ -451,6 +450,23 @@
     display: flex;
     align-items: center;
 }
+
+.btn-add-connection {
+    background: var(--c-grad);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.btn-add-connection:hover { transform: scale(1.05); }
 
 .no-chats-found {
     display: flex;

@@ -14,6 +14,8 @@ const userSchema = new mongoose.Schema({
     }],
     resetPasswordToken: String,
     resetPasswordExpires: Date,
+    followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);

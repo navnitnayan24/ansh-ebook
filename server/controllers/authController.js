@@ -208,3 +208,46 @@ exports.updateProfile = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+
+exports.followUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (id === req.user.id) return res.status(400).json({ error: "You cannot follow yourself" });
+
+        const userToFollow = await User.findById(id);
+        const currentUser = await User.findById(req.user.id);
+
+        if (!userToFollow || !currentUser) return res.status(404).json({ error: "User not found" });
+
+        if (currentUser.following.includes(id)) {
+            return res.status(400).json({ error: "Already following this user" });
+        }
+
+        await User.findByIdAndUpdate(req.user.id, { $push: { following: id } });
+        await User.findByIdAndUpdate(id, { $push: { followers: req.user.id } });
+
+        res.json({ message: "Successfully followed user" });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+exports.unfollowUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+        await User.findByIdAndUpdate(req.user.id, { $pull: { following: id } });
+        await User.findByIdAndUpdate(id, { $pull: { followers: req.user.id } });
+        res.json({ message: "Successfully unfollowed user" });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+exports.getFollowing = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id).populate('following', 'username profile_pic bio');
+        res.json(user.following);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Moon, Sun, Send, Users, UserPlus, Link, Plus, Check, Bell, BellOff } from 'lucide-react';
-import { createGroupChat, joinGroupByCode, acceptInvite, rejectInvite } from '../../api';
+import { createGroupChat, joinGroupByCode, acceptInvite, rejectInvite, followUser, getFollowing, findOrCreateChat } from '../../api';
 import { useSocket } from '../context/SocketContext';
 import { getAvatarUrl, maskEmail } from '../../config';
 import Avatar from '../../components/Avatar';
@@ -20,6 +20,7 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
     const [joinCode, setJoinCode] = useState('');
     const [loading, setLoading] = useState(false);
     const [notificationsEnabled, setNotificationsEnabled] = useState(Notification.permission === 'granted');
+    const [following, setFollowing] = useState([]);
 
     const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
     const currentUserId = currentUser.id || currentUser._id;
@@ -97,6 +98,16 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
             }));
         });
 
+        const fetchFollowingList = async () => {
+            try {
+                const res = await getFollowing();
+                setFollowing(res.data.map(u => u._id));
+            } catch (err) {
+                console.error("Error fetching following:", err);
+            }
+        };
+        fetchFollowingList();
+
         return () => {
             socket.off('user-typing');
         };
@@ -133,6 +144,19 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
         chat?.pendingParticipants?.some(p => p._id === currentUserId)
     );
 
+    const handleFollow = async (user) => {
+        try {
+            await followUser(user._id);
+            setFollowing(prev => [...prev, user._id]);
+            // Automatically initialize a chat with the newly followed user
+            await findOrCreateChat(user._id);
+            // Refresh to update the Sidebar list
+            window.location.reload();
+        } catch (err) {
+            alert("Connection failed");
+        }
+    };
+
     // Filter active chats by search
     const activeChats = (chats || []).filter(chat => 
         chat?.participants?.some(p => p._id === currentUserId)
@@ -152,18 +176,19 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
 
     // Filter users for discovery
     const filteredUsers = (users || []).filter(user => {
-        if (!user || !user._id) return false;
+        if (!user || !user._id || user._id === currentUserId) return false;
         const searchTerm = (search || '').toLowerCase();
         const username = user.username?.toLowerCase() || '';
-        const matchesSearch = username.includes(searchTerm);
         
-        if (search.length > 0) return matchesSearch;
-        // If no search, show only those NOT in active chats to avoid duplication
-        return !chats?.some(c => !c.isGroup && c.participants?.some(p => p._id === user._id));
+        // PRIVACY: Only show results if searching
+        if (search.length > 0) {
+            return username.includes(searchTerm);
+        }
+        return false;
     });
 
     // Separate "Recent" into Groups and Messages
-    const recentChats = filteredChats.filter(c => c.lastMessage || c.isGroup);
+    const recentChats = filteredChats;
     const groupConversations = recentChats.filter(c => c.isGroup);
     const directConversations = recentChats.filter(c => !c.isGroup);
 
@@ -299,10 +324,10 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
                     </>
                 )}
 
-                {/* User Discovery (only when searching or if no chats) */}
-                {(search.length > 0 || filteredUsers.length > 0) && (
+                {/* User Discovery (only when searching) */}
+                {search.length > 0 && filteredUsers.length > 0 && (
                     <>
-                        <div className="sidebar-section-title">People you may know</div>
+                        <div className="sidebar-section-title">Search Results</div>
                         {filteredUsers.map((user) => (
                             <div 
                                 key={user._id} 
@@ -330,7 +355,17 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
                                     </span>
                                 </div>
                                 <div className="quick-action-icon">
-                                    <Send size={16} />
+                                    {following.includes(user._id) ? (
+                                        <Send size={16} onClick={() => selectChatWithHash({ 
+                                            _id: `new-${user._id}`, 
+                                            participants: [currentUser, user],
+                                            isGroup: false 
+                                        })} />
+                                    ) : (
+                                        <button className="btn-add-connection" onClick={(e) => { e.stopPropagation(); handleFollow(user); }}>
+                                            <UserPlus size={16} /> <span>Connect</span>
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         ))}

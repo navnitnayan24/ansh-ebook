@@ -119,6 +119,9 @@ export const fetchUsers = () => API.get('admin/users');
 export const deleteUser = (id) => API.delete(`admin/users/${id}`);
 export const searchUsers = (q) => API.get('realtime/users', { params: { q } });
 export const searchMusic = (q) => API.get('music', { params: { q } });
+export const followUser = (id) => API.post(`auth/follow/${id}`);
+export const unfollowUser = (id) => API.post(`auth/unfollow/${id}`);
+export const getFollowing = () => API.get('auth/following');
 
 // Reviews
 export const fetchReviews = () => API.get('reviews');

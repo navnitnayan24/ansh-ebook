@@ -15,4 +15,9 @@ router.post('/change-password', authenticate, authController.changePassword);
 
 router.put('/profile', authenticate, upload.single('profile_pic'), authController.updateProfile);
 
+// User Connections (Follow System)
+router.post('/follow/:id', authenticate, authController.followUser);
+router.post('/unfollow/:id', authenticate, authController.unfollowUser);
+router.get('/following', authenticate, authController.getFollowing);
+
 module.exports = router;
