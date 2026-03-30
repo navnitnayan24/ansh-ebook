@@ -8,8 +8,7 @@ body:has(.realtime-chat-page) {
 }
 
 /* Force Reset for Main Layout on Chat Page (Desktop Fix) */
-html:has(.realtime-chat-page) .main-layout,
-html:has(.realtime-chat-page) .layout-body-flex {
+html:has(.realtime-chat-page) .main-layout {
     min-height: unset !important;
     height: 100% !important;
     overflow: hidden !important;
