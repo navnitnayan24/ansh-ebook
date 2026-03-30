@@ -194,7 +194,7 @@ const ChatWindow = ({ chat, setSelectedChat }) => {
                 </div>
             )}
 
-            <div className="messages-area" style={{ flex: 1 }}>
+            <div className="messages-area">
                 {messages.map((msg, idx) => (
                     <div 
                         key={idx} 
