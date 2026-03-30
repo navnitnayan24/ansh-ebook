@@ -161,6 +161,16 @@ const setupSocket = (server) => {
             io.to(data.to).emit('call-ended');
         });
 
+        // --- STATUS MODULE EVENTS ---
+        socket.on('status-seen', (data) => {
+            const { statusId, ownerId } = data;
+            // Notify the owner that their status was seen
+            io.to(ownerId).emit('status-seen-notification', {
+                statusId,
+                viewerId: userId
+            });
+        });
+
         socket.on('disconnect', () => {
             onlineUsers.delete(userId);
             io.emit('user-status', { userId, status: 'offline' });

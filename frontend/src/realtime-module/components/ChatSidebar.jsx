@@ -5,6 +5,7 @@ import { useSocket } from '../context/SocketContext';
 import { getAvatarUrl, maskEmail } from '../../config';
 import Avatar from '../../components/Avatar';
 import AdSpace from '../../components/AdSpace';
+import StoriesBar from '../../components/StoriesBar';
 
 const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef }) => {
     const [search, setSearch] = useState('');
@@ -199,6 +200,9 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
                     />
                 </div>
             </div>
+            
+            {/* STORIES SECTION */}
+            <StoriesBar />
 
             <div className="user-list">
                 {/* Pending Invitations */}

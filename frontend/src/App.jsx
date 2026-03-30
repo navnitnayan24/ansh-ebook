@@ -60,6 +60,8 @@ const ChatPage = lazyRetry(() => import('./realtime-module/pages/ChatPage'));
 const Settings = lazyRetry(() => import('./pages/Settings'));
 const NotFound = lazyRetry(() => import('./pages/NotFound'));
 
+import './styles/Stories.css';
+
 import Sidebar from './components/Sidebar';
 import BrandHeader from './components/BrandHeader';
 import { SocketProvider } from './realtime-module/context/SocketContext'; // Realtime Module Hook

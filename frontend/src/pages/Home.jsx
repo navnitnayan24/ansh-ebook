@@ -7,6 +7,7 @@ import { MEDIA_URL, maskEmail } from '../config';
 import AdSpace from '../components/AdSpace';
 import SEO from '../components/SEO';
 import SkeletonLoader from '../components/SkeletonLoader';
+import StoriesBar from '../components/StoriesBar';
 import '../styles/Home.css';
 
 const Home = () => {
@@ -275,6 +276,9 @@ const Home = () => {
                 title="Ansh Ebook - Free Shayari, Music, Podcasts" 
                 description="Welcome to Ansh-Ebook. Explore original premium Hindi Shayari, soulful Music, Podcasts, and E-Books."
             />
+
+            {/* STORIES SECTION */}
+            <StoriesBar />
             
             {/* HERO SECTION */}
             <section id="hero" className="hero-section">

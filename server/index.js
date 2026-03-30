@@ -141,6 +141,7 @@ app.use('/uploads', (req, res) => {
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/status', require('./routes/status.routes')); // Status/Story Module
 app.use('/api/realtime', require('./realtime-module/routes/chat.routes')); // Realtime Module Hook
 app.use('/api', contentRoutes);
 

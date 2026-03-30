@@ -146,5 +146,14 @@ export const leaveGroup = (chatId) => API.post('realtime/leave-group', { chatId 
 export const joinGroupByCode = (joinCode) => API.post('realtime/join-group-code', { joinCode });
 export const pinMessage = (data) => API.post('realtime/pin', data);
 
+// Status/Story Module APIs
+export const fetchActiveStories = () => API.get('status/active');
+export const createStatus = (formData) => API.post('status', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+});
+export const viewStatus = (id) => API.post(`status/view/${id}`);
+export const toggleStatusLike = (id) => API.post(`status/like/${id}`);
+export const replyToStatus = (id, text) => API.post(`status/reply/${id}`, { text });
+
 export { API };
 export default API;
