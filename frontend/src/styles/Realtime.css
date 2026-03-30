@@ -108,7 +108,7 @@ body:has(.realtime-chat-page) {
 
 /* ─── Page Root ─── */
 .realtime-chat-page {
-    height: 100vh;
+    height: 100%;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -135,6 +135,7 @@ body:has(.realtime-chat-page) {
     display: grid;
     grid-template-columns: 260px 1fr;
     width: 100%;
+    flex: 1; /* Essential to fill the height in column root */
     height: 100%;
     overflow: hidden;
 }
@@ -504,6 +505,7 @@ body:has(.realtime-chat-page) {
     flex: 1;
     overflow: hidden;
     position: relative;
+    background: #000;
 }
 
 /* No Chat Selected */
@@ -517,6 +519,7 @@ body:has(.realtime-chat-page) {
     padding: 40px;
     text-align: center;
     background: var(--c-bg);
+    height: 100%;
 }
 
 .chat-welcome-icon {

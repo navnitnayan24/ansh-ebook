@@ -107,9 +107,7 @@ const Layout = ({ children }) => {
                 style={{ 
                     marginTop: isMobile ? '80px' : '100px',
                     height: isChatPage ? `calc(100dvh - ${isMobile ? '80px' : '100px'})` : 'auto',
-                    overflow: isChatPage ? 'hidden' : 'visible',
-                    display: 'flex',
-                    flexDirection: 'column'
+                    overflow: isChatPage ? 'hidden' : 'visible'
                 }}
             >
                 {!isMobile && <Sidebar />}
