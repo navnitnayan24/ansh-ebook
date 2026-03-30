@@ -3,7 +3,8 @@ import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, LogOut, Settings, Sun, Moon, Home, Book, Music, Mic, BookOpen, Quote, User, MessageCircle, Youtube, Instagram, Facebook, Linkedin, DownloadCloud } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
-import { MEDIA_URL, getAvatarUrl } from '../config';
+import { MEDIA_URL, getAvatarUrl, maskEmail } from '../config';
+import AdSpace from './AdSpace';
 import Avatar from './Avatar';
 import '../styles/Navbar.css';
 
@@ -285,7 +286,7 @@ const Navbar = ({ isOpen, setIsOpen, closeMenu }) => {
 
                                     {/* Native Bar Drawer Slot */}
                                     <div style={{ marginTop: '2rem', padding: '0 1rem', width: '100%', opacity: 0.8 }}>
-                                        <div id="container-fc31d37af05da68c422a1508c61daeb3"></div>
+                                        <AdSpace type="horizontal" id="nav-drawer-ad" />
                                     </div>
                                 </ul>
 

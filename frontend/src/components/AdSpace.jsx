@@ -26,11 +26,15 @@ const AdSpace = ({ type = 'horizontal', id }) => {
         initialized.current = true;
 
         const el = containerRef.current;
+        const currentContainerId = stableId.current;
 
-        // === HilltopAds Native Bar (only first AdSpace instance) ===
+        // === HilltopAds Native Bar ===
+        // Note: Global scripts like HilltopAds often look for a specific ID.
+        // We try to inject it provided it's the first one or if we're in a clear state.
         if (!nativeBarInjected) {
             nativeBarInjected = true;
             const nativeDiv = document.createElement('div');
+            // Hardcoded ID required by the script
             nativeDiv.id = 'container-fc31d37af05da68c422a1508c61daeb3';
             el.appendChild(nativeDiv);
 
@@ -38,16 +42,12 @@ const AdSpace = ({ type = 'horizontal', id }) => {
             script.async = true;
             script.setAttribute('data-cfasync', 'false');
             script.src = 'https://doubtfulimpatient.com/fc31d37af05da68c422a1508c61daeb3/invoke.js';
-            
-            script.onload = () => console.log('[AdSpace] Native Bar script loaded.');
-            script.onerror = () => console.warn('[AdSpace] Native Bar script failed to load.');
-            
             el.appendChild(script);
         }
 
         // === Google AdSense auto ad ===
-        // Check if adsbygoogle script is loaded (it loads async from index.html)
         const tryAdSense = () => {
+            if (!el) return;
             try {
                 const ins = document.createElement('ins');
                 ins.className = 'adsbygoogle';
@@ -58,16 +58,25 @@ const AdSpace = ({ type = 'horizontal', id }) => {
                 ins.setAttribute('data-full-width-responsive', 'true');
                 el.appendChild(ins);
 
-                (window.adsbygoogle = window.adsbygoogle || []).push({});
+                // Push only if adsbygoogle is available
+                if (window.adsbygoogle) {
+                    (window.adsbygoogle = window.adsbygoogle || []).push({});
+                }
             } catch (e) {
-                // Silent fail - ad blocked or not approved
+                console.warn('[AdSpace] AdSense push failed:', e);
             }
         };
 
-        // Wait a bit for the global adsbygoogle.js to load
-        setTimeout(tryAdSense, 1500);
+        // Wait for DOM to be stable
+        const timer = setTimeout(tryAdSense, 1000);
 
-    }, []);
+        return () => {
+            clearTimeout(timer);
+            // Optional: reset nativeBarInjected if we want it to reload on other pages
+            // nativeBarInjected = false; 
+        };
+
+    }, [type]);
 
     return (
         <motion.div 

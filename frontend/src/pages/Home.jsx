@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Play, Book, Mic, Quote, ArrowRight, BookOpen, Instagram, Youtube, MessageCircle, PlayCircle, Music, Star, ThumbsUp, ThumbsDown, User, Share2, MessageSquare, Send, Clock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { fetchHomeContent, fetchReviews, addReview, updateReviewReaction, API } from '../api';
-import { MEDIA_URL } from '../config';
+import { fetchHomeContent, fetchReviews, addReview, updateReviewReaction, API, subscribeUser } from '../api';
+import { MEDIA_URL, maskEmail } from '../config';
 import AdSpace from '../components/AdSpace';
 import SEO from '../components/SEO';
 import SkeletonLoader from '../components/SkeletonLoader';
@@ -383,7 +383,7 @@ const Home = () => {
                                             {item.comments?.map(c => (
                                                 <div key={c._id} className="comment-item-mini">
                                                     <div className="comment-meta">
-                                                        <span className="comment-user">{c.username}</span>
+                                                        <span className="comment-user">{maskEmail(c.username)}</span>
                                                         <span className="comment-time">{formatTimeAgo(c.createdAt)}</span>
                                                     </div>
                                                     {editingComment?.id === c._id ? (

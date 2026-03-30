@@ -9,7 +9,7 @@ import {
     fetchReviews, deleteReview
 } from '../api';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MEDIA_URL, getAvatarUrl } from '../config';
+import { MEDIA_URL, getAvatarUrl, maskEmail } from '../config';
 import Avatar from '../components/Avatar';
 import SkeletonLoader from '../components/SkeletonLoader';
 import '../styles/Dashboard.css';
@@ -638,7 +638,7 @@ const AdminDashboard = () => {
                                 <tbody>
                                     {filteredItems.map(item => (
                                         <tr key={item._id} className="table-row">
-                                            <td>{item.email}</td>
+                                            <td>{maskEmail(item.email)}</td>
                                             <td>{new Date(item.createdAt).toLocaleDateString()}</td>
                                             <td>
                                                 <button className="icon-btn delete" onClick={async () => {
@@ -667,7 +667,7 @@ const AdminDashboard = () => {
                                     {filteredItems.map(item => (
                                         <tr key={item._id} className="table-row">
                                             <td>{item.username}</td>
-                                            <td>{item.email}</td>
+                                            <td>{maskEmail(item.email)}</td>
                                             <td><span className="badge">{item.role || 'user'}</span></td>
                                             <td>{new Date(item.createdAt).toLocaleDateString()}</td>
                                             <td>
@@ -772,12 +772,12 @@ const AdminDashboard = () => {
                                                     {item.cover_url && !item.thumbnail && <img src={item.cover_url.startsWith('/uploads') ? `${MEDIA_URL}${item.cover_url}` : item.cover_url} alt="" className="cell-thumb" />}
                                                     <div>
                                                         <span className="item-title">
-                                                            {activeTab === 'users' ? (item.username || item.email) : 
+                                                            {activeTab === 'users' ? (maskEmail(item.username) || maskEmail(item.email)) : 
                                                              activeTab === 'reviews' ? (item.content?.substring(0, 50) + '...') :
                                                              (item.title || (item.content?.substring(0, 30) + '...'))}
                                                         </span>
                                                         <span className="item-sub">
-                                                            {activeTab === 'users' ? item.email : 
+                                                            {activeTab === 'users' ? maskEmail(item.email) : 
                                                              activeTab === 'reviews' ? `By: ${item.username || 'Anonymous'}` :
                                                              (item.artist || item.author || 'N/A')}
                                                         </span>

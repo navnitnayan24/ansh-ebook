@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import MessageInput from './MessageInput';
 import GroupInfoView from './GroupInfoView';
+import AdSpace from '../../components/AdSpace';
 import { useSocket } from '../context/SocketContext';
 import { Phone, Video, MoreVertical, Pin, ArrowLeft } from 'lucide-react';
 import { fetchMessages } from '../../api';
@@ -226,9 +227,7 @@ const ChatWindow = ({ chat, setSelectedChat }) => {
             </div>
 
             {/* Native Bar Chat Window Slot */}
-            <div className="chat-window-ad-slot" style={{ padding: '8px', borderTop: '1px solid var(--border-color)', opacity: 0.7 }}>
-                <div id="container-fc31d37af05da68c422a1508c61daeb3"></div>
-            </div>
+            <AdSpace type="horizontal" id="chat-window-ad" />
 
             <MessageInput chatId={chat._id} receiverId={otherUser?._id} setMessages={setMessages} />
 

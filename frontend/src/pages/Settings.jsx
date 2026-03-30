@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 // Add imports for Avatar Updates
 import { fetchCloudinarySignature, updateProfile } from '../api';
 import Avatar from '../components/Avatar';
+import { maskEmail } from '../config';
 import '../styles/Settings.css';
 
 const Settings = () => {
@@ -182,7 +183,7 @@ const Settings = () => {
                                         </div>
                                         <div className="profile-quick-info">
                                             <h4>{user?.username}</h4>
-                                            <p className="text-muted">{user?.email}</p>
+                                            <p className="text-muted">{maskEmail(user?.email)}</p>
                                         </div>
                                     </div>
 
@@ -199,7 +200,7 @@ const Settings = () => {
                                             </div>
                                             <div className="form-group">
                                                 <label>Email Address</label>
-                                                <input type="email" defaultValue={user?.email} className="glass-input" readOnly />
+                                                <input type="email" defaultValue={maskEmail(user?.email)} className="glass-input" readOnly />
                                             </div>
                                         </div>
                                         <div className="form-group">

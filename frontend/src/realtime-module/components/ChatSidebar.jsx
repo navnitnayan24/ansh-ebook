@@ -4,6 +4,7 @@ import { createGroupChat, joinGroupByCode, acceptInvite, rejectInvite } from '..
 import { useSocket } from '../context/SocketContext';
 import { getAvatarUrl, maskEmail } from '../../config';
 import Avatar from '../../components/Avatar';
+import AdSpace from '../../components/AdSpace';
 
 const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef }) => {
     const [search, setSearch] = useState('');
@@ -341,9 +342,7 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
             </div>
             
             {/* Native Bar Chat Sidebar Slot */}
-            <div className="chat-sidebar-ad-slot" style={{ padding: '1rem', borderTop: '1px solid var(--border-color)', opacity: 0.8 }}>
-                <div id="container-fc31d37af05da68c422a1508c61daeb3"></div>
-            </div>
+            <AdSpace type="horizontal" id="sidebar-ad" />
             
             {/* Create Group Modal */}
 

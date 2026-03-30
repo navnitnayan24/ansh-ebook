@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Quote, Heart, Copy, Search, ArrowLeft, Share2, PenTool, MessageCircle, Send } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fetchContentByType, fetchCategories } from '../api';
+import { maskEmail } from '../config';
 import SEO from '../components/SEO';
 import AdSpace from '../components/AdSpace';
 import '../styles/Shayari.css';
@@ -236,7 +237,7 @@ const Shayari = () => {
                                                                     <div key={i} className="comment-item" style={{background: 'var(--bg-glass-light)', padding: '0.6rem', borderRadius: '8px', marginBottom: '0.5rem'}}>
                                                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                                                                             <div>
-                                                                                <strong style={{color: 'var(--pink-primary)', fontSize: '0.85rem'}}>{c.username}</strong>
+                                                                                <strong style={{color: 'var(--pink-primary)', fontSize: '0.85rem'}}>{maskEmail(c.username)}</strong>
                                                                                 <p style={{margin: '0.3rem 0 0', fontSize: '0.9rem', color: 'var(--text-primary)'}}>{c.text}</p>
                                                                             </div>
                                                                             {currentUser && c.user_id && (c.user_id !== currentUser._id && c.user_id !== currentUser.id) && (

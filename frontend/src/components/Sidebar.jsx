@@ -2,6 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { Home, Music, Book, BookOpen, Mic, Youtube, MessageCircle, Instagram, Facebook, Linkedin, Sun, Moon, Settings, User, LogOut } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import AdSpace from './AdSpace';
 import '../styles/Sidebar.css';
 
 const Sidebar = () => {
@@ -114,7 +115,7 @@ const Sidebar = () => {
             <div className="sidebar-footer" style={{ marginTop: 'auto', padding: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
                 {/* Native Bar Sidebar Slot */}
                 <div style={{ marginBottom: '1.5rem', width: '100%', overflow: 'hidden' }}>
-                    <div id="container-fc31d37af05da68c422a1508c61daeb3"></div>
+                    <AdSpace type="horizontal" id="sidebar-bottom-ad" />
                 </div>
                 
                 <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '1rem', letterSpacing: '1px' }}>CONNECT</p>
