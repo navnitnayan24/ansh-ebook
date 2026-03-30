@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Plus, Trash2, Edit, Save, X, Search, Settings as SettingsIcon, ArrowLeft, Home } from 'lucide-react';
+import { Plus, Trash2, Edit, Save, X, Search, Settings as SettingsIcon, ArrowLeft, Home, CheckCircle } from 'lucide-react';
 import { 
     fetchContentByType, addContent, updateContent, deleteContent, 
     fetchCategories, fetchSettings, updateSetting, 
@@ -46,6 +46,7 @@ const AdminDashboard = () => {
     const [thumbnailFile, setThumbnailFile] = useState(null);
     const [audioFile, setAudioFile] = useState(null);
     const [uploadProgress, setUploadProgress] = useState({ active: false, percent: 0, currentChunk: 0, totalChunks: 0 });
+    const [uploadStatus, setUploadStatus] = useState('idle'); // idle, uploading, success, error
 
     const getSavedUser = () => {
         try {
@@ -145,6 +146,7 @@ const AdminDashboard = () => {
             setThumbnailFile(null);
             setAudioFile(null);
         }
+        setUploadStatus('idle');
         setShowModal(true);
     };
 
@@ -316,12 +318,13 @@ const AdminDashboard = () => {
             } else {
                 await addContent(modelName, payload);
             }
-            alert('Item saved successfully!');
-            setShowModal(false);
+            
+            setUploadStatus('success');
             await loadItems();
             setThumbnailFile(null);
             setAudioFile(null);
         } catch (err) {
+            setUploadStatus('error');
             console.error('Submit Error:', err);
             const errorData = err.response?.data;
             const errorMsg = errorData?.error || errorData?.message || err.message;
@@ -815,91 +818,121 @@ const AdminDashboard = () => {
                             <h3 className="pink-gradient-text">{isEditing ? 'UPDATE' : 'ADD NEW'} {activeTab.toUpperCase()}</h3>
                             <button className="close-btn" onClick={() => setShowModal(false)}><X size={24} /></button>
                         </div>
-                        <form onSubmit={handleSubmit} className="modal-form">
-                            <div className="form-grid">
-                                {activeTab === 'shayari' ? (
-                                    <>
-                                        <div className="form-group full">
-                                            <label>Shayari Content</label>
-                                            <textarea value={formData.content} onChange={(e) => setFormData({...formData, content: e.target.value})} placeholder="Type here..." rows="4" />
-                                        </div>
-                                        <div className="form-group">
-                                            <label>Category (Type Name)</label>
-                                            <input list="cat-suggestions" value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})} placeholder="e.g. Love, Sad" />
-                                            <datalist id="cat-suggestions">
-                                                {categories && categories.map(cat => <option key={cat._id} value={cat.name} />)}
-                                            </datalist>
-                                        </div>
-                                        <div className="form-group">
-                                            <label>Author</label>
-                                            <input type="text" value={formData.author} onChange={(e) => setFormData({...formData, author: e.target.value})} />
-                                        </div>
-                                    </>
-                                ) : activeTab === 'music' ? (
-                                    <>
-                                        <div className="form-group full">
-                                            <label>Title</label>
-                                            <input type="text" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} />
-                                        </div>
-                                        <div className="form-group">
-                                            <label>Artist</label>
-                                            <input type="text" value={formData.artist} onChange={(e) => setFormData({...formData, artist: e.target.value})} />
-                                        </div>
-                                        <div className="form-group">
-                                            <label>Category ID</label>
-                                            <select value={formData.category_id} onChange={(e) => setFormData({...formData, category_id: e.target.value})}>
-                                                <option value="">Select Category</option>
-                                                {categories && categories.map(cat => <option key={cat._id} value={cat._id}>{cat.name}</option>)}
-                                            </select>
-                                        </div>
-                                        <div className="form-group">
-                                            <label>Thumbnail / Upload</label>
-                                            <input type="text" value={formData.thumbnail} onChange={(e) => setFormData({...formData, thumbnail: e.target.value})} placeholder="Image URL" />
-                                            <input type="file" onChange={(e) => setThumbnailFile(e.target.files[0])} style={{marginTop: '5px'}}/>
-                                        </div>
-                                        <div className="form-group">
-                                            <label>File URL / Upload Audio</label>
-                                            <input type="text" value={formData.file_url} onChange={(e) => setFormData({...formData, file_url: e.target.value})} placeholder="Direct Audio URL" />
-                                            <input type="file" onChange={(e) => setAudioFile(e.target.files[0])} accept="audio/*" style={{marginTop: '5px'}}/>
-                                        </div>
-                                    </>
-                                ) : (
-                                    <>
-                                        <div className="form-group full">
-                                            <label>Title</label>
-                                            <input type="text" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} />
-                                        </div>
-                                        <div className="form-group full">
-                                            <label>Description</label>
-                                            <textarea value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} />
-                                        </div>
-                                        <div className="form-group">
-                                            <label>Category</label>
-                                            <select value={formData.category_id} onChange={(e) => setFormData({...formData, category_id: e.target.value})}>
-                                                <option value="">Select Category</option>
-                                                {categories && categories.map(cat => <option key={cat._id} value={cat._id}>{cat.name}</option>)}
-                                            </select>
-                                        </div>
-                                        <div className="form-group">
-                                            <label>Thumbnail / Upload</label>
-                                            <input type="text" value={formData.thumbnail} onChange={(e) => setFormData({...formData, thumbnail: e.target.value})} />
-                                            <input type="file" onChange={(e) => setThumbnailFile(e.target.files[0])} style={{marginTop: '5px'}}/>
-                                        </div>
-                                        <div className="form-group">
-                                            <label>File URL / Upload Document/Audio</label>
-                                            <input type="text" value={formData.file_url} onChange={(e) => setFormData({...formData, file_url: e.target.value})} placeholder="Direct File URL" />
-                                            <input type="file" onChange={(e) => setAudioFile(e.target.files[0])} accept="audio/*,application/pdf" style={{marginTop: '5px'}}/>
-                                        </div>
-                                    </>
-                                )}
+                        {uploadStatus === 'success' ? (
+                            <div className="success-view animate-fade-in" style={{ textAlign: 'center', padding: '2rem 0' }}>
+                                <motion.div 
+                                    initial={{ scale: 0 }}
+                                    animate={{ scale: 1 }}
+                                    transition={{ type: 'spring', stiffness: 200, damping: 10 }}
+                                >
+                                    <CheckCircle size={80} className="text-success mb-3" style={{ color: '#4caf50' }} />
+                                </motion.div>
+                                <h2 className="pink-gradient-text">Success!</h2>
+                                <p className="text-muted mb-4">Your content has been {isEditing ? 'updated' : 'published'} successfully.</p>
+                                <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+                                    <button 
+                                        className="btn btn-outline btn-pill"
+                                        onClick={() => setShowModal(false)}
+                                    >
+                                        Back to Dashboard
+                                    </button>
+                                    {!isEditing && (
+                                        <button 
+                                            className="btn btn-primary shadow-neon btn-pill"
+                                            onClick={() => handleOpenModal()}
+                                        >
+                                            Add Another
+                                        </button>
+                                    )}
+                                </div>
                             </div>
-                            <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Close</button>
-                                <button type="submit" className="btn btn-primary shadow-neon">
-                                    <Save size={18} /> {isEditing ? 'Confirm Update' : 'CONFIRM SAVE'}
-                                </button>
-                            </div>
-                        </form>
+                        ) : (
+                            <form onSubmit={handleSubmit} className="modal-form">
+                                <div className="form-grid">
+                                    {activeTab === 'shayari' ? (
+                                        <>
+                                            <div className="form-group full">
+                                                <label>Shayari Content</label>
+                                                <textarea value={formData.content} onChange={(e) => setFormData({...formData, content: e.target.value})} placeholder="Type here..." rows="4" />
+                                            </div>
+                                            <div className="form-group">
+                                                <label>Category (Type Name)</label>
+                                                <input list="cat-suggestions" value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})} placeholder="e.g. Love, Sad" />
+                                                <datalist id="cat-suggestions">
+                                                    {categories && categories.map(cat => <option key={cat._id} value={cat.name} />)}
+                                                </datalist>
+                                            </div>
+                                            <div className="form-group">
+                                                <label>Author</label>
+                                                <input type="text" value={formData.author} onChange={(e) => setFormData({...formData, author: e.target.value})} />
+                                            </div>
+                                        </>
+                                    ) : activeTab === 'music' ? (
+                                        <>
+                                            <div className="form-group full">
+                                                <label>Title</label>
+                                                <input type="text" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} />
+                                            </div>
+                                            <div className="form-group">
+                                                <label>Artist</label>
+                                                <input type="text" value={formData.artist} onChange={(e) => setFormData({...formData, artist: e.target.value})} />
+                                            </div>
+                                            <div className="form-group">
+                                                <label>Category ID</label>
+                                                <select value={formData.category_id} onChange={(e) => setFormData({...formData, category_id: e.target.value})}>
+                                                    <option value="">Select Category</option>
+                                                    {categories && categories.map(cat => <option key={cat._id} value={cat._id}>{cat.name}</option>)}
+                                                </select>
+                                            </div>
+                                            <div className="form-group">
+                                                <label>Thumbnail / Upload</label>
+                                                <input type="text" value={formData.thumbnail} onChange={(e) => setFormData({...formData, thumbnail: e.target.value})} placeholder="Image URL" />
+                                                <input type="file" onChange={(e) => setThumbnailFile(e.target.files[0])} style={{marginTop: '5px'}}/>
+                                            </div>
+                                            <div className="form-group">
+                                                <label>File URL / Upload Audio</label>
+                                                <input type="text" value={formData.file_url} onChange={(e) => setFormData({...formData, file_url: e.target.value})} placeholder="Direct Audio URL" />
+                                                <input type="file" onChange={(e) => setAudioFile(e.target.files[0])} accept="audio/*" style={{marginTop: '5px'}}/>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <div className="form-group full">
+                                                <label>Title</label>
+                                                <input type="text" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} />
+                                            </div>
+                                            <div className="form-group full">
+                                                <label>Description</label>
+                                                <textarea value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} />
+                                            </div>
+                                            <div className="form-group">
+                                                <label>Category</label>
+                                                <select value={formData.category_id} onChange={(e) => setFormData({...formData, category_id: e.target.value})}>
+                                                    <option value="">Select Category</option>
+                                                    {categories && categories.map(cat => <option key={cat._id} value={cat._id}>{cat.name}</option>)}
+                                                </select>
+                                            </div>
+                                            <div className="form-group">
+                                                <label>Thumbnail / Upload</label>
+                                                <input type="text" value={formData.thumbnail} onChange={(e) => setFormData({...formData, thumbnail: e.target.value})} />
+                                                <input type="file" onChange={(e) => setThumbnailFile(e.target.files[0])} style={{marginTop: '5px'}}/>
+                                            </div>
+                                            <div className="form-group">
+                                                <label>File URL / Upload Document/Audio</label>
+                                                <input type="text" value={formData.file_url} onChange={(e) => setFormData({...formData, file_url: e.target.value})} placeholder="Direct File URL" />
+                                                <input type="file" onChange={(e) => setAudioFile(e.target.files[0])} accept="audio/*,application/pdf" style={{marginTop: '5px'}}/>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
+                                <div className="modal-footer">
+                                    <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Close</button>
+                                    <button type="submit" className="btn btn-primary shadow-neon">
+                                        <Save size={18} /> {isEditing ? 'Confirm Update' : 'CONFIRM SAVE'}
+                                    </button>
+                                </div>
+                            </form>
+                        )}
                     </motion.div>
                 </div>
             )}
