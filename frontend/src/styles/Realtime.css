@@ -505,7 +505,7 @@ body:has(.realtime-chat-page) {
     flex: 1;
     overflow: hidden;
     position: relative;
-    background: #000;
+    background: transparent;
 }
 
 /* No Chat Selected */
