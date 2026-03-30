@@ -154,7 +154,7 @@ const ChatWindow = ({ chat, setSelectedChat }) => {
                     {/* Text Section highly constrained */}
                     <div className="chat-header-title-text" style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', paddingRight: '8px' }}>
                         <h4 className="header-username" style={{ margin: '0 0 2px 0', fontSize: '1.05rem', fontWeight: '700', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: '#fff', letterSpacing: '-0.2px' }}>
-                            {chat.isGroup ? (isKohinoor ? '🔥 🌹 Kohinoor 🌹 🔥' : chat.name) : maskEmail(otherUser?.username)}
+                            {chat.isGroup ? (isKohinoor ? '🔥 🌹 Kohinoor 🌹 🔥' : chat.name) : (otherUser?.username || 'Chat')}
                         </h4>
                         <span className="user-status-text" style={{ fontSize: '0.78rem', fontWeight: '600', color: '#ff69b4', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                             {chat.isGroup ? `${chat.participants?.length || 0} members` : (onlineUsers[otherUser?._id] === 'online' ? 'Online' : 'Offline')}
@@ -191,7 +191,7 @@ const ChatWindow = ({ chat, setSelectedChat }) => {
                     >
                         {chat.isGroup && msg.sender !== currentId && msg.sender?._id !== currentId && (
                             <div className="message-sender-name" style={{ fontSize: '0.7rem', color: '#ff69b4', fontWeight: '600', marginBottom: '2px' }}>
-                                {maskEmail(msg.sender?.username || 'Member')}
+                                {msg.sender?.username || 'Member'}
                             </div>
                         )}
                         

@@ -311,7 +311,7 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
                                     </div>
                                     <div className="user-info">
                                         <div className="user-name-row">
-                                            <span className="user-name">{maskEmail(otherParticipant?.username)}</span>
+                                            <span className="user-name">{otherParticipant?.username || 'User'}</span>
                                             {unreadCount > 0 && <span className="unread-badge">{unreadCount}</span>}
                                         </div>
                                         <span className={`last-message-preview ${isTyping ? 'is-typing' : ''}`}>
@@ -347,9 +347,7 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
                                     <span className={`status-dot ${onlineUsers[user._id] === 'online' ? 'online' : 'offline'}`}></span>
                                 </div>
                                 <div className="user-info">
-                                    <span className="user-name">
-                                        {maskEmail(user.username)} {user._id === currentUserId ? '(You)' : ''}
-                                    </span>
+                                        {user.username} {user._id === currentUserId ? '(You)' : ''}
                                     <span className="user-status-online">
                                         {user._id === currentUserId ? 'Saved Messages' : 'Available for chat'}
                                     </span>
