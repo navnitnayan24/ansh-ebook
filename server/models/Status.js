@@ -28,6 +28,11 @@ const statusSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     }],
+    comments: [{
+        user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+        text: { type: String, required: true },
+        createdAt: { type: Date, default: Date.now }
+    }],
     // TTL Index: expires after 24 hours (86400 seconds)
     createdAt: {
         type: Date,

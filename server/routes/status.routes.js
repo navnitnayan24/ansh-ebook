@@ -23,6 +23,7 @@ router.get('/active', authenticate, statusController.getAllStories);
 router.post('/view/:id', authenticate, statusController.viewStatus);
 router.post('/like/:id', authenticate, statusController.likeStatus);
 router.post('/reply/:id', authenticate, statusController.replyToStatus);
+router.post('/comment/:id', authenticate, statusController.addCommentToStatus);
 router.delete('/:id', authenticate, statusController.deleteStatus);
 
 module.exports = router;

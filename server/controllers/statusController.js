@@ -51,6 +51,9 @@ exports.getAllStories = async (req, res) => {
         // MongoDB TTL index handles the 24h deletion automatically
         const statuses = await Status.find()
             .populate('user', 'username profile_pic')
+            .populate('views.user', 'username profile_pic')
+            .populate('likes', 'username profile_pic')
+            .populate('comments.user', 'username profile_pic')
             .sort({ createdAt: -1 });
 
         // Grouping logic: Collect all statuses for each user
@@ -189,6 +192,40 @@ exports.deleteStatus = async (req, res) => {
         }
 
         res.json({ message: 'Status deleted successfully' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+exports.addCommentToStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { text } = req.body;
+        const status = await Status.findById(id);
+        if (!status) return res.status(404).json({ error: 'Status not found' });
+
+        const comment = {
+            user: req.user.id,
+            text,
+            createdAt: new Date()
+        };
+
+        status.comments.push(comment);
+        await status.save();
+
+        const populatedStatus = await Status.findById(id).populate('comments.user', 'username profile_pic');
+        const newComment = populatedStatus.comments[populatedStatus.comments.length - 1];
+
+        // Notify the owner
+        const io = getIo();
+        if (io) {
+            io.to(status.user.toString()).emit('status-comment', { 
+                statusId: id, 
+                comment: newComment 
+            });
+        }
+
+        res.status(201).json(newComment);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

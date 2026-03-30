@@ -154,6 +154,7 @@ export const createStatus = (formData) => API.post('status', formData, {
 export const viewStatus = (id) => API.post(`status/view/${id}`);
 export const toggleStatusLike = (id) => API.post(`status/like/${id}`);
 export const replyToStatus = (id, text) => API.post(`status/reply/${id}`, { text });
+export const addCommentToStatus = (id, text) => API.post(`status/comment/${id}`, { text });
 export const deleteStatus = (id) => API.delete(`status/${id}`);
 
 export { API };
