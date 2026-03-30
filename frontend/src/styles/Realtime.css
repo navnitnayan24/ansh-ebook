@@ -701,16 +701,32 @@ body:has(.realtime-chat-page) {
 /* Messages Area */
 .messages-area {
     flex: 1;
-    padding: 16px 20px;
+    padding: 18px 22px;
     overflow-y: auto;
     overflow-x: hidden;
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    background-color: #0a0a0a;
-    background-image:
-        radial-gradient(circle at 20% 80%, rgba(124,58,237,0.05) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(233,30,140,0.05) 0%, transparent 50%);
+    gap: 8px;
+    background-color: #080808;
+    position: relative;
+}
+
+/* Premium Chat Backdrop Pattern */
+.messages-area::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: 
+        radial-gradient(circle at 2px 2px, rgba(255,255,255,0.03) 1px, transparent 0);
+    background-size: 24px 24px;
+    opacity: 0.5;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.messages-area * {
+    position: relative;
+    z-index: 1;
 }
 
 @media (max-width: 768px) {
@@ -737,14 +753,19 @@ body:has(.realtime-chat-page) {
     background: var(--c-sent);
     color: #fff;
     border-bottom-right-radius: 4px;
-    box-shadow: 0 2px 10px rgba(109,40,217,0.3);
+    box-shadow: 0 4px 15px rgba(109,40,217,0.25);
+    transition: transform 0.2s;
 }
 .message-bubble.received {
     align-self: flex-start;
     background: var(--c-recv);
     color: var(--c-txt);
     border-bottom-left-radius: 4px;
-    border: 1px solid rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.message-bubble:hover {
+    transform: scale(1.01);
 }
 .message-bubble p { margin: 0; }
 
@@ -789,13 +810,13 @@ body:has(.realtime-chat-page) {
    ================================================================ */
 .message-input-form {
     flex-shrink: 0;
-    padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
-    background: rgba(10, 10, 10, 0.92);
-    backdrop-filter: blur(25px) saturate(180%);
-    -webkit-backdrop-filter: blur(25px) saturate(180%);
+    padding: 14px 20px calc(14px + env(safe-area-inset-bottom, 0px));
+    background: rgba(10, 10, 10, 0.94);
+    backdrop-filter: blur(30px) saturate(200%);
+    -webkit-backdrop-filter: blur(30px) saturate(200%);
     border-top: 1px solid var(--c-glassborder);
     position: relative;
-    z-index: 10;
+    z-index: 100;
 }
 
 @media (max-width: 768px) {
@@ -810,12 +831,18 @@ body:has(.realtime-chat-page) {
 .input-field-container {
     display: flex;
     align-items: center;
-    background: #1c1c21;
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 28px;
-    padding: 5px 8px 5px 6px;
-    gap: 6px;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--c-glassborder);
+    border-radius: 30px;
+    padding: 6px 14px 6px 8px;
+    gap: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+}
+.input-field-container:focus-within {
+    border-color: rgba(233,30,140,0.5);
+    background: rgba(255,255,255,0.09);
+    box-shadow: 0 0 15px rgba(233,30,140,0.12);
 }
 .input-field-container:focus-within {
     border-color: rgba(233,30,140,0.4);

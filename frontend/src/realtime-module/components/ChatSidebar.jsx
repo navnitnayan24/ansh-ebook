@@ -4,6 +4,12 @@ import { createGroupChat, joinGroupByCode, acceptInvite, rejectInvite, followUse
 import { useSocket } from '../context/SocketContext';
 import { getAvatarUrl, maskEmail } from '../../config';
 import Avatar from '../../components/Avatar';
+
+// Utility for clean display names (no email domains)
+const getCleanName = (name) => {
+    if (!name || typeof name !== 'string') return 'User';
+    return name.split('@')[0];
+};
 import AdSpace from '../../components/AdSpace';
 import StoriesBar from '../../components/StoriesBar';
 
@@ -311,7 +317,7 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
                                     </div>
                                     <div className="user-info">
                                         <div className="user-name-row">
-                                            <span className="user-name">{otherParticipant?.username || 'User'}</span>
+                                            <span className="user-name">{getCleanName(otherParticipant?.username)}</span>
                                             {unreadCount > 0 && <span className="unread-badge">{unreadCount}</span>}
                                         </div>
                                         <span className={`last-message-preview ${isTyping ? 'is-typing' : ''}`}>
@@ -347,7 +353,7 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
                                     <span className={`status-dot ${onlineUsers[user._id] === 'online' ? 'online' : 'offline'}`}></span>
                                 </div>
                                 <div className="user-info">
-                                        {user.username} {user._id === currentUserId ? '(You)' : ''}
+                                        {getCleanName(user.username)} {user._id === currentUserId ? '(You)' : ''}
                                     <span className="user-status-online">
                                         {user._id === currentUserId ? 'Saved Messages' : 'Available for chat'}
                                     </span>

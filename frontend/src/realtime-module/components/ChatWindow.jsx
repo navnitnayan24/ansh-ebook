@@ -8,6 +8,12 @@ import { fetchMessages } from '../../api';
 import { getAvatarUrl, maskEmail } from '../../config';
 import Avatar from '../../components/Avatar';
 
+// Utility for clean display names (no email domains)
+const getCleanName = (name) => {
+    if (!name) return 'User';
+    return name.split('@')[0];
+};
+
 const ChatWindow = ({ chat, setSelectedChat }) => {
     const [messages, setMessages] = useState([]);
     const [isTyping, setIsTyping] = useState([]);
@@ -18,11 +24,16 @@ const ChatWindow = ({ chat, setSelectedChat }) => {
     const currentId = currentUser?.id || currentUser?._id;
     
     // Find other participant, or self if chatting with self
+    // Find other participant, or self if chatting with self
     const otherUser = !chat.isGroup ? (
         chat.participants.find(p => (p._id || p.id)?.toString() !== currentId?.toString()) || 
         chat.participants[0] || 
         {}
     ) : null;
+
+    // Clean display name (remove email domain if any)
+    const rawName = chat.isGroup ? (chat.name || 'Group') : (otherUser?.username || 'Chat');
+    const displayName = rawName.split('@')[0];
     
     // Reliable public notification sound
     const notificationSound = new Audio('https://res.cloudinary.com/dhpwp898n/video/upload/v1711516000/notification_vqc6vz.mp3'); 
@@ -154,7 +165,7 @@ const ChatWindow = ({ chat, setSelectedChat }) => {
                     {/* Text Section highly constrained */}
                     <div className="chat-header-title-text" style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', paddingRight: '8px' }}>
                         <h4 className="header-username" style={{ margin: '0 0 2px 0', fontSize: '1.05rem', fontWeight: '700', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: '#fff', letterSpacing: '-0.2px' }}>
-                            {chat.isGroup ? (isKohinoor ? '🔥 🌹 Kohinoor 🌹 🔥' : chat.name) : (otherUser?.username || 'Chat')}
+                            {chat.isGroup && (displayName.toLowerCase().includes('kohinoor')) ? '🔥 🌹 Kohinoor 🌹 🔥' : displayName}
                         </h4>
                         <span className="user-status-text" style={{ fontSize: '0.78rem', fontWeight: '600', color: '#ff69b4', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                             {chat.isGroup ? `${chat.participants?.length || 0} members` : (onlineUsers[otherUser?._id] === 'online' ? 'Online' : 'Offline')}
