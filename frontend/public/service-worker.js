@@ -1,12 +1,11 @@
-// ANSH EBOOK - Smart Service Worker v3
-// Strategy: Network-First for HTML/API, Cache-First for static assets
-// This prevents the blank screen issue caused by stale cache after new deployments.
+// ANSH EBOOK - Smart Service Worker v5
+// Strategy: NETWORK-FIRST for ALL requests
+// This guarantees users ALWAYS get the latest code after deployment.
 
-const CACHE_VERSION = 'ansh-ebook-v4';
+const CACHE_VERSION = 'ansh-ebook-v5';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
-const OFFLINE_URL = '/';
 
-// Only cache truly static assets (icons, fonts, manifest)
+// Only cache icons/manifest for offline splash screen
 const PRECACHE_ASSETS = [
   '/manifest.json',
   '/icon-192.png',
@@ -16,8 +15,7 @@ const PRECACHE_ASSETS = [
 
 // ─── INSTALL ───────────────────────────────────────────────────────────────
 self.addEventListener('install', event => {
-  // Immediately activate the new service worker — don't wait for old one to finish
-  self.skipWaiting();
+  self.skipWaiting(); // Immediately activate
   event.waitUntil(
     caches.open(STATIC_CACHE).then(cache => {
       return cache.addAll(PRECACHE_ASSETS).catch(err => {
@@ -39,55 +37,36 @@ self.addEventListener('activate', event => {
             return caches.delete(name);
           })
       );
-    }).then(() => self.clients.claim()) // Take control of all open tabs immediately
+    }).then(() => self.clients.claim())
   );
 });
 
-// ─── FETCH ─────────────────────────────────────────────────────────────────
+// ─── FETCH — NETWORK-FIRST for everything ──────────────────────────────────
 self.addEventListener('fetch', event => {
   const { request } = event;
-  const url = new URL(request.url);
 
-  // Skip non-GET requests and cross-origin requests (APIs, CDN, etc)
+  // Skip non-GET requests
   if (request.method !== 'GET') return;
-  if (url.origin !== self.location.origin) return;
 
-  // Skip API calls — always go to network for these
+  // Skip cross-origin and API calls entirely (never cache)
+  const url = new URL(request.url);
+  if (url.origin !== self.location.origin) return;
   if (url.pathname.startsWith('/api/')) return;
 
-  // For HTML pages — use Network-First
-  // This ensures users always get the latest code after a deployment
-  if (request.headers.get('accept')?.includes('text/html') || url.pathname === '/') {
-    event.respondWith(
-      fetch(request)
-        .then(response => {
-          // Cache a copy of the successful response
+  // NETWORK-FIRST: Always try fresh version, fallback to cache only offline
+  event.respondWith(
+    fetch(request)
+      .then(response => {
+        // Cache a copy for offline fallback
+        if (response.ok) {
           const cloned = response.clone();
           caches.open(STATIC_CACHE).then(cache => cache.put(request, cloned));
-          return response;
-        })
-        .catch(() => {
-          // Offline fallback — serve cached version if available
-          return caches.match(request) || caches.match(OFFLINE_URL);
-        })
-    );
-    return;
-  }
-
-  // For JS/CSS/Images — Stale-While-Revalidate
-  // Serves from cache immediately, but updates cache in background
-  event.respondWith(
-    caches.open(STATIC_CACHE).then(cache => {
-      return cache.match(request).then(cachedResponse => {
-        const networkFetch = fetch(request).then(networkResponse => {
-          if (networkResponse.ok) {
-            cache.put(request, networkResponse.clone());
-          }
-          return networkResponse;
-        }).catch(() => cachedResponse); // Offline: return cached
-
-        return cachedResponse || networkFetch;
-      });
-    })
+        }
+        return response;
+      })
+      .catch(() => {
+        // Offline: serve from cache
+        return caches.match(request);
+      })
   );
 });

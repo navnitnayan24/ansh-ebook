@@ -148,7 +148,17 @@ app.use('/api', contentRoutes);
 // Serve static files from the React app
 const distPath = path.resolve(__dirname, '../frontend/dist');
 if (fs.existsSync(distPath)) {
-    app.use(express.static(distPath));
+    app.use(express.static(distPath, {
+        maxAge: '1h', // Hashed assets can be cached briefly
+        setHeaders: (res, filePath) => {
+            // index.html must NEVER be cached — it contains the asset links
+            if (filePath.endsWith('.html')) {
+                res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+                res.setHeader('Pragma', 'no-cache');
+                res.setHeader('Expires', '0');
+            }
+        }
+    }));
 }
 
 // Catch-all wildcard for React SPA
@@ -160,6 +170,10 @@ app.use((req, res, next) => {
     
     const indexPath = path.resolve(__dirname, '../frontend/dist/index.html');
     if (fs.existsSync(indexPath)) {
+        // CRITICAL: Never cache the SPA fallback either
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
         res.sendFile(indexPath);
     } else {
         res.status(404).send('Frontend build not found.');

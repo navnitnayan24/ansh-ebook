@@ -4,6 +4,12 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/logo-ansh.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Cache Busting: Force browsers to always check for fresh assets -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    
     <link rel="canonical" href="https://ansh-ebook.onrender.com/" />
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#ff1493" />
@@ -114,6 +120,38 @@
       window.global = window;
       window.process = { env: {} };
       window.Buffer = window.Buffer || require('buffer').Buffer;
+      
+      // === AUTOMATIC CACHE BUSTER (runs on every page load) ===
+      var APP_VERSION = 'v3.1.0-' + Date.now();
+      (function() {
+        // 1. Unregister all Service Workers
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            registrations.forEach(function(reg) { reg.unregister(); });
+          });
+        }
+        // 2. Clear ALL browser caches (JS, CSS, images)
+        if ('caches' in window) {
+          caches.keys().then(function(names) {
+            names.forEach(function(name) { caches.delete(name); });
+          });
+        }
+        // 3. Check if version changed → force hard reload once
+        var lastVersion = localStorage.getItem('app-version');
+        if (lastVersion && lastVersion !== APP_VERSION) {
+          localStorage.setItem('app-version', APP_VERSION);
+          // Only auto-reload if we haven't just reloaded
+          if (!sessionStorage.getItem('version-reload')) {
+            sessionStorage.setItem('version-reload', '1');
+            location.reload(true);
+          } else {
+            sessionStorage.removeItem('version-reload');
+          }
+        } else {
+          localStorage.setItem('app-version', APP_VERSION);
+          sessionStorage.removeItem('version-reload');
+        }
+      })();
     </script>
     <style>
       /* --- Instant Startup Loader --- */
