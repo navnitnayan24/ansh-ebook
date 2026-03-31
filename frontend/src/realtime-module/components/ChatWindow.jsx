@@ -122,7 +122,10 @@ const ChatWindow = ({ chat, setSelectedChat }) => {
 
     useEffect(() => {
         const timeout = setTimeout(() => {
-            scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
+            const container = scrollRef.current?.parentElement;
+            if (container) {
+                container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+            }
         }, 100);
         return () => clearTimeout(timeout);
     }, [messages]);
