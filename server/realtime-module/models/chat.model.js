@@ -30,6 +30,10 @@ const chatSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
+    coAdmins: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }],
     pinnedMessage: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Message'

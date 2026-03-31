@@ -143,6 +143,18 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
         }
     };
 
+    const handleStartChatFromSearch = async (user) => {
+        try {
+            const res = await findOrCreateChat(user._id);
+            selectChatWithHash(res.data);
+            // Optionally reload sidebar list to include the new chat dynamically
+            window.location.reload(); 
+        } catch (err) {
+            console.error("Failed to initialize chat:", err);
+            alert("Failed to start chat. Check connection.");
+        }
+    };
+
     const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark');
 
     // Filter pending invites
@@ -338,11 +350,7 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
                             <div 
                                 key={user._id} 
                                 className={`user-item discovery ${user._id === currentUserId ? 'is-self' : ''}`}
-                                onClick={() => selectChatWithHash({ 
-                                    _id: `new-${user._id}`, 
-                                    participants: [currentUser, user],
-                                    isGroup: false 
-                                })}
+                                onClick={() => handleStartChatFromSearch(user)}
                             >
                                 <div className="user-avatar-wrapper">
                                     <Avatar 
@@ -360,11 +368,7 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
                                 </div>
                                 <div className="quick-action-icon">
                                     {following.includes(user._id) ? (
-                                        <Send size={16} onClick={() => selectChatWithHash({ 
-                                            _id: `new-${user._id}`, 
-                                            participants: [currentUser, user],
-                                            isGroup: false 
-                                        })} />
+                                        <Send size={16} onClick={(e) => { e.stopPropagation(); handleStartChatFromSearch(user); }} />
                                     ) : (
                                         <button className="btn-add-connection" onClick={(e) => { e.stopPropagation(); handleFollow(user); }}>
                                             <UserPlus size={16} /> <span>Connect</span>

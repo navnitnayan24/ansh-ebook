@@ -117,8 +117,9 @@ exports.addMemberToGroup = async (req, res) => {
         const chat = await Chat.findById(chatId);
         if (!chat) return res.status(404).json({ error: 'Chat not found' });
         
-        // Check if requester is admin
-        if (chat.admin?.toString() !== req.user.id) {
+        // Check if requester is admin or coAdmin
+        const isAdmin = chat.admin?.toString() === req.user.id || chat.coAdmins?.map(a => a.toString()).includes(req.user.id);
+        if (!isAdmin) {
             return res.status(403).json({ error: 'Only admins can add members' });
         }
 
@@ -150,11 +151,18 @@ exports.removeMemberFromGroup = async (req, res) => {
         const chat = await Chat.findById(chatId);
         if (!chat) return res.status(404).json({ error: 'Chat not found' });
         
-        if (chat.admin?.toString() !== req.user.id) {
+        const isAdmin = chat.admin?.toString() === req.user.id || chat.coAdmins?.map(a => a.toString()).includes(req.user.id);
+        if (!isAdmin) {
             return res.status(403).json({ error: 'Only admins can remove members' });
+        }
+        
+        // Prevent removal of the main creator/admin by a coAdmin
+        if (chat.admin?.toString() === userId) {
+            return res.status(403).json({ error: 'Cannot remove the primary group creator' });
         }
 
         chat.participants = chat.participants.filter(p => p.toString() !== userId);
+        chat.coAdmins = chat.coAdmins.filter(p => p.toString() !== userId); // strip admin rights if possessed
         await chat.save();
 
         const populatedChat = await chat.populate('participants', 'username profile_pic bio _id');
@@ -179,12 +187,13 @@ exports.updateGroupDetails = async (req, res) => {
         const chat = await Chat.findById(chatId);
         if (!chat) return res.status(404).json({ error: 'Chat not found' });
         
-        if (chat.admin?.toString() !== req.user.id) {
+        const isAdmin = chat.admin?.toString() === req.user.id || chat.coAdmins?.map(a => a.toString()).includes(req.user.id);
+        if (!isAdmin) {
             return res.status(403).json({ error: 'Only admins can edit group' });
         }
 
         if (name) chat.name = name;
-        if (description) chat.description = description;
+        if (description !== undefined) chat.description = description;
         if (req.body.groupIcon) chat.groupIcon = req.body.groupIcon;
         await chat.save();
 
@@ -203,14 +212,61 @@ exports.leaveGroup = async (req, res) => {
         if (!chat) return res.status(404).json({ error: 'Chat not found' });
         
         chat.participants = chat.participants.filter(p => p?.toString() !== req.user.id);
+        chat.coAdmins = chat.coAdmins.filter(p => p?.toString() !== req.user.id);
         
-        // If the admin is leaving, assign someone else or delete (for now just assign if participants exist)
+        // If the primary admin is leaving, assign someone else
         if (chat.admin?.toString() === req.user.id && chat.participants.length > 0) {
-            chat.admin = chat.participants[0];
+            chat.admin = chat.coAdmins.length > 0 ? chat.coAdmins[0] : chat.participants[0];
         }
 
         await chat.save();
         res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// Make Co-Admin
+exports.makeAdmin = async (req, res) => {
+    const { chatId, userId } = req.body;
+    try {
+        const chat = await Chat.findById(chatId);
+        if (!chat) return res.status(404).json({ error: 'Chat not found' });
+        
+        const isAdmin = chat.admin?.toString() === req.user.id || chat.coAdmins?.map(a => a.toString()).includes(req.user.id);
+        if (!isAdmin) return res.status(403).json({ error: 'Only admins can promote users' });
+
+        if (!chat.coAdmins.includes(userId) && chat.admin?.toString() !== userId) {
+            chat.coAdmins.push(userId);
+            await chat.save();
+        }
+
+        const populatedChat = await chat.populate('participants coAdmins', 'username profile_pic bio _id');
+        res.json(populatedChat);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// Remove Co-Admin
+exports.removeAdmin = async (req, res) => {
+    const { chatId, userId } = req.body;
+    try {
+        const chat = await Chat.findById(chatId);
+        if (!chat) return res.status(404).json({ error: 'Chat not found' });
+        
+        const isAdmin = chat.admin?.toString() === req.user.id || chat.coAdmins?.map(a => a.toString()).includes(req.user.id);
+        if (!isAdmin) return res.status(403).json({ error: 'Only admins can demote users' });
+
+        if (chat.admin?.toString() === userId) {
+            return res.status(403).json({ error: 'Cannot demote the primary founder of the group' });
+        }
+
+        chat.coAdmins = chat.coAdmins.filter(a => a.toString() !== userId);
+        await chat.save();
+
+        const populatedChat = await chat.populate('participants coAdmins', 'username profile_pic bio _id');
+        res.json(populatedChat);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

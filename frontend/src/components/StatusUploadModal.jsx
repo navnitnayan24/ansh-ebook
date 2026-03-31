@@ -33,10 +33,23 @@ const StatusUploadModal = ({ onClose, onSuccess }) => {
         const timer = setTimeout(async () => {
             if (musicQuery.trim()) {
                 try {
-                    const res = await searchMusic(musicQuery);
-                    setMusicResults(res.data);
+                    // Use iTunes Search API: Permanent, Secure, Lightning Fast, Global Library
+                    const response = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(musicQuery)}&media=music&entity=song&limit=15`);
+                    if (!response.ok) throw new Error('Search failed');
+                    const data = await response.json();
+                    
+                    const mappedSongs = data.results
+                        .filter(song => song.previewUrl) // Ensure it has playable audio
+                        .map(song => ({
+                            _id: song.trackId.toString(),
+                            title: song.trackName,
+                            artist: song.artistName,
+                            cover_url: song.artworkUrl100 || song.artworkUrl60,
+                            file_url: song.previewUrl // 30s High-Quality Apple Music preview snippet
+                        }));
+                    setMusicResults(mappedSongs);
                 } catch (err) {
-                    console.error('Music search failed:', err);
+                    console.error('iTunes API search failed:', err);
                 }
             } else {
                 setMusicResults([]);

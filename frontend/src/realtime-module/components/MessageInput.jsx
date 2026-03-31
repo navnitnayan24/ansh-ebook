@@ -90,6 +90,22 @@ const MessageInput = ({ chatId, receiverId, setMessages }) => {
             createdAt: new Date().toISOString()
         };
 
+        const currUserObj = JSON.parse(localStorage.getItem('user') || '{}');
+        const optimisticMessage = {
+            ...messageData,
+            _id: `temp-${Date.now()}`,
+            sender: { 
+                _id: currUserObj.id || currUserObj._id, 
+                username: currUserObj.username, 
+                profile_pic: currUserObj.profile_pic 
+            },
+            status: 'sending'
+        };
+
+        if (setMessages && currentChatId && !currentChatId.startsWith('new-')) {
+            setMessages(prev => [...prev, optimisticMessage]);
+        }
+
         socket.emit('send-message', messageData);
         setText('');
         clearFile(); // Clear preview after sending

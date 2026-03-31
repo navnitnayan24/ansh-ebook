@@ -79,6 +79,21 @@ const setupSocket = (server) => {
                 const roomName = chatId.toString();
                 socket.join(roomName);
 
+                // Fire instantaneous broadcast (Optimistic UI for receiver)
+                const tempMsgPayload = {
+                    _id: `temp-${Date.now()}`,
+                    chat: chatId,
+                    sender: userId,
+                    text: text || '',
+                    mediaUrl,
+                    mediaType,
+                    createdAt: new Date().toISOString(),
+                    status: 'sent'
+                };
+                
+                io.to(roomName).emit('receive-message', tempMsgPayload);
+
+                // --- Async DB saving happens after broadcasting to kill latency ---
                 const message = await Message.create({
                     chat: chatId,
                     sender: userId,
@@ -96,13 +111,10 @@ const setupSocket = (server) => {
                     console.error(`❌ Chat not found for ID: ${chatId}`);
                     return;
                 }
-
-                // Broadcast to the entire chat room
-                io.to(roomName).emit('receive-message', message);
                 
-                // CRITICAL: Also emit to receiver's private room for potential discovery chats
+                // Secondary check for direct DMs to ensure it hits discovery connections
                 if (!chat.isGroup && receiverId) {
-                    io.to(receiverId).emit('receive-message', message);
+                    io.to(receiverId).emit('receive-message', message); // send the real one
                 }
                 
                 console.log(`📩 Message sent in chat ${chatId} by ${userId}`);

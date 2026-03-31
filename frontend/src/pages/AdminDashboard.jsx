@@ -198,9 +198,9 @@ const AdminDashboard = () => {
                     resourceType = 'raw';
                 }
 
-                // Small chunks for 100kb/s stability
-                const CHUNK_SIZE = 512 * 1024; 
-                if (file.size <= 1024 * 1024) {
+                // Small chunks for 0-100kb/s stability
+                const CHUNK_SIZE = 64 * 1024; // Extremely tiny 64KB chunks for awful connections
+                if (file.size <= 256 * 1024) {
                     setUploadProgress({ active: true, percent: 10, currentChunk: 1, totalChunks: 1, status: 'starting' });
                     const fd = new FormData();
                     fd.append('file', file);
@@ -243,16 +243,16 @@ const AdminDashboard = () => {
 
                     let retryCount = 0;
                     let success = false;
-                    while (!success && retryCount < 10) { // Increased to 10 retries for ultra-slow connections
+                    while (!success && retryCount < 20) { // Increased to 20 retries for ultra-slow connections
                         try {
                             if (retryCount > 0) {
                                 setUploadProgress(prev => ({ 
                                     ...prev, 
                                     status: `retrying-${retryCount}`,
-                                    message: `Network glitch at step ${i+1}? Retrying...` 
+                                    message: `Network glitch at piece ${i+1}? Auto-recovering...` 
                                 }));
-                                // Stronger exponential backoff
-                                await new Promise(r => setTimeout(r, 2000 * Math.pow(2, Math.min(retryCount, 4))));
+                                // Stronger exponential backoff, capped at 10 seconds per wait
+                                await new Promise(r => setTimeout(r, Math.min(10000, 2000 * Math.pow(1.5, retryCount))));
                             }
                             
                             const fd = new FormData();
@@ -283,8 +283,8 @@ const AdminDashboard = () => {
                             success = true;
                         } catch (err) {
                             retryCount++;
-                            console.warn(`Chunk ${i+1} failed (Attempt ${retryCount}/10):`, err.message);
-                            if (retryCount >= 10) throw new Error(`Upload failed after 10 retries at step ${i+1}. Please try a more stable connection if possible.`);
+                            console.warn(`Chunk ${i+1} failed (Attempt ${retryCount}/20):`, err.message);
+                            if (retryCount >= 20) throw new Error(`Upload failed after 20 retries at piece ${i+1}. Please check if you have any internet at all.`);
                         }
                     }
                 }

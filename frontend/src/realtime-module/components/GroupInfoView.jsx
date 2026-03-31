@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { X, UserPlus, Shield, UserMinus, LogOut, MoreVertical, Search, Check, Plus, Edit2, Save, Copy, Camera, Link } from 'lucide-react';
 import { getAvatarUrl, maskEmail } from '../../config';
 import Avatar from '../../components/Avatar';
-import { searchUsers, addMember, removeMember, updateGroup, leaveGroup } from '../../api';
+import { fetchCloudinarySignature, searchUsers, addMember, removeMember, updateGroup, leaveGroup, makeAdmin, removeAdmin } from '../../api';
 
 const GroupInfoView = ({ chat, onClose, onUpdate }) => {
     const navigate = useNavigate();
@@ -20,7 +20,7 @@ const GroupInfoView = ({ chat, onClose, onUpdate }) => {
 
     const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
     const currentId = currentUser.id || currentUser._id;
-    const isAdmin = chat.admin === currentId || chat.admin?._id === currentId;
+    const isAdmin = chat.admin === currentId || chat.admin?._id === currentId || (chat.coAdmins && chat.coAdmins.some(a => (a._id || a).toString() === currentId));
 
     const otherUser = !chat.isGroup ? (
         chat.participants?.find(p => (p._id || p.id)?.toString() !== currentId?.toString()) || 
@@ -94,6 +94,24 @@ const GroupInfoView = ({ chat, onClose, onUpdate }) => {
         }
     };
 
+    const handleMakeAdmin = async (userId) => {
+        try {
+            const res = await makeAdmin({ chatId: chat._id, userId });
+            if (onUpdate) onUpdate(res.data);
+        } catch (err) {
+            alert(err.response?.data?.error || "Failed to promote to admin");
+        }
+    };
+
+    const handleRemoveAdmin = async (userId) => {
+        try {
+            const res = await removeAdmin({ chatId: chat._id, userId });
+            if (onUpdate) onUpdate(res.data);
+        } catch (err) {
+            alert(err.response?.data?.error || "Failed to demote admin");
+        }
+    };
+
     const copyJoinLink = () => {
         const link = `${window.location.origin}/chat?join=${chat.joinCode}`;
         navigator.clipboard.writeText(link);
@@ -104,16 +122,21 @@ const GroupInfoView = ({ chat, onClose, onUpdate }) => {
         const file = e.target.files[0];
         if (!file) return;
 
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('upload_preset', 'ml_default'); // Assuming standard preset or should I use ansh-ebook logic?
-        
         setIsLoading(true);
         try {
-            // Using Cloudinary direct upload for simplicity or existing API if available
-            const cloudRes = await fetch(`https://api.cloudinary.com/v1_1/datao7ela/image/upload`, {
+            const sigRes = await fetchCloudinarySignature();
+            const { signature, timestamp, cloudName, apiKey } = sigRes.data;
+
+            const fd = new FormData();
+            fd.append('file', file);
+            fd.append('api_key', apiKey);
+            fd.append('timestamp', timestamp);
+            fd.append('signature', signature);
+            fd.append('access_mode', 'public');
+            
+            const cloudRes = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
                 method: 'POST',
-                body: formData
+                body: fd
             });
             const cloudData = await cloudRes.json();
             
@@ -177,7 +200,10 @@ const GroupInfoView = ({ chat, onClose, onUpdate }) => {
 
                         <div className="detail-info-group">
                             <label>Role</label>
-                            <span className="role-text">{chat.admin === selectedMember._id || chat.admin?._id === selectedMember._id ? 'Group Admin' : 'Member'}</span>
+                            <span className="role-text">
+                                {chat.admin === selectedMember._id || chat.admin?._id === selectedMember._id ? 'Group Creator / Admin' : 
+                                 (chat.coAdmins && chat.coAdmins.some(a => (a._id || a).toString() === selectedMember._id)) ? 'Group Admin' : 'Member'}
+                            </span>
                         </div>
                         
                         <div className="detail-info-group privacy-note">
@@ -187,9 +213,21 @@ const GroupInfoView = ({ chat, onClose, onUpdate }) => {
                     </div>
                     <div className="detail-actions">
                         {isAdmin && selectedMember._id !== currentId && (
-                            <button className="remove-member-btn" onClick={() => handleRemoveMember(selectedMember._id)}>
-                                <UserMinus size={18} /> Remove from Group
-                            </button>
+                            <>
+                                {chat.admin?.toString() !== selectedMember._id && !(chat.coAdmins && chat.coAdmins.some(a => (a._id || a).toString() === selectedMember._id)) && (
+                                    <button className="group-action-item" style={{ width: '100%', marginBottom: '8px', color: '#00fa9a', border: '1px solid #00fa9a' }} onClick={() => handleMakeAdmin(selectedMember._id)}>
+                                        <Shield size={18} /> Make Group Admin
+                                    </button>
+                                )}
+                                {(chat.coAdmins && chat.coAdmins.some(a => (a._id || a).toString() === selectedMember._id)) && (
+                                    <button className="group-action-item" style={{ width: '100%', marginBottom: '8px', color: '#ffa500', border: '1px solid #ffa500' }} onClick={() => handleRemoveAdmin(selectedMember._id)}>
+                                        <UserMinus size={18} /> Remove Admin Rights
+                                    </button>
+                                )}
+                                <button className="remove-member-btn" onClick={() => handleRemoveMember(selectedMember._id)}>
+                                    <UserMinus size={18} /> Remove from Group
+                                </button>
+                            </>
                         )}
                         <button className="message-direct-btn" onClick={() => navigate(`/chat?dm=${selectedMember._id}`)}>
                             Send Private Message
@@ -357,7 +395,7 @@ const GroupInfoView = ({ chat, onClose, onUpdate }) => {
                                     />
                                     <div className="participant-name">
                                         <span>{maskEmail(member.username)}</span>
-                                        {(chat.admin === member._id || chat.admin?._id === member._id) && <span className="admin-tag">Admin</span>}
+                                        {(chat.admin === member._id || chat.admin?._id === member._id || (chat.coAdmins && chat.coAdmins.some(a => (a._id || a).toString() === member._id))) && <span className="admin-tag">Admin</span>}
                                     </div>
                                     {isAdmin && member._id !== currentId && (
                                         <button className="member-more-btn" onClick={(e) => { e.stopPropagation(); setSelectedMember(member); }}><MoreVertical size={16}/></button>

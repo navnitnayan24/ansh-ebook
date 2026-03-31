@@ -31,8 +31,8 @@ html:has(.realtime-chat-page) .main-layout {
 .group-info-sidebar,
 .call-modal-overlay {
     /* DEFAULT DARK THEME */
-    --c-bg:          #0d0d0d;
-    --c-sidebar:     #111111;
+    --c-bg:          #121217;
+    --c-sidebar:     #16161c;
     --c-border:      rgba(255, 255, 255, 0.07);
     --c-pink:        #e91e8c;
     --c-purple:      #7c3aed;
@@ -137,11 +137,16 @@ html:has(.realtime-chat-page) .main-layout {
 
 .chat-layout {
     display: grid;
-    grid-template-columns: 260px 1fr;
+    grid-template-columns: 320px 1fr; /* Increased sidebar width for better readability */
     width: 100%;
-    flex: 1; /* Essential to fill the height in column root */
+    max-width: 1600px; /* Prevent over-stretching on ultrawide monitors */
+    margin: 0 auto; /* Center on large screens */
+    flex: 1; 
     height: 100%;
     overflow: hidden;
+    background: var(--c-bg);
+    border-left: 1px solid var(--c-border);
+    border-right: 1px solid var(--c-border);
 }
 
 @media (max-width: 768px) {
@@ -509,7 +514,7 @@ html:has(.realtime-chat-page) .main-layout {
     flex: 1;
     overflow: hidden;
     position: relative;
-    background: transparent;
+    background: var(--c-bg);
 }
 
 /* No Chat Selected */
@@ -712,18 +717,20 @@ html:has(.realtime-chat-page) .main-layout {
 .messages-area {
     flex: 1;
     overflow-y: auto;
-    padding: 10px;
+    padding: 16px 14px;
     scroll-behavior: smooth;
     display: flex;
     flex-direction: column;
     gap: 8px;
-    background-color: #080808;
+    background-color: var(--c-bg);
     position: relative;
     max-height: 100%;
+    transition: background 0.4s ease;
 }
 
-/* Premium Chat Backdrop Pattern */
-.messages-area::before {
+/* Premium Chat Backdrop Pattern — only shown in default wallpaper */
+.messages-area:not([style*="background"])::before,
+.messages-area[style*="background: ;"]::before {
     content: "";
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
@@ -1411,3 +1418,102 @@ html:has(.realtime-chat-page) .main-layout {
 .btn-accept:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(233, 30, 140, 0.3); }
 .btn-reject:hover { background: rgba(255,255,255,0.1); color: #fff; }
 .group-avatar-main.invite { background: linear-gradient(135deg, var(--pink-primary), #9c27b0); display: flex; align-items: center; justify-content: center; border-radius: 50%; color: white; }
+
+/* ================================================================
+   WALLPAPER DROPDOWN MENU
+   ================================================================ */
+.wallpaper-menu {
+    animation: wallpaper-fade-in 0.2s ease-out;
+}
+@keyframes wallpaper-fade-in {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.wallpaper-option:hover {
+    background: rgba(233, 30, 140, 0.12) !important;
+}
+
+/* ================================================================
+   LIGHT THEME — Messages Area Fix
+   ================================================================ */
+[data-chat-theme="light"] .messages-area {
+    background-color: #e8ecf1;
+}
+
+[data-chat-theme="light"] .message-bubble.sent {
+    background: linear-gradient(135deg, #6d28d9, #7c3aed);
+    color: #fff;
+}
+
+[data-chat-theme="light"] .timestamp {
+    color: rgba(0, 0, 0, 0.35);
+}
+
+[data-chat-theme="light"] .message-bubble.sent .timestamp {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+[data-chat-theme="light"] .chat-actions button {
+    background: rgba(0, 0, 0, 0.04);
+    border-color: rgba(0, 0, 0, 0.08);
+    color: #333;
+}
+
+[data-chat-theme="light"] .chat-actions button:hover {
+    background: rgba(233, 30, 140, 0.1);
+}
+
+[data-chat-theme="light"] .no-chat-selected {
+    background: #f0f2f5;
+}
+
+[data-chat-theme="light"] .group-info-sidebar {
+    background: #ffffff;
+    border-left-color: rgba(0, 0, 0, 0.08);
+}
+
+[data-chat-theme="light"] .group-info-header {
+    border-bottom-color: rgba(0, 0, 0, 0.06);
+}
+
+[data-chat-theme="light"] .group-info-header h3 {
+    color: #1c1e21;
+}
+
+/* ================================================================
+   WALLPAPER TEXT CONTRAST SAFETY
+   Ensures message text is readable on any wallpaper gradient
+   ================================================================ */
+.messages-area[style*="linear-gradient"] .message-bubble.received {
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.messages-area[style*="linear-gradient"] .message-bubble.sent {
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+}
+
+.messages-area[style*="linear-gradient"] .message-sender-name {
+    color: #ffb6e0;
+}
+
+.messages-area[style*="linear-gradient"] .timestamp {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+/* Desktop grid enforcement */
+@media (min-width: 769px) {
+    .chat-layout {
+        grid-template-columns: minmax(280px, 30%) 1fr;
+    }
+    .chat-window-container {
+        min-width: 0;
+    }
+    .mobile-back-btn {
+        display: flex !important;
+    }
+}
+
