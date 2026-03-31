@@ -208,7 +208,34 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
     // Separate "Recent" into Groups and Messages
     const recentChats = filteredChats;
     const groupConversations = recentChats.filter(c => c.isGroup);
-    const directConversations = recentChats.filter(c => !c.isGroup);
+    // Sort DMs by latest message time (newest first), like Instagram Primary
+    const directConversations = recentChats
+        .filter(c => !c.isGroup)
+        .sort((a, b) => {
+            const timeA = a.lastMessage?.createdAt || a.updatedAt || a.createdAt || '';
+            const timeB = b.lastMessage?.createdAt || b.updatedAt || b.createdAt || '';
+            return new Date(timeB) - new Date(timeA);
+        });
+
+    // Helper: relative time like Instagram ("now", "2m", "1h", "3d", "2w")
+    const getRelativeTime = (dateStr) => {
+        if (!dateStr) return '';
+        const now = new Date();
+        const date = new Date(dateStr);
+        const diffMs = now - date;
+        const diffSec = Math.floor(diffMs / 1000);
+        const diffMin = Math.floor(diffSec / 60);
+        const diffHr = Math.floor(diffMin / 60);
+        const diffDay = Math.floor(diffHr / 24);
+        const diffWeek = Math.floor(diffDay / 7);
+
+        if (diffSec < 60) return 'now';
+        if (diffMin < 60) return `${diffMin}m`;
+        if (diffHr < 24) return `${diffHr}h`;
+        if (diffDay < 7) return `${diffDay}d`;
+        if (diffWeek < 52) return `${diffWeek}w`;
+        return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+    };
 
     return (
         <div className="chat-sidebar">
@@ -248,10 +275,10 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
             <StoriesBar />
 
             <div className="user-list">
-                {/* Pending Invitations */}
+                {/* Pending Invitations — Instagram "Requests" style */}
                 {pendingInvites.length > 0 && (
                     <div className="sidebar-section-invites">
-                        <div className="sidebar-section-title">New Invitations ({pendingInvites.length})</div>
+                        <div className="sidebar-section-title">Requests ({pendingInvites.length})</div>
                         {pendingInvites.map((chat) => (
                             <div key={chat._id} className="user-item invite-item">
                                 <div className="user-avatar-wrapper">
@@ -269,7 +296,7 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
                     </div>
                 )}
 
-                {/* Group Conversations */}
+                {/* ── GROUPS Section (Instagram-style compact) ── */}
                 {groupConversations.length > 0 && (
                     <>
                         <div className="sidebar-section-title">Groups</div>
@@ -277,6 +304,7 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
                             const isSelected = selectedChat?._id === chat._id;
                             const unreadCount = chat.unreadCount?.[currentUserId] || 0;
                             const isTyping = typingStatus[chat._id];
+                            const lastTime = getRelativeTime(chat.lastMessage?.createdAt || chat.updatedAt);
 
                             return (
                                 <div 
@@ -290,11 +318,14 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
                                     <div className="user-info">
                                         <div className="user-name-row">
                                             <span className="user-name">{chat.name || 'Kohinoor Group'}</span>
+                                            <span className="chat-time-stamp">{lastTime}</span>
+                                        </div>
+                                        <div className="user-name-row">
+                                            <span className={`last-message-preview ${isTyping ? 'is-typing' : ''}`}>
+                                                {isTyping ? 'typing...' : (chat.lastMessage?.text || 'Group Chat')}
+                                            </span>
                                             {unreadCount > 0 && <span className="unread-badge">{unreadCount}</span>}
                                         </div>
-                                        <span className={`last-message-preview ${isTyping ? 'is-typing' : ''}`}>
-                                            {isTyping ? 'typing...' : (chat.lastMessage?.text || 'Group Chat')}
-                                        </span>
                                     </div>
                                 </div>
                             );
@@ -302,7 +333,7 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
                     </>
                 )}
 
-                {/* Direct Conversations */}
+                {/* ── MESSAGES Section (Instagram Primary style) ── */}
                 {directConversations.length > 0 && (
                     <>
                         <div className="sidebar-section-title">Messages</div>
@@ -312,11 +343,12 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
                             const isOnline = onlineUsers[otherParticipant?._id] === 'online';
                             const unreadCount = chat.unreadCount?.[currentUserId] || 0;
                             const isTyping = typingStatus[chat._id];
+                            const lastTime = getRelativeTime(chat.lastMessage?.createdAt || chat.updatedAt);
 
                             return (
                                 <div 
                                     key={chat._id} 
-                                    className={`user-item ${isSelected ? 'active' : ''}`}
+                                    className={`user-item ${isSelected ? 'active' : ''} ${unreadCount > 0 ? 'has-unread' : ''}`}
                                     onClick={() => selectChatWithHash(chat)}
                                 >
                                     <div className="user-avatar-wrapper">
@@ -330,11 +362,14 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
                                     <div className="user-info">
                                         <div className="user-name-row">
                                             <span className="user-name">{getCleanName(otherParticipant?.username)}</span>
+                                            <span className="chat-time-stamp">{lastTime}</span>
+                                        </div>
+                                        <div className="user-name-row">
+                                            <span className={`last-message-preview ${isTyping ? 'is-typing' : ''}`}>
+                                                {isTyping ? 'typing...' : (chat.lastMessage?.text || 'Start chatting')}
+                                            </span>
                                             {unreadCount > 0 && <span className="unread-badge">{unreadCount}</span>}
                                         </div>
-                                        <span className={`last-message-preview ${isTyping ? 'is-typing' : ''}`}>
-                                            {isTyping ? 'typing...' : (chat.lastMessage?.text || 'Start chatting')}
-                                        </span>
                                     </div>
                                 </div>
                             );

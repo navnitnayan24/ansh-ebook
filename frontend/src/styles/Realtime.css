@@ -447,10 +447,36 @@ html:has(.realtime-chat-page) .main-layout {
     overflow: hidden;
     text-overflow: ellipsis;
     display: block;
+    flex: 1;
+    min-width: 0;
 }
 .last-message-preview.is-typing {
     color: var(--c-pink) !important;
     font-style: italic;
+}
+
+/* Instagram-style timestamp on each chat row */
+.chat-time-stamp {
+    font-size: 0.68rem;
+    color: var(--c-muted);
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-left: auto;
+    padding-left: 6px;
+}
+
+/* Highlight unread chats like Instagram (bold name + colored timestamp) */
+.user-item.has-unread .user-name {
+    font-weight: 700;
+    color: var(--c-txt);
+}
+.user-item.has-unread .chat-time-stamp {
+    color: var(--c-pink);
+    font-weight: 600;
+}
+.user-item.has-unread .last-message-preview {
+    color: var(--c-txt);
+    font-weight: 500;
 }
 
 .user-status-online {
