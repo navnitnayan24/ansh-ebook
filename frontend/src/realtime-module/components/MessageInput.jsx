@@ -3,7 +3,7 @@ import { Send, Image, Mic, Paperclip, Camera, Smile, Plus, X } from 'lucide-reac
 import { useSocket } from '../context/SocketContext';
 import { findOrCreateChat, fetchCloudinarySignature } from '../../api';
 import CameraModal from './CameraModal';
-import EmojiPicker from 'emoji-picker-react';
+import EmojiPicker, { EmojiStyle } from 'emoji-picker-react';
 
 const MessageInput = ({ chatId, receiverId, setMessages }) => {
     const [text, setText] = useState('');
@@ -199,8 +199,12 @@ const MessageInput = ({ chatId, receiverId, setMessages }) => {
                     <EmojiPicker 
                         onEmojiClick={(emojiObj) => setText(prev => prev + emojiObj.emoji)} 
                         theme="dark" 
+                        emojiStyle={EmojiStyle.GOOGLE}
                         searchDisabled={false}
                         skinTonesDisabled={true}
+                        lazyLoadEmojis={true}
+                        width={320}
+                        height={380}
                     />
                 </div>
             )}
