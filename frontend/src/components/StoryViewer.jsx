@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
-import { X, ChevronLeft, ChevronRight, Heart, Send, Share2, Trash2, Eye, MessageSquare } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, Heart, Send, Share2, Trash2, Eye, MessageSquare, ChevronUp } from 'lucide-react';
 import { viewStatus, toggleStatusLike, replyToStatus, deleteStatus, addCommentToStatus } from '../api';
 import Avatar from './Avatar';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -242,8 +242,13 @@ const StoryViewer = ({ group, onClose, onComplete }) => {
                     {/* Owner Stats Trigger */}
                     {isOwner && (
                         <div className="story-owner-stats-bar" onClick={() => { setShowStats(true); setShowComments(false); }}>
-                            <Eye size={18} />
-                            <span>{currentStory.views?.length || 0} Viewers</span>
+                            <ChevronUp size={16} className="animate-bounce" />
+                            <div className="stats-counts">
+                                <span title="Views" className="stat-view"><Eye size={16} color="#fff" /> {currentStory.views?.length || 0}</span>
+                                <span title="Likes" className="stat-like"><Heart size={16} fill="#ff1493" color="#ff1493" /> {currentStory.likes?.length || 0}</span>
+                                <span title="Comments" className="stat-comment"><MessageSquare size={16} color="#fff" /> {currentStory.comments?.length || 0}</span>
+                            </div>
+                            <span className="stats-hint">Swipe up or Click to see who</span>
                         </div>
                     )}
                 </div>
@@ -278,25 +283,39 @@ const StoryViewer = ({ group, onClose, onComplete }) => {
                             </div>
                             <div className="drawer-tabs">
                                 <div className="drawer-section">
-                                    <h4>Viewers</h4>
+                                    <h4>Viewers ({currentStory.views?.length || 0})</h4>
                                     <div className="user-list">
-                                        {currentStory.views.map((v, i) => (
+                                        {currentStory.views?.length > 0 ? currentStory.views.map((v, i) => (
                                             <div key={i} className="user-list-item">
                                                 <Avatar pic={v.user.profile_pic} username={v.user.username} className="avatar-micro" />
                                                 <span>{v.user.username}</span>
                                             </div>
-                                        ))}
+                                        )) : <span className="no-data-text">No viewers yet</span>}
                                     </div>
                                 </div>
                                 <div className="drawer-section">
-                                    <h4>Likes</h4>
+                                    <h4>Likes ({currentStory.likes?.length || 0})</h4>
                                     <div className="user-list">
-                                        {currentStory.likes.map((l, i) => (
+                                        {currentStory.likes?.length > 0 ? currentStory.likes.map((l, i) => (
                                             <div key={i} className="user-list-item">
                                                 <Avatar pic={l.profile_pic} username={l.username} className="avatar-micro" />
                                                 <span>{l.username}</span>
                                             </div>
-                                        ))}
+                                        )) : <span className="no-data-text">No likes yet</span>}
+                                    </div>
+                                </div>
+                                <div className="drawer-section">
+                                    <h4>Comments ({currentStory.comments?.length || 0})</h4>
+                                    <div className="comments-list-inline">
+                                        {currentStory.comments?.length > 0 ? currentStory.comments.map((c, i) => (
+                                            <div key={i} className="comment-item-inline">
+                                                <Avatar pic={c.user.profile_pic} username={c.user.username} className="avatar-micro" />
+                                                <div className="comment-text-box">
+                                                    <span className="comment-user">{c.user.username}</span>
+                                                    <p>{c.text}</p>
+                                                </div>
+                                            </div>
+                                        )) : <span className="no-data-text">No comments yet</span>}
                                     </div>
                                 </div>
                             </div>
