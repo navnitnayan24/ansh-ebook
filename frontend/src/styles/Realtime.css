@@ -645,13 +645,17 @@ html:has(.realtime-chat-page) .main-layout {
 
 @media (max-width: 768px) {
     .chat-header {
-        padding: 10px 14px;
-        min-height: 64px;
+        padding: 8px 12px;
+        min-height: 60px;
         flex-shrink: 0;
         width: 100%;
-        background: rgba(13, 13, 13, 0.95);
+        background: rgba(var(--c-bg-rgb), 0.9);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
         z-index: 100;
-        position: relative;
+        position: sticky;
+        top: 0;
+        border-bottom: 1px solid var(--c-border);
     }
 }
 
