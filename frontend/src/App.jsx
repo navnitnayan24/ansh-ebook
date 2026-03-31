@@ -105,9 +105,10 @@ const Layout = ({ children }) => {
             <div 
                 className="layout-body-flex" 
                 style={{ 
-                    marginTop: isMobile ? '80px' : '100px',
-                    height: isChatPage ? `calc(100dvh - ${isMobile ? '80px' : '100px'})` : 'auto',
-                    overflow: isChatPage ? 'hidden' : 'visible'
+                    paddingTop: isMobile ? '80px' : '100px',
+                    height: isChatPage ? '100dvh' : 'auto',
+                    overflow: isChatPage ? 'hidden' : 'visible',
+                    boxSizing: 'border-box'
                 }}
             >
                 {!isMobile && <Sidebar />}
