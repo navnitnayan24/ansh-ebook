@@ -106,7 +106,7 @@ const Layout = ({ children }) => {
             <div 
                 className="layout-body-flex" 
                 style={{ 
-                    paddingTop: isMobile ? '80px' : '100px',
+                    paddingTop: isMobile ? (isChatPage ? '130px' : '80px') : '100px',
                     height: isChatPage ? '100dvh' : 'auto',
                     flex: 1,
                     overflow: 'hidden',
