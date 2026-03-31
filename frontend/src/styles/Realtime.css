@@ -1,10 +1,13 @@
-html:has(.realtime-chat-page), 
-body:has(.realtime-chat-page) {
-    overflow: hidden !important;
-    height: 100dvh !important;
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
+/* ================================================================
+   GLOBAL VIEWPORT LOCK (CRITICAL)
+   ================================================================ */
+html, body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden !important; 
+    background: #121217;
 }
 
 /* Force Reset for Main Layout on Chat Page (Desktop Fix) */
@@ -118,9 +121,6 @@ html:has(.realtime-chat-page) .main-layout {
     flex-direction: column;
     overflow: hidden;
     background: var(--c-bg);
-    position: relative;
-    z-index: 50;
-    box-sizing: border-box;
 }
 
 @media (max-width: 768px) {
@@ -130,8 +130,7 @@ html:has(.realtime-chat-page) .main-layout {
 }
 
 .chat-layout {
-    display: grid;
-    grid-template-columns: 320px 1fr;
+    display: flex; 
     width: 100%;
     max-width: 100%;
     flex: 1;
@@ -139,10 +138,8 @@ html:has(.realtime-chat-page) .main-layout {
     min-height: 0;
     overflow: hidden;
     background: var(--c-bg);
-    border-left: 1px solid var(--c-border);
-    border-right: 1px solid var(--c-border);
-    box-sizing: border-box;
     position: relative;
+    box-sizing: border-box;
 }
 
 /* Global Container Fixes */
@@ -160,37 +157,29 @@ html:has(.realtime-chat-page) .main-layout {
 
 @media (max-width: 768px) {
     .chat-layout {
-        display: flex;
         flex-direction: column;
-        flex: 1;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
     }
     
     .chat-sidebar {
+        width: 100%;
         display: flex;
-        width: 100%;
-        height: 100%;
+        flex-direction: column;
         flex: 1;
-        background: var(--c-bg);
-    }
-    
-    .chat-window-container {
-        display: none;
-        width: 100%;
-        height: 100%;
-        flex: 1;
-        background: var(--c-bg);
     }
     
     .chat-layout.has-selected-chat .chat-sidebar {
         display: none !important;
     }
     
+    .chat-window-container {
+        display: none;
+        width: 100%;
+        flex: 1;
+        min-height: 0;
+    }
+    
     .chat-layout.has-selected-chat .chat-window-container {
         display: flex !important;
-        /* No padding-top needed — parent .realtime-chat-page already has top: 80px */
     }
     
     .mobile-back-btn {
@@ -623,7 +612,6 @@ html:has(.realtime-chat-page) .main-layout {
     width: 100%;
     flex: 1;
     background: var(--c-bg);
-    position: relative;
     overflow: hidden;
 }
 
@@ -649,12 +637,10 @@ html:has(.realtime-chat-page) .main-layout {
         min-height: 60px;
         flex-shrink: 0;
         width: 100%;
-        background: rgba(var(--c-bg-rgb), 0.9);
+        background: rgba(10, 10, 10, 0.9);
         backdrop-filter: blur(25px);
         -webkit-backdrop-filter: blur(25px);
         z-index: 100;
-        position: sticky;
-        top: 0;
         border-bottom: 1px solid var(--c-border);
     }
 }
@@ -882,10 +868,14 @@ html:has(.realtime-chat-page) .main-layout {
 
 @media (max-width: 768px) {
     .message-input-form {
-        padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px));
+        padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px));
         position: sticky;
         bottom: 0;
         width: 100%;
+        background: rgba(10, 10, 10, 0.98);
+        border-top: 1px solid var(--c-border);
+        flex-shrink: 0;
+        z-index: 50;
     }
 }
 

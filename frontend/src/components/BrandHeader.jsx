@@ -13,14 +13,14 @@ const BrandHeader = ({ isMobile, toggleMenu, isOpen, style }) => {
         <header 
             className="brand-header-wrapper glass-card"
             style={{ 
-                position: 'fixed', 
-                top: 0, 
+                position: style?.position || 'fixed', 
+                top: style?.top !== undefined ? style.top : 0, 
                 left: 0, 
                 right: 0, 
                 zIndex: 9999,
                 width: '100%',
                 overflow: 'visible',
-                ...style // Allow overrides like position: relative
+                ...style 
             }}
         >
             <div className="brand-header-container">

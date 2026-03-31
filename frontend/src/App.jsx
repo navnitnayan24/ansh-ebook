@@ -101,19 +101,32 @@ const Layout = ({ children }) => {
     const isChatPage = location.pathname === '/chat';
 
     return (
-        <div className="app-wrapper" style={isChatPage ? { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' } : {}}>
+        <div 
+            className="app-wrapper" 
+            style={isChatPage ? { 
+                position: 'fixed', 
+                top: 0, 
+                left: 0, 
+                right: 0, 
+                bottom: 0, 
+                overflow: 'hidden', 
+                display: 'flex', 
+                flexDirection: 'column',
+                height: '100dvh'
+            } : {}}
+        >
             <BrandHeader 
                 isMobile={isMobile} 
                 toggleMenu={toggleMenu} 
                 isOpen={isMenuOpen} 
-                style={isChatPage ? { position: 'sticky', top: 0 } : {}} 
+                style={isChatPage ? { position: 'relative' } : {}} 
             />
             <div 
                 className="layout-body-flex" 
                 style={{ 
                     paddingTop: isChatPage ? '0' : (isMobile ? '80px' : '100px'),
-                    height: isChatPage ? '100dvh' : 'auto',
                     flex: 1,
+                    minHeight: 0,
                     overflow: 'hidden',
                     display: 'flex',
                     flexDirection: isChatPage ? 'row' : 'column',
@@ -124,13 +137,13 @@ const Layout = ({ children }) => {
                 <div 
                     className={`main-layout ${!isMobile ? 'desktop-with-sidebar' : ''} ${isChatPage ? 'height-full-flex' : ''}`}
                     style={isChatPage ? { 
-                        paddingBottom: 0, 
-                        minHeight: '0', 
-                        height: '100%', 
-                        overflow: 'hidden',
                         display: 'flex',
                         flexDirection: 'column',
-                        flex: 1
+                        flex: 1,
+                        minHeight: 0,
+                        height: '100%', 
+                        overflow: 'hidden',
+                        paddingBottom: 0
                     } : {}}
                 >
                     <main className={isChatPage ? "height-full-flex" : "content-fluid"} style={isChatPage ? { flex: 1, display: 'flex', flexDirection: 'column', height: '100%' } : {}}>

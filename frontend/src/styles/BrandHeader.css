@@ -130,8 +130,7 @@
 @media (max-width: 768px) {
     .brand-header-wrapper {
         height: 80px;
-        position: fixed;
-        top: 0;
+        position: relative; /* Changed from fixed for flex-column stack */
         padding: 0 1rem !important;
     }
     
