@@ -102,23 +102,40 @@ const Layout = ({ children }) => {
 
     return (
         <div className="app-wrapper" style={isChatPage ? { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' } : {}}>
-            <BrandHeader isMobile={isMobile} toggleMenu={toggleMenu} isOpen={isMenuOpen} />
+            <BrandHeader 
+                isMobile={isMobile} 
+                toggleMenu={toggleMenu} 
+                isOpen={isMenuOpen} 
+                style={isChatPage ? { position: 'relative' } : {}} 
+            />
             <div 
                 className="layout-body-flex" 
                 style={{ 
-                    paddingTop: isMobile ? '80px' : '100px',
-                    height: isChatPage ? '100%' : 'auto',
+                    paddingTop: isChatPage ? '0' : (isMobile ? '80px' : '100px'),
+                    height: isChatPage ? '100dvh' : 'auto',
                     flex: 1,
-                    overflow: isChatPage ? 'hidden' : 'visible',
+                    overflow: 'hidden',
+                    display: 'flex',
+                    flexDirection: isChatPage ? 'row' : 'column',
                     boxSizing: 'border-box'
                 }}
             >
                 {!isMobile && <Sidebar />}
                 <div 
                     className={`main-layout ${!isMobile ? 'desktop-with-sidebar' : ''} ${isChatPage ? 'height-full-flex' : ''}`}
-                    style={isChatPage ? { paddingBottom: 0, minHeight: 'unset', height: '100%', overflow: 'hidden' } : {}}
+                    style={isChatPage ? { 
+                        paddingBottom: 0, 
+                        minHeight: '0', 
+                        height: '100%', 
+                        overflow: 'hidden',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        flex: 1
+                    } : {}}
                 >
-                    <main className={isChatPage ? "height-full-flex" : "content-fluid"}>{children}</main>
+                    <main className={isChatPage ? "height-full-flex" : "content-fluid"} style={isChatPage ? { flex: 1, display: 'flex', flexDirection: 'column', height: '100%' } : {}}>
+                        {children}
+                    </main>
                     {!isChatPage && <Footer />}
                 </div>
             </div>

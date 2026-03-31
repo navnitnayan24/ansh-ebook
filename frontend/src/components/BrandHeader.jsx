@@ -6,7 +6,7 @@ import '../styles/BrandHeader.css';
 import { Menu, X, Sun, Moon } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 
-const BrandHeader = ({ isMobile, toggleMenu, isOpen }) => {
+const BrandHeader = ({ isMobile, toggleMenu, isOpen, style }) => {
     const { theme, toggleTheme } = useTheme();
 
     return (
@@ -19,7 +19,8 @@ const BrandHeader = ({ isMobile, toggleMenu, isOpen }) => {
                 right: 0, 
                 zIndex: 9999,
                 width: '100%',
-                overflow: 'visible'
+                overflow: 'visible',
+                ...style // Allow overrides like position: relative
             }}
         >
             <div className="brand-header-container">

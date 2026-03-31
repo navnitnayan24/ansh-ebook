@@ -111,29 +111,21 @@ html:has(.realtime-chat-page) .main-layout {
 .realtime-chat-page *::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 10px; }
 
 /* ─── Page Root ─── */
-/* NUCLEAR FIX: Use position:fixed with exact offsets to bypass broken height:100% chain */
 .realtime-chat-page {
-    position: fixed !important;
-    top: 100px;    /* Navbar height on desktop */
-    left: 250px;   /* Sidebar width on desktop */
-    right: 0;
-    bottom: 0;
+    height: 100%;
+    width: 100%;
     display: flex;
     flex-direction: column;
     overflow: hidden;
     background: var(--c-bg);
+    position: relative;
     z-index: 50;
     box-sizing: border-box;
 }
 
 @media (max-width: 768px) {
     .realtime-chat-page {
-        position: fixed !important;
-        top: 80px !important;  /* Mobile navbar height */
-        left: 0 !important;   /* No sidebar on mobile */
-        right: 0 !important;
-        bottom: 0 !important;
-        z-index: 50;
+        height: 100%;
     }
 }
 
@@ -150,6 +142,7 @@ html:has(.realtime-chat-page) .main-layout {
     border-left: 1px solid var(--c-border);
     border-right: 1px solid var(--c-border);
     box-sizing: border-box;
+    position: relative;
 }
 
 /* Global Container Fixes */
