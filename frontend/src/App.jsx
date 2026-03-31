@@ -86,9 +86,13 @@ const LoginRequiredRoute = ({ children }) => {
 const Layout = ({ children }) => {
     const [isMobile, setIsMobile] = React.useState(window.innerWidth <= 768);
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+    const [innerHeight, setInnerHeight] = React.useState(window.innerHeight);
 
     React.useEffect(() => {
-        const handleResize = () => setIsMobile(window.innerWidth <= 768);
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 768);
+            setInnerHeight(window.innerHeight);
+        };
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
@@ -100,13 +104,13 @@ const Layout = ({ children }) => {
     const isChatPage = location.pathname === '/chat';
 
     return (
-        <div className="app-wrapper" style={isChatPage ? { height: '100dvh', overflow: 'hidden' } : {}}>
+        <div className="app-wrapper" style={isChatPage ? { height: `${innerHeight}px`, overflow: 'hidden' } : {}}>
             <BrandHeader isMobile={isMobile} toggleMenu={toggleMenu} isOpen={isMenuOpen} />
             <div 
                 className="layout-body-flex" 
                 style={{ 
                     paddingTop: isMobile ? '80px' : '100px',
-                    height: isChatPage ? '100dvh' : 'auto',
+                    height: isChatPage ? `${innerHeight}px` : 'auto',
                     overflow: isChatPage ? 'hidden' : 'visible',
                     boxSizing: 'border-box'
                 }}
