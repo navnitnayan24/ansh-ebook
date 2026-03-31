@@ -86,13 +86,10 @@ const LoginRequiredRoute = ({ children }) => {
 const Layout = ({ children }) => {
     const [isMobile, setIsMobile] = React.useState(window.innerWidth <= 768);
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-    const [innerHeight, setInnerHeight] = React.useState(window.innerHeight);
-
+    
+    // We strictly use CSS fixed positioning to lock the layout, bypassing unreliable vh logic.
     React.useEffect(() => {
-        const handleResize = () => {
-            setIsMobile(window.innerWidth <= 768);
-            setInnerHeight(window.innerHeight);
-        };
+        const handleResize = () => setIsMobile(window.innerWidth <= 768);
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
@@ -104,13 +101,14 @@ const Layout = ({ children }) => {
     const isChatPage = location.pathname === '/chat';
 
     return (
-        <div className="app-wrapper" style={isChatPage ? { height: `${innerHeight}px`, overflow: 'hidden' } : {}}>
+        <div className="app-wrapper" style={isChatPage ? { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' } : {}}>
             <BrandHeader isMobile={isMobile} toggleMenu={toggleMenu} isOpen={isMenuOpen} />
             <div 
                 className="layout-body-flex" 
                 style={{ 
                     paddingTop: isMobile ? '80px' : '100px',
-                    height: isChatPage ? `${innerHeight}px` : 'auto',
+                    height: isChatPage ? '100%' : 'auto',
+                    flex: 1,
                     overflow: isChatPage ? 'hidden' : 'visible',
                     boxSizing: 'border-box'
                 }}
