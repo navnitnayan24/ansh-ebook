@@ -124,6 +124,7 @@ h1, h2, h3, h4, h5, h6 {
     flex-direction: column;
     height: 100%;
     flex: 1;
+    min-height: 0 !important; /* Override min-height: 100vh from .main-layout */
     overflow: hidden;
 }
 
@@ -269,6 +270,11 @@ h1, h2, h3, h4, h5, h6 {
     .main-layout {
         min-height: 100vh;
         transition: padding-left 0.3s ease;
+    }
+    /* When chat page is active, KILL min-height so flex containment works */
+    .main-layout.height-full-flex {
+        min-height: 0;
+        max-height: 100%;
     }
     
     .desktop-with-sidebar {
