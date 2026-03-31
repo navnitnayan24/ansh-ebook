@@ -102,16 +102,11 @@ const Layout = ({ children }) => {
 
     return (
         <div className="app-wrapper" style={isChatPage ? { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' } : {}}>
-            <BrandHeader 
-                isMobile={isMobile} 
-                toggleMenu={toggleMenu} 
-                isOpen={isMenuOpen} 
-                style={isChatPage ? { position: 'relative' } : {}} 
-            />
+            <BrandHeader isMobile={isMobile} toggleMenu={toggleMenu} isOpen={isMenuOpen} />
             <div 
                 className="layout-body-flex" 
                 style={{ 
-                    paddingTop: isChatPage ? '0' : (isMobile ? '80px' : '100px'),
+                    paddingTop: isMobile ? '80px' : '100px',
                     height: isChatPage ? '100dvh' : 'auto',
                     flex: 1,
                     overflow: 'hidden',
