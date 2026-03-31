@@ -149,6 +149,20 @@ html:has(.realtime-chat-page) .main-layout {
     border-left: 1px solid var(--c-border);
     border-right: 1px solid var(--c-border);
     padding-top: 20px; /* IMPORTANT clearance for hidden Desktop Headers */
+    box-sizing: border-box; /* Fixes padding-top pushing heights out */
+}
+
+/* Global Container Fixes */
+.chat-window-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    width: 100%;
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    background: var(--c-bg);
 }
 
 @media (max-width: 768px) {
@@ -731,7 +745,7 @@ html:has(.realtime-chat-page) .main-layout {
     gap: 8px;
     background-color: var(--c-bg);
     position: relative;
-    max-height: 100%;
+    box-sizing: border-box;
     transition: background 0.4s ease;
 }
 
