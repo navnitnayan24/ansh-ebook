@@ -210,9 +210,17 @@ const ChatWindow = ({ chat, setSelectedChat }) => {
 
                 {showWallpaperMenu && (
                     <div className="wallpaper-menu">
-                        {['default', 'love', 'peace', 'nature', 'cat', 'meditation'].map(w => (
-                            <div key={w} className="wallpaper-option" onClick={() => { setChatWallpaper(w); localStorage.setItem('chatWallpaper', w); setShowWallpaperMenu(false); }}>
-                                {w.toUpperCase()}
+                        <div style={{ padding: '8px 20px', fontSize: '0.7rem', color: 'var(--c-pink)', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1px' }}>Theme</div>
+                        {[
+                            { id: 'default', label: 'Default', icon: '🧹' },
+                            { id: 'love', label: 'Love', icon: '❤️' },
+                            { id: 'peace', label: 'Peace', icon: '☮️' },
+                            { id: 'nature', label: 'Nature', icon: '🌿' },
+                            { id: 'cat', label: 'Black Cat', icon: '🐈' },
+                            { id: 'meditation', label: 'Zen', icon: '🧘' }
+                        ].map(w => (
+                            <div key={w.id} className="wallpaper-option" onClick={() => { setChatWallpaper(w.id); localStorage.setItem('chatWallpaper', w.id); setShowWallpaperMenu(false); }}>
+                                <span>{w.icon}</span> {w.label}
                             </div>
                         ))}
                     </div>
