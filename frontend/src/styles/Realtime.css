@@ -130,7 +130,8 @@ html:has(.realtime-chat-page) .main-layout {
 }
 
 .chat-layout {
-    display: flex; 
+    display: grid;
+    grid-template-columns: 320px 1fr;
     width: 100%;
     max-width: 100%;
     flex: 1;
@@ -859,8 +860,7 @@ html:has(.realtime-chat-page) .main-layout {
 .message-input-form {
     flex-shrink: 0;
     padding: 12px 16px;
-    background: rgba(10, 10, 10, 0.98);
-    border-top: 1px solid var(--c-border);
+    background: transparent; /* Changed to blend with chat window or sidebar */
     position: sticky;
     bottom: 0;
     z-index: 10;
@@ -868,11 +868,13 @@ html:has(.realtime-chat-page) .main-layout {
 
 @media (max-width: 768px) {
     .message-input-form {
-        padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px));
-        position: sticky;
+        padding: 5px 8px calc(8px + env(safe-area-inset-bottom, 0px));
+        position: fixed;
         bottom: 0;
         width: 100%;
-        background: rgba(10, 10, 10, 0.98);
+        background: rgba(10, 10, 10, 0.95);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
         border-top: 1px solid var(--c-border);
         flex-shrink: 0;
         z-index: 50;
@@ -882,29 +884,27 @@ html:has(.realtime-chat-page) .main-layout {
 .input-field-container {
     display: flex;
     align-items: center;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid var(--c-glassborder);
-    border-radius: 30px;
-    padding: 6px 14px 6px 8px;
-    gap: 10px;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    background: #1e1e24; /* Darker, sophisticated background */
+    border: 1px solid rgba(255,255,255,0.04);
+    border-radius: 40px; /* High roundedness for "pill" look */
+    padding: 5px 12px 5px 6px; /* Precise padding for elite feel */
+    gap: 8px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+    width: 100%;
 }
+
 .input-field-container:focus-within {
-    border-color: rgba(233,30,140,0.5);
-    background: rgba(255,255,255,0.09);
-    box-shadow: 0 0 15px rgba(233,30,140,0.12);
-}
-.input-field-container:focus-within {
-    border-color: rgba(233,30,140,0.4);
-    box-shadow: 0 0 0 3px rgba(233,30,140,0.08);
+    border-color: rgba(233,30,140,0.3);
+    background: #24242e;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
 }
 
 .camera-btn-round {
-    width: 36px;
-    height: 36px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
-    background: var(--c-grad);
+    background: linear-gradient(135deg, #e91e8c, #7c3aed); /* Vibrant gradient matching Image 2 */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -912,9 +912,12 @@ html:has(.realtime-chat-page) .main-layout {
     border: none;
     cursor: pointer;
     flex-shrink: 0;
-    transition: transform 0.2s, opacity 0.2s;
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 2px 10px rgba(233,30,140,0.3);
 }
-.camera-btn-round:hover { transform: scale(1.08); opacity: 0.9; }
+
+.camera-btn-round:hover { transform: scale(1.1); }
+.camera-btn-round:active { transform: scale(0.92); }
 
 .main-chat-input {
     flex: 1;
@@ -931,8 +934,9 @@ html:has(.realtime-chat-page) .main-layout {
 .input-actions-right {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 14px; /* Slightly wider spacing matching Image 2 */
     flex-shrink: 0;
+    padding-right: 4px;
 }
 
 .input-action-icon {

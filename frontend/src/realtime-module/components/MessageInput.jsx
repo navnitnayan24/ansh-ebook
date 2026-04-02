@@ -230,7 +230,7 @@ const MessageInput = ({ chatId, receiverId, setMessages }) => {
                     </button>
                 </div>
             )}
-            <div className="input-field-container" style={{ borderTopLeftRadius: selectedFile ? '0' : '28px', borderTopRightRadius: selectedFile ? '0' : '28px' }}>
+            <div className="input-field-container">
                 <input 
                     type="file" 
                     hidden 
@@ -241,7 +241,7 @@ const MessageInput = ({ chatId, receiverId, setMessages }) => {
                 
                 {/* Fixed camera button on the left as per screenshot */}
                 <button type="button" className="camera-btn-round" onClick={() => setIsCameraOpen(true)}>
-                    <Camera size={20}/>
+                    <Camera size={22}/>
                 </button>
 
                 <input 
