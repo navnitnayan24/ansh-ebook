@@ -1883,28 +1883,36 @@ html:has(.realtime-chat-page) .main-layout {
     /* Custom Premium Scrollbar for Desktop */
     .messages-area::-webkit-scrollbar,
     .chat-sidebar::-webkit-scrollbar,
-    .user-list-scroll::-webkit-scrollbar {
-        width: 6px;
+    .user-list-scroll::-webkit-scrollbar,
+    .group-info-content::-webkit-scrollbar {
+        width: 8px; /* Slightly wider for better accessibility */
+        display: block !important;
     }
 
     .messages-area::-webkit-scrollbar-track,
     .chat-sidebar::-webkit-scrollbar-track,
-    .user-list-scroll::-webkit-scrollbar-track {
-        background: transparent;
+    .user-list-scroll::-webkit-scrollbar-track,
+    .group-info-content::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.05); /* Very subtle track */
     }
 
     .messages-area::-webkit-scrollbar-thumb,
     .chat-sidebar::-webkit-scrollbar-thumb,
-    .user-list-scroll::-webkit-scrollbar-thumb {
-        background: rgba(233, 30, 140, 0.2);
+    .user-list-scroll::-webkit-scrollbar-thumb,
+    .group-info-content::-webkit-scrollbar-thumb {
+        background: rgba(233, 30, 140, 0.4); /* Increased opacity for better visibility */
         border-radius: 10px;
+        border: 2px solid transparent;
+        background-clip: content-box;
         transition: background 0.3s;
     }
 
     .messages-area::-webkit-scrollbar-thumb:hover,
     .chat-sidebar::-webkit-scrollbar-thumb:hover,
-    .user-list-scroll::-webkit-scrollbar-thumb:hover {
+    .user-list-scroll::-webkit-scrollbar-thumb:hover,
+    .group-info-content::-webkit-scrollbar-thumb:hover {
         background: var(--c-pink);
+        background-clip: content-box;
     }
 }
 
