@@ -206,20 +206,17 @@ const ChatWindow = ({ chat, setSelectedChat }) => {
 
     return (
         <div className="chat-window">
-            <div className="chat-header" onClick={() => setShowInfo(true)} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px' }}>
+            <div className="chat-header" onClick={() => setShowInfo(true)}>
                 
                 {/* Left Side: Back + Avatar + Text */}
-                <div className="other-user-info" style={{ display: 'flex', alignItems: 'center', gap: '14px', flex: 1, minWidth: 0 }}>
+                <div className="other-user-info">
                     
-                    {/* Back Button Wrapper container */}
-                    <div style={{ flexShrink: 0 }}>
-                        <button className="mobile-back-btn" onClick={(e) => { e.stopPropagation(); handleBack(); }} style={{ flexShrink: 0, border: 'none', background: 'rgba(255,255,255,0.08)', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', margin: 0, padding: 0 }}>
-                            <ArrowLeft size={20} color="#fff" style={{ marginLeft: '-2px' }}/>
-                        </button>
-                    </div>
+                    <button className="mobile-back-btn" onClick={(e) => { e.stopPropagation(); handleBack(); }}>
+                        <ArrowLeft size={20} color="#fff"/>
+                    </button>
 
                     {/* Avatar Wrapper explicitly separated */}
-                    <div style={{ flexShrink: 0, cursor: 'pointer' }} onClick={handleAvatarClick}>
+                    <div onClick={handleAvatarClick} style={{ cursor: 'pointer', flexShrink: 0 }}>
                         {chat.isGroup ? (
                             <div className="group-avatar-main">💎</div>
                         ) : (
@@ -232,18 +229,18 @@ const ChatWindow = ({ chat, setSelectedChat }) => {
                     </div>
 
                     {/* Text Section highly constrained */}
-                    <div className="chat-header-title-text" style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', paddingRight: '8px' }}>
-                        <h4 className="header-username" onClick={handleAvatarClick} style={{ margin: '0 0 2px 0', fontSize: '1.05rem', fontWeight: '700', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: '#fff', letterSpacing: '-0.2px', cursor: 'pointer' }}>
+                    <div className="chat-header-title-text">
+                        <h4 className="header-username">
                             {chat.isGroup && (displayName.toLowerCase().includes('kohinoor')) ? '🔥 🌹 Kohinoor 🌹 🔥' : displayName}
                         </h4>
-                        <span className="user-status-text" style={{ fontSize: '0.78rem', fontWeight: '600', color: '#ff69b4', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        <span className="user-status-text">
                             {chat.isGroup ? `${chat.participants?.length || 0} members` : (onlineUsers[otherUser?._id] === 'online' ? 'Online' : 'Offline')}
                             {isTyping.length > 0 && ` • typing...`}
                         </span>
                     </div>
 
                 </div>
-                <div className="chat-actions" onClick={(e) => e.stopPropagation()} style={{ position: 'relative' }}>
+                <div className="chat-actions" onClick={(e) => e.stopPropagation()}>
                     {!chat.isGroup && !(chat._id && chat._id.toString().startsWith('new-')) && (
                         <>
                             <button onClick={() => callUser(otherUser?._id, 'audio')}><Phone size={20}/></button>
