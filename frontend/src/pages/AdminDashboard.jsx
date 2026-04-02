@@ -191,16 +191,19 @@ const AdminDashboard = () => {
                 const sigRes = await fetchCloudinarySignature();
                 const { signature, timestamp, cloudName, apiKey } = sigRes.data;
 
-                let resourceType = 'auto';
-                if (file.type.startsWith('audio/') || file.type.startsWith('video/')) {
-                    resourceType = 'video';
+                let resourceType = 'auto'; // Default
+                if (file.type.startsWith('audio/') || file.type.endsWith('.mp3') || file.type.endsWith('.wav')) {
+                    resourceType = 'video'; // Cloudinary uses 'video' for audio
                 } else if (file.type === 'application/pdf' || file.name?.toLowerCase().endsWith('.pdf')) {
-                    resourceType = 'raw';
+                    resourceType = 'raw'; // PDFs must be 'raw'
                 }
 
-                // Small chunks for 0-100kb/s stability
-                const CHUNK_SIZE = 64 * 1024; // Extremely tiny 64KB chunks for awful connections
-                if (file.size <= 256 * 1024) {
+                // Chunks for 10MB-50MB stability
+                // Cloudinary chunks MUST be at least 5MB unless it's the last chunk.
+                const CHUNK_SIZE = 5 * 1024 * 1024; // 5MB Pieces
+                
+                // If small, just one pass
+                if (file.size <= CHUNK_SIZE) {
                     setUploadProgress({ active: true, percent: 10, currentChunk: 1, totalChunks: 1, status: 'starting' });
                     const fd = new FormData();
                     fd.append('file', file);
@@ -216,6 +219,7 @@ const AdminDashboard = () => {
 
                     if (!res.ok) {
                         const errorObj = await res.json();
+                        console.error('Single pass failed:', errorObj);
                         throw new Error(errorObj.error?.message || 'Upload failed');
                     }
                     const resData = await res.json();
@@ -243,16 +247,15 @@ const AdminDashboard = () => {
 
                     let retryCount = 0;
                     let success = false;
-                    while (!success && retryCount < 20) { // Increased to 20 retries for ultra-slow connections
+                    while (!success && retryCount < 10) { 
                         try {
                             if (retryCount > 0) {
                                 setUploadProgress(prev => ({ 
                                     ...prev, 
                                     status: `retrying-${retryCount}`,
-                                    message: `Network glitch at piece ${i+1}? Auto-recovering...` 
+                                    message: `Retrying piece ${i+1}...` 
                                 }));
-                                // Stronger exponential backoff, capped at 10 seconds per wait
-                                await new Promise(r => setTimeout(r, Math.min(10000, 2000 * Math.pow(1.5, retryCount))));
+                                await new Promise(r => setTimeout(r, 2000 * retryCount));
                             }
                             
                             const fd = new FormData();
@@ -273,6 +276,7 @@ const AdminDashboard = () => {
 
                             if (!res.ok) {
                                 const errBody = await res.json();
+                                console.warn('Chunk failed:', errBody);
                                 throw new Error(errBody.error?.message || 'Chunk failed');
                             }
                             
@@ -283,8 +287,7 @@ const AdminDashboard = () => {
                             success = true;
                         } catch (err) {
                             retryCount++;
-                            console.warn(`Chunk ${i+1} failed (Attempt ${retryCount}/20):`, err.message);
-                            if (retryCount >= 20) throw new Error(`Upload failed after 20 retries at piece ${i+1}. Please check if you have any internet at all.`);
+                            if (retryCount >= 10) throw new Error(`Large upload failed at piece ${i+1}. Connection lost.`);
                         }
                     }
                 }
