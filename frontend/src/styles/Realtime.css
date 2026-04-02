@@ -1885,7 +1885,7 @@ html:has(.realtime-chat-page) .main-layout {
     .chat-sidebar::-webkit-scrollbar,
     .user-list-scroll::-webkit-scrollbar,
     .group-info-content::-webkit-scrollbar {
-        width: 8px; /* Slightly wider for better accessibility */
+        width: 12px; /* Much wider for better accessibility */
         display: block !important;
     }
 
@@ -1893,16 +1893,16 @@ html:has(.realtime-chat-page) .main-layout {
     .chat-sidebar::-webkit-scrollbar-track,
     .user-list-scroll::-webkit-scrollbar-track,
     .group-info-content::-webkit-scrollbar-track {
-        background: rgba(0, 0, 0, 0.05); /* Very subtle track */
+        background: rgba(0, 0, 0, 0.1); 
     }
 
     .messages-area::-webkit-scrollbar-thumb,
     .chat-sidebar::-webkit-scrollbar-thumb,
     .user-list-scroll::-webkit-scrollbar-thumb,
     .group-info-content::-webkit-scrollbar-thumb {
-        background: rgba(233, 30, 140, 0.4); /* Increased opacity for better visibility */
-        border-radius: 10px;
-        border: 2px solid transparent;
+        background: rgba(233, 30, 140, 0.6); /* Even Higher opacity */
+        border-radius: 12px;
+        border: 3px solid transparent;
         background-clip: content-box;
         transition: background 0.3s;
     }

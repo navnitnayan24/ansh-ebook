@@ -29,16 +29,27 @@ const ChatWindow = ({ chat, setSelectedChat }) => {
     const messagesAreaRef = useRef(); // Added for manual scroll control
     const currentUser = JSON.parse(localStorage.getItem('user'));
 
-    // Handle PageUp/PageDown keyboard scrolling
+    // Handle Keyboard scrolling (PageUp, PageDown, Arrows)
     useEffect(() => {
         const handleKeyDown = (e) => {
             if (!messagesAreaRef.current) return;
-            const scrollAmount = messagesAreaRef.current.clientHeight * 0.8;
             
+            // Only handle if not typing in a search box (optional, but keep it simple for now)
+            const scrollAmount = messagesAreaRef.current.clientHeight * 0.8;
+            const smallAmount = 100;
+
             if (e.key === 'PageUp') {
+                e.preventDefault();
                 messagesAreaRef.current.scrollBy({ top: -scrollAmount, behavior: 'smooth' });
             } else if (e.key === 'PageDown') {
+                e.preventDefault();
                 messagesAreaRef.current.scrollBy({ top: scrollAmount, behavior: 'smooth' });
+            } else if (e.key === 'ArrowUp' && (e.ctrlKey || e.altKey)) {
+                e.preventDefault();
+                messagesAreaRef.current.scrollBy({ top: -smallAmount, behavior: 'smooth' });
+            } else if (e.key === 'ArrowDown' && (e.ctrlKey || e.altKey)) {
+                e.preventDefault();
+                messagesAreaRef.current.scrollBy({ top: smallAmount, behavior: 'smooth' });
             }
         };
 
