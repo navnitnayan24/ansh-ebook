@@ -1879,5 +1879,32 @@ html:has(.realtime-chat-page) .main-layout {
     .main-chat-input {
         font-size: 1rem;
     }
+
+    /* Custom Premium Scrollbar for Desktop */
+    .messages-area::-webkit-scrollbar,
+    .chat-sidebar::-webkit-scrollbar,
+    .user-list-scroll::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .messages-area::-webkit-scrollbar-track,
+    .chat-sidebar::-webkit-scrollbar-track,
+    .user-list-scroll::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .messages-area::-webkit-scrollbar-thumb,
+    .chat-sidebar::-webkit-scrollbar-thumb,
+    .user-list-scroll::-webkit-scrollbar-thumb {
+        background: rgba(233, 30, 140, 0.2);
+        border-radius: 10px;
+        transition: background 0.3s;
+    }
+
+    .messages-area::-webkit-scrollbar-thumb:hover,
+    .chat-sidebar::-webkit-scrollbar-thumb:hover,
+    .user-list-scroll::-webkit-scrollbar-thumb:hover {
+        background: var(--c-pink);
+    }
 }
 
