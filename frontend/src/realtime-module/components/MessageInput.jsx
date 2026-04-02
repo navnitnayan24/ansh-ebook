@@ -260,53 +260,71 @@ const MessageInput = ({ chatId, receiverId, setMessages, replyTo, setReplyTo }) 
                     </button>
                 </div>
             )}
-            <div className="input-field-container">
-                <input 
-                    type="file" 
-                    hidden 
-                    ref={fileInputRef} 
-                    onChange={handleFileSelect} 
-                    accept="image/*,video/*,audio/*,.pdf,.doc,.docx"
-                />
-                
-                {/* Fixed camera button on the left as per screenshot */}
-                <button type="button" className="camera-btn-round" onClick={() => setIsCameraOpen(true)}>
-                    <Camera size={22}/>
-                </button>
 
-                <input 
-                    type="text" 
-                    className="main-chat-input"
-                    placeholder={isUploading ? "Uploading..." : "Message..."} 
-                    value={text}
-                    onChange={handleTyping}
-                    disabled={isUploading}
-                />
+            <input type="file" hidden ref={fileInputRef} onChange={handleFileSelect} accept="image/*,video/*,audio/*,.pdf,.doc,.docx"/>
 
-                <div className="input-actions-right">
-                    {isRecording ? (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                            <span style={{ color: '#ff1493', fontWeight: 'bold', fontSize: '0.9rem' }}>
-                                00:{recordingTime.toString().padStart(2, '0')}
-                            </span>
-                            <div onClick={stopRecording} style={{ background: '#ff1493', borderRadius: '50%', width: '30px', height: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 0 10px rgba(255,20,147,0.5)' }}>
-                                <div style={{ width: '10px', height: '10px', background: '#fff', borderRadius: '2px' }} />
+            <div className="chat-input-wrapper-master">
+                <div className="input-field-container">
+                    {/* Camera Button (Mobile only inside pill, Desktop in footer) */}
+                    <button type="button" className="camera-btn-round mobile-only" onClick={() => setIsCameraOpen(true)}>
+                        <Camera size={22}/>
+                    </button>
+
+                    <input 
+                        type="text" 
+                        className="main-chat-input"
+                        placeholder={isUploading ? "Uploading..." : "Type a message..."} 
+                        value={text}
+                        onChange={handleTyping}
+                        disabled={isUploading}
+                    />
+
+                    <div className="input-actions-right">
+                        {isRecording ? (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <span style={{ color: '#ff1493', fontWeight: 'bold', fontSize: '0.9rem' }}>
+                                    00:{recordingTime.toString().padStart(2, '0')}
+                                </span>
+                                <div onClick={stopRecording} style={{ background: '#ff1493', borderRadius: '50%', width: '30px', height: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 0 10px rgba(255,20,147,0.5)' }}>
+                                    <div style={{ width: '10px', height: '10px', background: '#fff', borderRadius: '2px' }} />
+                                </div>
                             </div>
-                        </div>
-                    ) : (
-                        <>
-                            <Mic size={20} className="input-action-icon" onClick={startRecording} />
-                            <Image size={20} className="input-action-icon" onClick={() => fileInputRef.current?.click()} />
-                            <Smile size={20} className="input-action-icon" onClick={() => setShowPicker(prev => !prev)} />
-                            <Plus size={20} className="input-action-icon" onClick={() => fileInputRef.current?.click()} />
-                        </>
-                    )}
-                    
-                    {(text.trim() || selectedFile) && (
-                        <button type="submit" className="send-btn-minimal" style={{ marginLeft: '5px' }} disabled={isUploading}>
-                            <Send size={18} />
+                        ) : (
+                            <div className="desktop-hide-icons mobile-row-icons">
+                                <Mic size={20} className="input-action-icon mobile-only" onClick={startRecording} />
+                                <Image size={20} className="input-action-icon mobile-only" onClick={() => fileInputRef.current?.click()} />
+                                <Smile size={20} className="input-action-icon mobile-only" onClick={() => setShowPicker(prev => !prev)} />
+                                <Plus size={20} className="input-action-icon" onClick={() => fileInputRef.current?.click()} />
+                            </div>
+                        )}
+                        
+                        {(text.trim() || selectedFile) && (
+                            <button type="submit" className="send-btn-minimal" style={{ marginLeft: '5px' }} disabled={isUploading}>
+                                <Send size={18} />
+                            </button>
+                        )}
+                    </div>
+                </div>
+
+                {/* DESKTOP EXCLUSIVE FOOTER (Niche Footer) */}
+                <div className="desktop-input-footer">
+                    <div className="footer-actions-left">
+                        <button type="button" className="footer-action-btn" onClick={() => setIsCameraOpen(true)} title="Camera">
+                            <Camera size={20}/>
                         </button>
-                    )}
+                        <button type="button" className="footer-action-btn" onClick={startRecording} title="Voice Message">
+                            <Mic size={20}/>
+                        </button>
+                        <button type="button" className="footer-action-btn" onClick={() => fileInputRef.current?.click()} title="Gallery & Media">
+                            <Image size={20}/>
+                        </button>
+                        <button type="button" className="footer-action-btn" onClick={() => setShowPicker(prev => !prev)} title="Emojis & Stickers">
+                            <Smile size={20}/>
+                        </button>
+                    </div>
+                    <div className="footer-actions-right">
+                        <span className="desktop-meta-text">Press Enter to send</span>
+                    </div>
                 </div>
             </div>
             
