@@ -67,7 +67,7 @@ const setupSocket = (server) => {
 
         // Handle Messaging
         socket.on('send-message', async (data) => {
-            const { chatId, receiverId, text, mediaUrl, mediaType } = data;
+            const { chatId, receiverId, text, mediaUrl, mediaType, replyTo } = data;
             
             if (!chatId) {
                 console.error("❌ Cannot send message: chatId is missing");
@@ -87,6 +87,7 @@ const setupSocket = (server) => {
                     text: text || '',
                     mediaUrl,
                     mediaType,
+                    replyTo,
                     createdAt: new Date().toISOString(),
                     status: 'sent'
                 };
@@ -99,7 +100,8 @@ const setupSocket = (server) => {
                     sender: userId,
                     text: text || '',
                     mediaUrl,
-                    mediaType
+                    mediaType,
+                    replyTo
                 });
 
                 const chat = await Chat.findByIdAndUpdate(chatId, { 
@@ -172,6 +174,37 @@ const setupSocket = (server) => {
         socket.on('end-call', (data) => {
             io.to(data.to).emit('call-ended');
         });
+ 
+         // Message Reactions
+         socket.on('message-reaction', async (data) => {
+             const { messageId, chatId, emoji } = data;
+             try {
+                 const message = await Message.findById(messageId);
+                 if (!message) return;
+ 
+                 // Toggle reaction: remove if exists, add if new
+                 const existingIdx = message.reactions.findIndex(r => r.user.toString() === userId);
+                 if (existingIdx > -1) {
+                     if (message.reactions[existingIdx].emoji === emoji) {
+                         message.reactions.splice(existingIdx, 1); // remove if same emoji
+                     } else {
+                         message.reactions[existingIdx].emoji = emoji; // update if different emoji
+                     }
+                 } else {
+                     message.reactions.push({ user: userId, emoji });
+                 }
+ 
+                 await message.save();
+                 
+                 // Broadcast to the whole chat room
+                 io.to(chatId.toString()).emit('message-reaction-updated', { 
+                     messageId, 
+                     reactions: message.reactions 
+                 });
+             } catch (err) {
+                 console.error("Reaction error:", err);
+             }
+         });
 
         // --- STATUS MODULE EVENTS ---
         socket.on('status-seen', (data) => {

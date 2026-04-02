@@ -27,7 +27,17 @@ const messageSchema = new mongoose.Schema({
         type: String,
         enum: ['sent', 'delivered', 'seen'],
         default: 'sent'
-    }
+    },
+    replyTo: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Message'
+    },
+    reactions: [
+        {
+            user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+            emoji: { type: String }
+        }
+    ]
 }, { timestamps: true });
 
 module.exports = mongoose.model('Message', messageSchema);

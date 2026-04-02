@@ -5,7 +5,7 @@ import { findOrCreateChat, fetchCloudinarySignature } from '../../api';
 import CameraModal from './CameraModal';
 import EmojiPicker, { EmojiStyle } from 'emoji-picker-react';
 
-const MessageInput = ({ chatId, receiverId, setMessages }) => {
+const MessageInput = ({ chatId, receiverId, setMessages, replyTo, setReplyTo }) => {
     const [text, setText] = useState('');
     const [isUploading, setIsUploading] = useState(false);
     const [isRecording, setIsRecording] = useState(false);
@@ -19,6 +19,10 @@ const MessageInput = ({ chatId, receiverId, setMessages }) => {
     const fileInputRef = useRef();
     const audioChunksRef = useRef([]);
     const recordingTimerRef = useRef(null);
+
+    const closeReply = () => {
+        if (setReplyTo) setReplyTo(null);
+    };
 
     const uploadFile = async (file) => {
         if (file.size > 100 * 1024 * 1024) {
@@ -61,11 +65,10 @@ const MessageInput = ({ chatId, receiverId, setMessages }) => {
         
         let mediaData = directMedia;
         
-        // If there's a file queued, upload it first
         if (selectedFile) {
             mediaData = await uploadFile(selectedFile);
             if (!mediaData && !text.trim()) {
-                clearFile(); // clear everything if upload failed and no text
+                clearFile();
                 return;
             }
         }
@@ -87,6 +90,7 @@ const MessageInput = ({ chatId, receiverId, setMessages }) => {
             text: text,
             mediaUrl: mediaData?.url || null,
             mediaType: mediaData?.type || 'none',
+            replyTo: replyTo?._id || null,
             createdAt: new Date().toISOString()
         };
 
@@ -103,13 +107,17 @@ const MessageInput = ({ chatId, receiverId, setMessages }) => {
         };
 
         if (setMessages && currentChatId && !currentChatId.startsWith('new-')) {
-            setMessages(prev => [...prev, optimisticMessage]);
+            setMessages(prev => {
+                const updated = [...prev, optimisticMessage];
+                return updated;
+            });
         }
 
         socket.emit('send-message', messageData);
         setText('');
-        clearFile(); // Clear preview after sending
-        setShowPicker(false); // Hide picker on send
+        clearFile();
+        setShowPicker(false);
+        closeReply();
     };
 
     const clearFile = () => {
@@ -194,6 +202,28 @@ const MessageInput = ({ chatId, receiverId, setMessages }) => {
 
     return (
         <form className="message-input-form" onSubmit={handleSend} style={{ position: 'relative' }}>
+            {replyTo && (
+                <div className="reply-input-banner" style={{
+                    position: 'absolute', bottom: '100%', left: '16px', right: '16px', 
+                    background: 'rgba(233,30,140,0.1)', padding: '10px 14px', borderRadius: '12px 12px 0 0',
+                    display: 'flex', alignItems: 'center', gap: '12px',
+                    border: '1px solid rgba(233,30,140,0.3)', borderBottom: 'none',
+                    zIndex: 25, backdropFilter: 'blur(10px)'
+                }}>
+                    <div style={{ width: '4px', height: '30px', background: 'var(--c-pink)', borderRadius: '2px' }} />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: '0.75rem', fontWeight: 'bold', color: 'var(--c-pink)' }}>
+                            Replying to {replyTo.sender?.username || 'User'}
+                        </div>
+                        <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {replyTo.text || (replyTo.mediaType !== 'none' ? 'Media' : '...')}
+                        </div>
+                    </div>
+                    <button type="button" onClick={closeReply} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', cursor: 'pointer', display:'flex', padding:'6px', borderRadius:'50%' }}>
+                        <X size={16} />
+                    </button>
+                </div>
+            )}
             {showPicker && (
                 <div style={{ position: 'absolute', bottom: 'calc(100% + 10px)', right: '16px', zIndex: 50, boxShadow: '0 5px 15px rgba(0,0,0,0.5)' }}>
                     <EmojiPicker 

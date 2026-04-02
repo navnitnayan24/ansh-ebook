@@ -60,6 +60,15 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
         }
     };
 
+    const copyShareLink = () => {
+        const shareUrl = `${window.location.origin}/chat?dm=${currentUserId}`;
+        navigator.clipboard.writeText(shareUrl).then(() => {
+            alert("Chat Link Copied! Share it with friends.");
+        }).catch(err => {
+            console.error("Copy failed:", err);
+        });
+    };
+
     const toggleNotifications = async () => {
         if (Notification.permission === 'default' || Notification.permission === 'denied') {
             const permission = await Notification.requestPermission();
@@ -240,22 +249,27 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
     return (
         <div className="chat-sidebar">
             <div className="sidebar-header">
-                <div className="header-top-row">
-                    <h3 className="sidebar-title">
-                        Messages <span className="badge-premium">REALTIME</span>
-                    </h3>
-                    <div style={{ display: 'flex', gap: '8px' }}>
-                        <button className="theme-toggle-btn" title="Create Group" onClick={() => setIsCreateModalOpen(true)}>
-                            <Plus size={20}/>
+                <div className="sidebar-identity-section">
+                    <div className="identity-user-info">
+                        <Avatar pic={currentUser.profile_pic} username={currentUser.username} className="identity-avatar-img" />
+                        <div className="identity-text">
+                            <span className="identity-name">{getCleanName(currentUser.username)}</span>
+                            <span className="identity-label">My ID</span>
+                        </div>
+                    </div>
+                    <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                        <button className="btn-share-id" onClick={copyShareLink} title="Copy My Chat Link">
+                            <Link size={14} />
+                            <span>Share</span>
                         </button>
-                        <button className="theme-toggle-btn" title="Join Group" onClick={() => setIsJoinModalOpen(true)}>
-                            <Link size={20}/>
+                        <button className="theme-toggle-btn icon-only" title="Create Group" onClick={() => setIsCreateModalOpen(true)}>
+                            <Plus size={18}/>
                         </button>
-                        <button className="theme-toggle-btn" title={notificationsEnabled ? "Notifications On" : "Notifications Off"} onClick={toggleNotifications}>
-                            {notificationsEnabled ? <Bell size={20} className="text-pink" /> : <BellOff size={20} />}
+                        <button className="theme-toggle-btn icon-only" title={notificationsEnabled ? "Notifications On" : "Notifications Off"} onClick={toggleNotifications}>
+                            {notificationsEnabled ? <Bell size={18} className="text-pink" /> : <BellOff size={18} />}
                         </button>
-                        <button className="theme-toggle-btn" onClick={toggleTheme}>
-                            {theme === 'dark' ? <Sun size={20}/> : <Moon size={20}/>}
+                        <button className="theme-toggle-btn icon-only" onClick={toggleTheme}>
+                            {theme === 'dark' ? <Sun size={18}/> : <Moon size={18}/>}
                         </button>
                     </div>
                 </div>
