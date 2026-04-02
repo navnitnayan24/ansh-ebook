@@ -26,8 +26,13 @@ export const SocketProvider = ({ children }) => {
         const token = localStorage.getItem('token');
         if (!token) return;
 
-        const newSocket = io(window.location.origin, {
-            auth: { token }
+        // Determine socket URL: Use VITE_API_URL (minus /api) if available, else fallback to origin
+        const apiUrl = import.meta.env.VITE_API_URL || '';
+        const socketUrl = apiUrl.replace(/\/api$/, '') || window.location.origin;
+        
+        const newSocket = io(socketUrl, {
+            auth: { token },
+            transports: ['websocket', 'polling'] // Ensure maximum compatibility
         });
 
         newSocket.on('connect_error', (err) => {
