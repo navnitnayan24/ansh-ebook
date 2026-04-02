@@ -71,8 +71,8 @@ export const SocketProvider = ({ children }) => {
             );
         });
 
-        newSocket.on('hey-calling', ({ from, name: callerName, type }) => {
-            setCall({ isReceivingCall: true, from, name: callerName, type });
+        newSocket.on('hey-calling', ({ from, name: callerName, type, signal }) => {
+            setCall({ isReceivingCall: true, from, name: callerName, type, signal });
             showNotification(
                 `Incoming ${type === 'video' ? 'Video' : 'Voice'} Call`,
                 `${callerName} is calling you...`,
