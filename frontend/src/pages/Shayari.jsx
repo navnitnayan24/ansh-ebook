@@ -129,6 +129,7 @@ const Shayari = () => {
             <SEO 
                 title="Ansh Ebook - Premium Hindi Shayari" 
                 description="Explore original premium Hindi Shayari on Ansh Ebook. Beautiful words for love, life, and motivation by Ansh Sharma." 
+                keywords={shayaris.length > 0 ? "hindi shayari, love shayari, " + shayaris.slice(0, 3).map(s => s.content.substring(0, 20).replace(/[^a-zA-Z0-9 ]/g, '')).join(', ') : "hindi shayari, sad shayari, love shayari, premium shayari"}
             />
 
             <motion.div className="main-title-area text-center mb-5" variants={itemVariants}>

@@ -146,6 +146,38 @@ app.use('/api/realtime', require('./realtime-module/routes/chat.routes')); // Re
 app.use('/api/notifications', require('./routes/notification.routes')); // Notification Center
 app.use('/api', contentRoutes);
 
+// Dynamic SEO Sitemap Generator
+app.get('/sitemap.xml', async (req, res) => {
+    try {
+        const Shayari = require('./models/Shayari');
+        const shayaris = await Shayari.find().select('_id updatedAt');
+        
+        const baseUrl = 'https://ansh-ebook.onrender.com';
+        
+        let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+        xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+        
+        // Core Pages
+        const corePages = ['/', '/shayari', '/login', '/register', '/terms', '/privacy'];
+        corePages.forEach(page => {
+            xml += `  <url>\n    <loc>${baseUrl}${page}</loc>\n    <changefreq>daily</changefreq>\n    <priority>${page === '/' ? '1.0' : '0.8'}</priority>\n  </url>\n`;
+        });
+        
+        // Dynamic Shayari Entries (Helps Google index individual content via Anchor links if applicable)
+        shayaris.forEach(s => {
+            xml += `  <url>\n    <loc>${baseUrl}/shayari#${s._id}</loc>\n    <lastmod>${s.updatedAt ? new Date(s.updatedAt).toISOString() : new Date().toISOString()}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.6</priority>\n  </url>\n`;
+        });
+        
+        xml += `</urlset>`;
+        
+        res.header('Content-Type', 'application/xml');
+        res.send(xml);
+    } catch (err) {
+        console.error("Sitemap generation error:", err);
+        res.status(500).end();
+    }
+});
+
 // Serve static files from the React app
 const distPath = path.resolve(__dirname, '../frontend/dist');
 if (fs.existsSync(distPath)) {
