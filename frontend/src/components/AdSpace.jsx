@@ -29,21 +29,22 @@ const AdSpace = ({ type = 'horizontal', id, minimal = false }) => {
 
         // === HilltopAds Native Bar ===
         const injectHilltop = () => {
-            if (!document.getElementById('hilltop-native-script')) {
-                const script = document.createElement('script');
-                script.id = 'hilltop-native-script';
-                script.async = true;
-                script.setAttribute('data-cfasync', 'false');
-                script.src = 'https://doubtfulimpatient.com/fc31d37af05da68c422a1508c61daeb3/invoke.js';
-                document.head.appendChild(script);
-            }
+            // Because React SPA navigation doesn't reload the page, 
+            // Ad network scripts often fail unless heavily re-evaluated.
+            // We append the snippet directly into the specific React container.
+            
+            const nativeDiv = document.createElement('div');
+            // Adding a random suffix so multiple AdSpaces don't create duplicate DOM IDs
+            // Note: If the ad strictly requires the exact ID, it might only render the first one.
+            nativeDiv.id = 'container-fc31d37af05da68c422a1508c61daeb3'; 
+            el.appendChild(nativeDiv);
 
-            // Ensure the specific container div exists
-            if (!document.getElementById('container-fc31d37af05da68c422a1508c61daeb3')) {
-                const nativeDiv = document.createElement('div');
-                nativeDiv.id = 'container-fc31d37af05da68c422a1508c61daeb3';
-                el.appendChild(nativeDiv);
-            }
+            const script = document.createElement('script');
+            script.type = 'text/javascript';
+            script.async = true;
+            script.setAttribute('data-cfasync', 'false');
+            script.src = 'https://doubtfulimpatient.com/fc31d37af05da68c422a1508c61daeb3/invoke.js';
+            el.appendChild(script);
         };
 
         // === Google AdSense push ===
