@@ -47,6 +47,7 @@ const AdminDashboard = () => {
     const [audioFile, setAudioFile] = useState(null);
     const [uploadProgress, setUploadProgress] = useState({ active: false, percent: 0, currentChunk: 0, totalChunks: 0 });
     const [uploadStatus, setUploadStatus] = useState('idle'); // idle, uploading, success, error
+    const [statusMessage, setStatusMessage] = useState('');
 
     const getSavedUser = () => {
         try {
@@ -316,6 +317,9 @@ const AdminDashboard = () => {
             // This is more stable and faster for 100kb/s connections.
             payload = dataToSend; 
 
+            setUploadStatus('uploading');
+            setShowModal(false); // Close modal immediately to avoid "freeze" feel
+            
             if (isEditing) {
                 await updateContent(modelName, editId, payload);
             } else {
@@ -323,11 +327,16 @@ const AdminDashboard = () => {
             }
             
             setUploadStatus('success');
+            setStatusMessage(`${activeTab.toUpperCase()} Added Successfully! ✨`);
+            setTimeout(() => setUploadStatus('idle'), 5000);
+            
             await loadItems();
             setThumbnailFile(null);
             setAudioFile(null);
         } catch (err) {
             setUploadStatus('error');
+            setStatusMessage(`Error: ${err.message}`);
+            setTimeout(() => setUploadStatus('idle'), 7000);
             console.error('Submit Error:', err);
             const errorData = err.response?.data;
             const errorMsg = errorData?.error || errorData?.message || err.message;
@@ -441,33 +450,45 @@ const AdminDashboard = () => {
                 )}
             </div>
 
-            {/* PROGRESS OVERLAY */}
+            {/* BACKGROUND PROGRESS TOAST (Non-blocking) */}
             <AnimatePresence>
-                {uploadProgress.active && (
+                {(uploadProgress.active || uploadStatus === 'success' || uploadStatus === 'error') && (
                     <motion.div 
-                        className="upload-progress-overlay"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
+                        className={`upload-bg-toast ${uploadStatus}`}
+                        initial={{ opacity: 0, x: 100 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, scale: 0.5 }}
                     >
-                        <div className="progress-card glass-card shadow-neon">
-                            <h3>🚀 Powering through upload...</h3>
-                            <div className="progress-bar-container">
-                                <motion.div 
-                                    className="progress-bar-fill"
-                                    initial={{ width: 0 }}
-                                    animate={{ width: `${uploadProgress.percent}%` }}
-                                />
-                            </div>
-                            <div className="progress-details">
-                                <span className="percent">{uploadProgress.percent}%</span>
-                                <span className="chunks">
-                                    {uploadProgress.status?.includes('retrying') ? 
-                                        `⚠️ Retrying Chunk ${uploadProgress.currentChunk} (${uploadProgress.status.split('-')[1]}/5)...` : 
-                                        `Piece ${uploadProgress.currentChunk} / ${uploadProgress.totalChunks}`}
-                                </span>
-                            </div>
-                            <p className="slow-internet-note">Keep your browser open, especially on slow internet. We're retrying automatically if needed! 💎</p>
+                        <div className="toast-content glass-card shadow-neon">
+                            {uploadProgress.active ? (
+                                <>
+                                    <div className="toast-header">
+                                        <div className="spinner-mini"></div>
+                                        <span>Uploading {activeTab}...</span>
+                                    </div>
+                                    <div className="mini-progress-bar">
+                                        <motion.div 
+                                            className="mini-fill"
+                                            initial={{ width: 0 }}
+                                            animate={{ width: `${uploadProgress.percent}%` }}
+                                        />
+                                    </div>
+                                    <div className="toast-footer">
+                                        <span>{uploadProgress.percent}%</span>
+                                        <span>Piece {uploadProgress.currentChunk}/{uploadProgress.totalChunks}</span>
+                                    </div>
+                                </>
+                            ) : uploadStatus === 'success' ? (
+                                <div className="toast-success">
+                                    <CheckCircle size={20} color="#4caf50" />
+                                    <span>{statusMessage || 'Success!'}</span>
+                                </div>
+                            ) : (
+                                <div className="toast-error">
+                                    <X size={20} color="#f87171" />
+                                    <span>{statusMessage || 'Upload Failed'}</span>
+                                </div>
+                            )}
                         </div>
                     </motion.div>
                 )}

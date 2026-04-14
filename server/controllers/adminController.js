@@ -144,6 +144,22 @@ exports.addContent = async (req, res) => {
         const item = new model(data);
         await item.save();
         
+        // --- REAL-TIME SUCCESS NOTIFICATION ---
+        try {
+            const { getIo } = require('../realtime-module/socket');
+            const io = getIo();
+            if (io) {
+                io.emit('content_added', { 
+                    type: type.toLowerCase(), 
+                    item: item,
+                    timestamp: new Date()
+                });
+                console.log(`[REALTIME] Broadcasted 'content_added' event for ${type}`);
+            }
+        } catch (socketErr) {
+            console.error('[REALTIME ERROR] Failed to broadcast update:', socketErr.message);
+        }
+        
         const count = await model.countDocuments();
         console.log(`[DB SAVE SUCCESS] ${type} saved. New total count: ${count}`);
         
