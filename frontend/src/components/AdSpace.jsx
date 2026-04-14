@@ -43,7 +43,7 @@ const AdSpace = ({ type = 'horizontal', id, minimal = false }) => {
             script.type = 'text/javascript';
             script.async = true;
             script.setAttribute('data-cfasync', 'false');
-            script.src = 'https://doubtfulimpatient.com/fc31d37af05da68c422a1508c61daeb3/invoke.js';
+            script.src = 'https://pl29012496.profitablecpmratenetwork.com/fc31d37af05da68c422a1508c61daeb3/invoke.js';
             el.appendChild(script);
         };
 
