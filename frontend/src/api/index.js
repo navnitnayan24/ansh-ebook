@@ -24,11 +24,17 @@ API.interceptors.response.use(
         const status = error.response ? error.response.status : null;
 
         if (status === 401) {
-            console.warn('Unauthorized! Redirecting to login...');
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            if (!window.location.pathname.includes('/login')) {
-                window.location.href = '/login';
+            // Public pages should NEVER redirect to login on 401
+            const publicPages = ['/', '/shayari', '/terms', '/privacy', '/disclaimer', '/register', '/forgot-password'];
+            const isPublicPage = publicPages.some(p => window.location.pathname === p || window.location.pathname.startsWith('/reset-password'));
+            
+            if (!isPublicPage) {
+                console.warn('Unauthorized! Redirecting to login...');
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                if (!window.location.pathname.includes('/login')) {
+                    window.location.href = '/login';
+                }
             }
         } else if (status === 404) {
             console.error('API Endpoint not found. Please check backend routing.');
