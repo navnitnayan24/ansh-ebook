@@ -108,6 +108,19 @@
 
     <!-- Google AdSense -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3458226027310065" crossorigin="anonymous"></script>
+    
+    <!-- Social Bar Ads (positioned at bottom, not top) -->
+    <script type='text/javascript' src='https://pl29012495.profitablecpmratenetwork.com/63/2a/d5/632ad54b757bd4afede8cccb7c9b1df7.js'></script>
+    <style>
+      /* Push Social Bar floating ads to bottom-right so they don't overlap header or content */
+      div[id*="social-bar"], div[class*="social-bar"],
+      div[style*="position: fixed"][style*="top: 0"],
+      div[style*="position:fixed"][style*="top:0"] {
+        top: auto !important;
+        bottom: 80px !important;
+        z-index: 999 !important;
+      }
+    </style>
 
     
     <script>
