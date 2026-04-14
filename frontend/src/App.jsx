@@ -125,9 +125,9 @@ const Layout = ({ children }) => {
                 className="layout-body-flex" 
                 style={{ 
                     paddingTop: isChatPage ? '0' : (isMobile ? '80px' : '100px'),
-                    flex: 1,
-                    minHeight: 0,
-                    overflow: 'hidden',
+                    flex: isChatPage ? 1 : 'none',
+                    minHeight: isChatPage ? 0 : 'auto',
+                    overflow: isChatPage ? 'hidden' : 'visible',
                     display: 'flex',
                     flexDirection: isChatPage ? 'row' : 'column',
                     boxSizing: 'border-box'
