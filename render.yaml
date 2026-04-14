@@ -5,7 +5,7 @@ services:
     env: node
     buildCommand: npm install --prefix server
     startCommand: npm start --prefix server
-    autoDeploy: false
+    autoDeploy: true
     envVars:
       - key: NODE_ENV
         value: production
@@ -24,7 +24,7 @@ services:
     env: static
     buildCommand: npm install --prefix frontend && npm run build --prefix frontend
     staticPublishPath: frontend/dist
-    autoDeploy: false
+    autoDeploy: true
     routes:
       - type: rewrite
         source: /*

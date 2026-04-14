@@ -127,7 +127,6 @@ const Layout = ({ children }) => {
                     paddingTop: isChatPage ? '0' : (isMobile ? '80px' : '100px'),
                     flex: 1,
                     minHeight: 0,
-                    height: isChatPage ? '100%' : 'auto', /* Added explicit 100% height for Chat Page */
                     overflow: 'hidden',
                     display: 'flex',
                     flexDirection: isChatPage ? 'row' : 'column',
@@ -142,8 +141,6 @@ const Layout = ({ children }) => {
                         flexDirection: 'column',
                         flex: 1,
                         minHeight: 0,
-                        height: '100%', 
-                        maxHeight: '100%', /* Added max-height to prevent expansion */
                         overflow: 'hidden',
                         paddingBottom: 0,
                         position: 'relative'

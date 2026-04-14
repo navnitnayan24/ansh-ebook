@@ -983,8 +983,9 @@ html:has(.realtime-chat-page) .main-layout {
     flex-shrink: 0;
     padding: 12px 16px;
     background: transparent;
-    position: relative; /* Changed from sticky to relative for better flexbox behavior */
+    position: relative; 
     z-index: 10;
+    margin-bottom: auto; /* Ensures it can sit at the bottom but not overflow */
 }
 
 @media (max-width: 768px) {
@@ -1005,13 +1006,15 @@ html:has(.realtime-chat-page) .main-layout {
 .input-field-container {
     display: flex;
     align-items: center;
-    background: #1e1e24; /* Darker, sophisticated background */
-    border: 1px solid rgba(255,255,255,0.04);
-    border-radius: 40px; /* High roundedness for "pill" look */
-    padding: 5px 12px 5px 6px; /* Precise padding for elite feel */
+    background: rgba(30, 30, 36, 0.65); /* Glass effect base */
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255,255,255,0.08); /* Slightly more visible border */
+    border-radius: 40px; 
+    padding: 5px 12px 5px 6px; 
     gap: 8px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+    box-shadow: 0 4px 30px rgba(0,0,0,0.3); /* Softer, broader shadow */
     width: 100%;
 }
 
