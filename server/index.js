@@ -143,6 +143,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/status', require('./routes/status.routes')); // Status/Story Module
 app.use('/api/realtime', require('./realtime-module/routes/chat.routes')); // Realtime Module Hook
+app.use('/api/notifications', require('./routes/notification.routes')); // Notification Center
 app.use('/api', contentRoutes);
 
 // Serve static files from the React app

@@ -163,5 +163,10 @@ export const replyToStatus = (id, text) => API.post(`status/reply/${id}`, { text
 export const addCommentToStatus = (id, text) => API.post(`status/comment/${id}`, { text });
 export const deleteStatus = (id) => API.delete(`status/${id}`);
 
+// Notification Module APIs
+export const fetchNotifications = () => API.get('notifications');
+export const markNotificationRead = (id) => API.post(`notifications/read/${id}`);
+export const markAllNotificationsRead = () => API.post('notifications/read-all');
+
 export { API };
 export default API;

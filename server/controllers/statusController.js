@@ -2,6 +2,7 @@ const Status = require('../models/Status');
 const User = require('../models/User');
 const Chat = require('../realtime-module/models/chat.model');
 const Message = require('../realtime-module/models/message.model');
+const Notification = require('../models/Notification');
 const { getIo } = require('../realtime-module/socket');
 
 exports.createStatus = async (req, res) => {
@@ -118,6 +119,17 @@ exports.likeStatus = async (req, res) => {
         const index = status.likes.indexOf(req.user.id);
         if (index === -1) {
             status.likes.push(req.user.id);
+            if (req.user.id !== status.user.toString()) {
+                await Notification.create({
+                    recipient: status.user,
+                    sender: req.user.id,
+                    type: 'like',
+                    content: 'liked your story'
+                }).catch(e => console.error("Notification errored (likely duplicate logic): ", e));
+                
+                const io = getIo();
+                if (io) io.to(status.user.toString()).emit('receive-notification');
+            }
         } else {
             status.likes.splice(index, 1);
         }
@@ -171,6 +183,17 @@ exports.replyToStatus = async (req, res) => {
         if (io) {
             io.to(receiverId.toString()).emit('receive-message', message);
             io.to(senderId.toString()).emit('receive-message', message);
+            
+            if (senderId !== receiverId.toString()) {
+                await Notification.create({
+                    recipient: receiverId,
+                    sender: senderId,
+                    type: 'reply',
+                    content: `Replied: ${text}`,
+                    chatId: chat._id
+                });
+                io.to(receiverId.toString()).emit('receive-notification');
+            }
         }
 
         res.status(201).json(message);
@@ -229,6 +252,16 @@ exports.addCommentToStatus = async (req, res) => {
                 statusId: id, 
                 comment: newComment 
             });
+            
+            if (req.user.id !== status.user.toString()) {
+                await Notification.create({
+                    recipient: status.user,
+                    sender: req.user.id,
+                    type: 'comment',
+                    content: text
+                });
+                io.to(status.user.toString()).emit('receive-notification');
+            }
         }
 
         res.status(201).json(newComment);

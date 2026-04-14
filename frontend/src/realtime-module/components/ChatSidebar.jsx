@@ -12,6 +12,7 @@ const getCleanName = (name) => {
 };
 import AdSpace from '../../components/AdSpace';
 import StoriesBar from '../../components/StoriesBar';
+import NotificationsDropdown from './NotificationsDropdown';
 
 const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef }) => {
     const [search, setSearch] = useState('');
@@ -25,6 +26,7 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
     const [selectedUsers, setSelectedUsers] = useState([]);
     const [joinCode, setJoinCode] = useState('');
     const [loading, setLoading] = useState(false);
+    const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
     const [notificationsEnabled, setNotificationsEnabled] = useState(Notification.permission === 'granted');
     const [following, setFollowing] = useState([]);
 
@@ -265,9 +267,16 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
                         <button className="theme-toggle-btn icon-only" title="Create Group" onClick={() => setIsCreateModalOpen(true)}>
                             <Plus size={18}/>
                         </button>
-                        <button className="theme-toggle-btn icon-only" title={notificationsEnabled ? "Notifications On" : "Notifications Off"} onClick={toggleNotifications}>
-                            {notificationsEnabled ? <Bell size={18} className="text-pink" /> : <BellOff size={18} />}
-                        </button>
+                        <div style={{ position: 'relative' }}>
+                            <button className="theme-toggle-btn icon-only" title="Notifications" onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}>
+                                <Bell size={18} className={isNotificationsOpen ? "text-pink" : ""} />
+                            </button>
+                            <NotificationsDropdown 
+                                isOpen={isNotificationsOpen} 
+                                onClose={() => setIsNotificationsOpen(false)} 
+                                onNotificationClick={handleStartChatFromSearch}
+                            />
+                        </div>
                         <button className="theme-toggle-btn icon-only" onClick={toggleTheme}>
                             {theme === 'dark' ? <Sun size={18}/> : <Moon size={18}/>}
                         </button>

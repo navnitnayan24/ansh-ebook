@@ -2,6 +2,7 @@ const { Server } = require('socket.io');
 const jwt = require('jsonwebtoken');
 const Message = require('./models/message.model');
 const Chat = require('./models/chat.model');
+const Notification = require('../models/Notification');
 
 let io;
 
@@ -121,6 +122,18 @@ const setupSocket = (server) => {
                 
                 console.log(`📩 Message sent in chat ${chatId} by ${userId}`);
                 
+                // --- Create Notification ---
+                if (!chat.isGroup && receiverId) {
+                    await Notification.create({
+                        recipient: receiverId,
+                        sender: userId,
+                        type: 'message',
+                        content: text ? (text.length > 30 ? text.substring(0, 30) + '...' : text) : 'Sent an attachment',
+                        chatId: chatId
+                    }).catch(e => console.error("Notification Error:", e));
+                    io.to(receiverId).emit('receive-notification');
+                }
+                
                 // If it's a 1-to-1 chat and receiver is online, mark as delivered
                 if (!chat.isGroup && receiverId && onlineUsers.has(receiverId)) {
                     message.status = 'delivered';
@@ -162,9 +175,18 @@ const setupSocket = (server) => {
         });
 
         // WebRTC Signaling
-        socket.on('call-user', (data) => {
+        socket.on('call-user', async (data) => {
             const { userToCall, signalData, from, name, profile_pic, type } = data;
             io.to(userToCall).emit('hey-calling', { signal: signalData, from, name, profile_pic, type });
+            
+            // --- Create Notification ---
+            await Notification.create({
+                recipient: userToCall,
+                sender: userId,
+                type: 'call',
+                content: `Missed ${type === 'video' ? 'Video' : 'Voice'} Call`
+            }).catch(e => console.error("Notification Error:", e));
+            io.to(userToCall).emit('receive-notification');
         });
 
         socket.on('accept-call', (data) => {
