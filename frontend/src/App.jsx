@@ -127,6 +127,7 @@ const Layout = ({ children }) => {
                     paddingTop: isChatPage ? '0' : (isMobile ? '80px' : '100px'),
                     flex: 1,
                     minHeight: 0,
+                    height: isChatPage ? '100%' : 'auto', /* Added explicit 100% height for Chat Page */
                     overflow: 'hidden',
                     display: 'flex',
                     flexDirection: isChatPage ? 'row' : 'column',
@@ -142,8 +143,10 @@ const Layout = ({ children }) => {
                         flex: 1,
                         minHeight: 0,
                         height: '100%', 
+                        maxHeight: '100%', /* Added max-height to prevent expansion */
                         overflow: 'hidden',
-                        paddingBottom: 0
+                        paddingBottom: 0,
+                        position: 'relative'
                     } : {}}
                 >
                     <main className={isChatPage ? "height-full-flex" : "content-fluid"} style={isChatPage ? { flex: 1, display: 'flex', flexDirection: 'column', height: '100%' } : {}}>
@@ -223,6 +226,15 @@ function App() {
     React.useEffect(() => {
         // Hide Splash Screen as soon as the app mounts
         SplashScreen.hide().catch(err => console.warn('SplashScreen hide failed (Not on native device):', err));
+
+        // SERVER KEEP-ALIVE PING (Prevent Render.com free tier sleep)
+        const keepServerAlive = () => {
+            fetch('/health').catch(() => {});
+        };
+        const interval = setInterval(keepServerAlive, 10 * 60 * 1000); // 10 minutes
+        keepServerAlive(); // Initial ping
+
+        return () => clearInterval(interval);
     }, []);
 
     return (
