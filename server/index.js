@@ -38,18 +38,10 @@ const app = express();
 const PORT = process.env.PORT || 5000; 
 
 // Security Middleware
+// NOTE: CSP is disabled because Adsterra ad scripts load from many unpredictable domains.
+// All other Helmet protections (XSS, clickjacking, MIME sniffing, HSTS) remain active.
 app.use(helmet({
-    contentSecurityPolicy: {
-        directives: {
-            ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-            "img-src": ["'self'", "data:", "https://res.cloudinary.com", "https://*.cloudinary.com", "https://api.dicebear.com"],
-            "media-src": ["'self'", "https://res.cloudinary.com", "https://*.cloudinary.com"],
-            "script-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://pagead2.googlesyndication.com", "https://*.googlesyndication.com", "https://*.profitablecpmratenetwork.com", "https://*.doubtfulimpatient.com"],
-            "frame-src": ["'self'", "https://googleads.g.doubleclick.net", "https://*.googlesyndication.com", "https://res.cloudinary.com", "https://*.cloudinary.com", "https://*.profitablecpmratenetwork.com", "https://*.doubtfulimpatient.com"],
-            "object-src": ["'none'", "https://res.cloudinary.com", "https://*.cloudinary.com"],
-            "connect-src": ["'self'", "https://res.cloudinary.com", "https://*.cloudinary.com", "https://ansh-ebook.onrender.com", "wss://ansh-ebook.onrender.com", "stun:*", "turn:*", "https://*.profitablecpmratenetwork.com", "https://*.doubtfulimpatient.com"]
-        },
-    },
+    contentSecurityPolicy: false,
     crossOriginEmbedderPolicy: false, 
 })); 
 app.use(mongoSanitize()); 
