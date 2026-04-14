@@ -352,10 +352,12 @@ h1, h2, h3, h4, h5, h6 {
     width: 100%;
     max-width: 1280px;
     padding: 0 1.5rem;
+    display: flex;
+    justify-content: center;
 }
 
 .ad-wrapper.horizontal {
-    min-height: 120px;
+    min-height: 100px;
 }
 
 .ad-wrapper.square {
@@ -369,18 +371,28 @@ h1, h2, h3, h4, h5, h6 {
     justify-content: center;
     position: relative;
     overflow: hidden;
-    min-height: 100px;
+    min-height: 90px;
+    width: 100%;
     padding: 0.5rem !important;
     border: 1px dashed rgba(255, 20, 147, 0.15) !important;
+    border-radius: 12px;
     background: rgba(10, 1, 16, 0.3) !important;
 }
 
 .ad-box-horizontal {
-    min-height: 120px;
+    min-height: 100px;
 }
 
 .ad-box-square {
     min-height: 250px;
+}
+
+.injected-ad-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
 }
 
 .ad-label-tag {
