@@ -3,6 +3,7 @@ const Admin = require('../models/Admin');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+const nodemailer = require('nodemailer');
 
 exports.register = async (req, res) => {
     try {
@@ -104,11 +105,51 @@ exports.forgotPassword = async (req, res) => {
 
         console.log(`🔑 PASSWORD RESET TOKEN for ${email} (${type}): ${resetTokenRaw}`);
         
-        res.json({ 
-            message: 'An email with instructions has been sent (Mock: Check server logs for development).'
-        });
+        // ✉️ Send Email using Nodemailer
+        if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+            const transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                    user: process.env.EMAIL_USER,
+                    pass: process.env.EMAIL_PASS
+                }
+            });
+
+            // Determine frontend URL (fallback to production URL)
+            const frontendUrl = (process.env.FRONTEND_URL || 'https://ansh-ebook.onrender.com').replace(/\/$/, "");
+            const resetURL = `${frontendUrl}/reset-password/${resetTokenRaw}`;
+
+            const mailOptions = {
+                from: `"Ansh Ebook Team" <${process.env.EMAIL_USER}>`,
+                to: email,
+                subject: 'Password Reset Request',
+                html: `
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #1a1a24; padding: 20px; border-radius: 10px; color: #fff;">
+                        <h2 style="color: #e91e63; text-align: center;">ANSH EBOOK</h2>
+                        <h3 style="color: #fff;">Password Reset Request</h3>
+                        <p>Hi ${account.username || 'User'},</p>
+                        <p>We received a request to reset your password. Please click the button below to choose a new password. This link will expire in 1 hour.</p>
+                        <div style="text-align: center; margin: 30px 0;">
+                            <a href="${resetURL}" style="background-color: #e91e63; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">Reset Password</a>
+                        </div>
+                        <p style="color: #aaa; font-size: 12px;">If you did not request a password reset, please ignore this email or contact support if you have questions.</p>
+                        <p style="color: #aaa; font-size: 12px;">Link: <a href="${resetURL}" style="color: #00bcd4;">${resetURL}</a></p>
+                    </div>
+                `
+            };
+
+            await transporter.sendMail(mailOptions);
+            res.json({ message: 'A password reset link has been sent to your email.' });
+        } else {
+            // Fallback if environment variables are missing (for local testing/debugging without email setup)
+            console.warn("⚠️ EMAIL_USER or EMAIL_PASS not set. Email not sent.");
+            res.json({ 
+                message: 'Internal System Alert: Email credentials not configured. Please contact the administrator. (The reset token was generated in server logs)'
+            });
+        }
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error("Forgot Password Error:", err);
+        res.status(500).json({ error: 'There was an error sending the email. Please try again later.' });
     }
 };
 
