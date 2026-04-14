@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { fetchNotifications, markNotificationRead, markAllNotificationsRead } from '../../../api';
-import Avatar from '../../../components/Avatar';
-import { useSocket } from '../../context/SocketContext';
+import { fetchNotifications, markNotificationRead, markAllNotificationsRead } from '../../api';
+import Avatar from '../../components/Avatar';
+import { useSocket } from '../context/SocketContext';
 import { Heart, MessageCircle, PhoneMissed, MessageSquare, CheckCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
