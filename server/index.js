@@ -44,10 +44,10 @@ app.use(helmet({
             ...helmet.contentSecurityPolicy.getDefaultDirectives(),
             "img-src": ["'self'", "data:", "https://res.cloudinary.com", "https://*.cloudinary.com", "https://api.dicebear.com"],
             "media-src": ["'self'", "https://res.cloudinary.com", "https://*.cloudinary.com"],
-            "script-src": ["'self'", "'unsafe-inline'", "https://pagead2.googlesyndication.com", "https://*.googlesyndication.com"],
-            "frame-src": ["'self'", "https://googleads.g.doubleclick.net", "https://*.googlesyndication.com", "https://res.cloudinary.com", "https://*.cloudinary.com"],
+            "script-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://pagead2.googlesyndication.com", "https://*.googlesyndication.com", "https://*.profitablecpmratenetwork.com", "https://*.doubtfulimpatient.com"],
+            "frame-src": ["'self'", "https://googleads.g.doubleclick.net", "https://*.googlesyndication.com", "https://res.cloudinary.com", "https://*.cloudinary.com", "https://*.profitablecpmratenetwork.com", "https://*.doubtfulimpatient.com"],
             "object-src": ["'none'", "https://res.cloudinary.com", "https://*.cloudinary.com"],
-            "connect-src": ["'self'", "https://res.cloudinary.com", "https://*.cloudinary.com", "https://ansh-ebook.onrender.com", "wss://ansh-ebook.onrender.com", "stun:*", "turn:*"]
+            "connect-src": ["'self'", "https://res.cloudinary.com", "https://*.cloudinary.com", "https://ansh-ebook.onrender.com", "wss://ansh-ebook.onrender.com", "stun:*", "turn:*", "https://*.profitablecpmratenetwork.com", "https://*.doubtfulimpatient.com"]
         },
     },
     crossOriginEmbedderPolicy: false, 
