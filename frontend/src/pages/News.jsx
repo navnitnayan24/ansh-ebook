@@ -168,17 +168,13 @@ const News = () => {
                                                         <Heart size={18} fill={item.liked_by_user ? "var(--accent)" : "transparent"} /> {item.likes_count || 0}
                                                     </button>
                                                     
-                                                    {item.file_url && (
-                                                        <a 
-                                                            href={item.file_url.startsWith('http') ? item.file_url : `https://${item.file_url}`} 
-                                                            target="_blank" 
-                                                            rel="noopener noreferrer" 
-                                                            className="btn btn-primary btn-xs btn-pill shadow-neon"
-                                                            style={{ fontSize: '0.7rem', padding: '0.4rem 1rem', display: 'flex', alignItems: 'center', gap: '6px' }}
-                                                        >
-                                                            READ MORE <ExternalLink size={12} />
-                                                        </a>
-                                                    )}
+                                                    <Link 
+                                                        to={`/news/${item._id}`}
+                                                        className="btn btn-primary btn-xs btn-pill shadow-neon"
+                                                        style={{ fontSize: '0.7rem', padding: '0.4rem 1rem', display: 'flex', alignItems: 'center', gap: '6px' }}
+                                                    >
+                                                        READ MORE <ExternalLink size={12} />
+                                                    </Link>
                                                 </div>
                                             </div>
                                         </motion.div>

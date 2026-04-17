@@ -7,6 +7,8 @@ const podcastSchema = new mongoose.Schema({
     file_url: { type: String, required: true },
     thumbnail_url: { type: String },
     duration: { type: String },
+    body_content: { type: String },
+    is_premium: { type: Boolean, default: false },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Podcast', podcastSchema);

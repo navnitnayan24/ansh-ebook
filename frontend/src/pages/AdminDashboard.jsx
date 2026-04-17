@@ -152,7 +152,8 @@ const AdminDashboard = () => {
             setFormData({
                 title: '', content: '', category_id: '', author: '', artist: '', 
                 genre: '', duration: '', thumbnail: '', file_url: '', description: '',
-                category: '', link: '', price: ''
+                category: '', link: '', price: '', 
+                body_content: '', is_premium: false
             });
             setThumbnailFile(null);
             setAudioFile(null);
@@ -1073,7 +1074,27 @@ const AdminDashboard = () => {
                                                 {isEditing && <span className="file-hint">Leave blank to keep existing</span>}
                                             </div>
                                             <div className="form-group full">
-                                                <label>Blog Link / Article URL (Optional)</label>
+                                                <label>Full Story Text (Medium-style Content)</label>
+                                                <textarea 
+                                                    value={formData.body_content} 
+                                                    onChange={(e) => setFormData({...formData, body_content: e.target.value})} 
+                                                    placeholder="Paste the full article content here..." 
+                                                    rows="8" 
+                                                />
+                                            </div>
+                                            <div className="form-group">
+                                                <label className="d-flex align-items-center gap-2" style={{cursor: 'pointer'}}>
+                                                    <input 
+                                                        type="checkbox" 
+                                                        checked={formData.is_premium} 
+                                                        onChange={(e) => setFormData({...formData, is_premium: e.target.checked})} 
+                                                        style={{width: '20px', height: '20px'}}
+                                                    />
+                                                    <span>Member-only Story (Paywall)</span>
+                                                </label>
+                                            </div>
+                                            <div className="form-group">
+                                                <label>Article Link / PDF (Optional)</label>
                                                 <input type="text" value={formData.file_url} onChange={(e) => setFormData({...formData, file_url: e.target.value})} placeholder="https://..." />
                                             </div>
                                         </>

@@ -55,6 +55,7 @@ const ResetPassword = lazyRetry(() => import('./pages/ResetPassword'));
 const Shayari = lazyRetry(() => import('./pages/Shayari'));
 const Music = lazyRetry(() => import('./pages/Music'));
 const News = lazyRetry(() => import('./pages/News'));
+const NewsArticle = lazyRetry(() => import('./pages/NewsArticle'));
 const Ebooks = lazyRetry(() => import('./pages/Ebooks'));
 const ChatPage = lazyRetry(() => import('./realtime-module/pages/ChatPage'));
 const Settings = lazyRetry(() => import('./pages/Settings'));
@@ -191,6 +192,7 @@ const AnimatedRoutes = () => {
                 <Route path="/shayari" element={<PageWrapper><Shayari /></PageWrapper>} />
                 <Route path="/music" element={<LoginRequiredRoute><PageWrapper><Music /></PageWrapper></LoginRequiredRoute>} />
                 <Route path="/news" element={<LoginRequiredRoute><PageWrapper><News /></PageWrapper></LoginRequiredRoute>} />
+                <Route path="/news/:id" element={<PageWrapper><NewsArticle /></PageWrapper>} />
                 <Route path="/ebooks" element={<LoginRequiredRoute><PageWrapper><Ebooks /></PageWrapper></LoginRequiredRoute>} />
                 
                 {/* Legacy & SEO Redirects */}
