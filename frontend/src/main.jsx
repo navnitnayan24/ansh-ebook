@@ -22,24 +22,31 @@ if ('serviceWorker' in navigator) {
       .then(reg => {
         console.log('[SW] Registered:', reg.scope);
 
-        // When a new service worker takes control, reload the page to get fresh assets
-        reg.addEventListener('updatefound', () => {
-          const newWorker = reg.installing;
-          if (newWorker) {
-            newWorker.addEventListener('statechange', () => {
-              if (newWorker.state === 'activated' && navigator.serviceWorker.controller) {
-                // New SW is active — force reload to get latest files
-                window.location.reload();
-              }
-            });
+    const handleAutoReload = () => {
+      // Prevent infinite loops if activation is buggy
+      const lastReload = sessionStorage.getItem('last-sw-reload');
+      const now = Date.now();
+      if (!lastReload || (now - parseInt(lastReload)) > 5000) {
+        sessionStorage.setItem('last-sw-reload', now.toString());
+        window.location.reload();
+      }
+    };
+
+    // When a new service worker takes control, reload the page to get fresh assets
+    reg.addEventListener('updatefound', () => {
+      const newWorker = reg.installing;
+      if (newWorker) {
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'activated' && navigator.serviceWorker.controller) {
+            handleAutoReload();
           }
         });
-      })
-      .catch(err => console.error('[SW] Registration Failed:', err));
+      }
+    });
 
     // Also reload if a new SW takes control of this tab (Auto-Update)
     navigator.serviceWorker.addEventListener('controllerchange', () => {
-      window.location.reload();
+      handleAutoReload();
     });
   });
 }

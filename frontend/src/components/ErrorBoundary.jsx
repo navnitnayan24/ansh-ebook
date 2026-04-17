@@ -25,6 +25,10 @@ class ErrorBoundary extends React.Component {
 
     handleSilentReload = async () => {
         try {
+            // Prevent multiple concurrent reloads
+            if (this.state.autoRecovering) return;
+            this.setState({ autoRecovering: true });
+
             // Clear all retry flags and caches
             for (let i = sessionStorage.length - 1; i >= 0; i--) {
                 const key = sessionStorage.key(i);
@@ -33,14 +37,15 @@ class ErrorBoundary extends React.Component {
                 }
             }
             
-            // Actually empty full browser caches (the Ctrl+Shift+Delete equivalent for PWA/SW)
             if ('caches' in window) {
                 const cacheNames = await caches.keys();
                 await Promise.all(cacheNames.map(name => caches.delete(name)));
             }
             
-            // Force a hard reload INSTANTLY
-            window.location.reload();
+            // Short delay to allow state to settle before browser refresh
+            setTimeout(() => {
+                window.location.replace(window.location.origin);
+            }, 300);
             
         } catch (err) {
             console.error("Auto-recovery cache clear failed:", err);
@@ -50,8 +55,31 @@ class ErrorBoundary extends React.Component {
 
     render() {
         if (this.state.hasError) {
-            // Truly silent recovery: render nothing while the page reloads instantly
-            return null;
+            // Minimal, non-intrusive feedback instead of pure black
+            return (
+                <div style={{
+                    minHeight: '100vh',
+                    background: '#0a0110', 
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                }}>
+                    <div className="pulse-dot" style={{
+                        width: '8px',
+                        height: '8px',
+                        background: '#ff1493',
+                        borderRadius: '50%',
+                        opacity: 0.4,
+                        animation: 'pulse-tiny 1s ease-in-out infinite'
+                    }}></div>
+                    <style>{`
+                        @keyframes pulse-tiny {
+                            0%, 100% { transform: scale(0.8); opacity: 0.2; }
+                            50% { transform: scale(1.2); opacity: 0.5; }
+                        }
+                    `}</style>
+                </div>
+            );
         }
 
         return this.props.children;
