@@ -920,12 +920,11 @@ const AdminDashboard = () => {
                                             <td className="main-cell">
                                                 <div className="cell-content">
                                                 {(() => {
-                                                    const img = item.thumbnail_url || item.thumbnail || item.cover_url;
+                                                    const img = item.thumbnail_url || item.thumbnail || item.cover_url || item.file_url;
                                                     if (!img) return <div className="cell-thumb placeholder"></div>;
-                                                    const src = img.startsWith('/uploads') ? `${MEDIA_URL}${img}` : img;
+                                                    const src = img.startsWith('/uploads') ? `${MEDIA_URL}${img.replace(/\\/g, '/')}` : img;
                                                     return <img src={src} alt="" className="cell-thumb" />;
                                                 })()}
-                                                    {item.cover_url && !item.thumbnail && <img src={item.cover_url.startsWith('/uploads') ? `${MEDIA_URL}${item.cover_url}` : item.cover_url} alt="" className="cell-thumb" />}
                                                     <div>
                                                         <span className="item-title">
                                                             {activeTab === 'users' ? (maskEmail(item.username) || maskEmail(item.email)) : 
