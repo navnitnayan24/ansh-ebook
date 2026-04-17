@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { User, Mail, Shield, Calendar, LogOut, ArrowRight, Heart, BookOpen, Trash2, CheckCircle, Camera } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { API } from '../api';
-import { MEDIA_URL, getAvatarUrl } from '../config';
+import { MEDIA_URL, getAvatarUrl, maskEmail } from '../config';
 import Avatar from '../components/Avatar';
 import '../styles/Profile.css';
 
