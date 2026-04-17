@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Play, Book, Mic, Quote, ArrowRight, BookOpen, Instagram, Youtube, MessageCircle, PlayCircle, Music, Star, ThumbsUp, ThumbsDown, User, Share2, MessageSquare, Send, Clock } from 'lucide-react';
+import { Play, Book, Mic, Quote, ArrowRight, BookOpen, Instagram, Youtube, MessageCircle, PlayCircle, Music, Star, ThumbsUp, ThumbsDown, User, Share2, MessageSquare, Send, Clock, Newspaper } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fetchHomeContent, fetchReviews, addReview, updateReviewReaction, API, subscribeUser } from '../api';
 import { MEDIA_URL, maskEmail } from '../config';

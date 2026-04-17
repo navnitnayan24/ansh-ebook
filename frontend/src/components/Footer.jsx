@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { 
     Facebook, Twitter, Instagram, Youtube, Send, Globe, Linkedin, MessageCircle,
-    Music, Quote, Mic, Book, Info, Mail, MonitorPlay, PlayCircle, Tv
+    Music, Quote, Mic, Book, Info, Mail, MonitorPlay, PlayCircle, Tv, Newspaper
 } from 'lucide-react';
 import { subscribeUser } from '../api';
 import '../styles/Footer.css';
