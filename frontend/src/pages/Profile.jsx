@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { User, Mail, Shield, Calendar, LogOut, ArrowRight, Heart, BookOpen, Trash2, CheckCircle2, Camera } from 'lucide-react';
+import { User, Mail, Shield, Calendar, LogOut, ArrowRight, Heart, BookOpen, Trash2, CheckCircle, Camera } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { API } from '../api';
 import { MEDIA_URL, getAvatarUrl } from '../config';
@@ -110,7 +110,7 @@ const Profile = () => {
                         <div className="avatar-controls-pill glass-card shadow-sm">
                             <input type="file" id="profile-upload" accept="image/*" style={{ display: 'none' }} onChange={handleProfilePicUpload} />
                             <label htmlFor="profile-upload" title="Upload from Device" className="control-btn"><Camera size={16} /></label>
-                            <button title="Choose Avatar" className="control-btn" onClick={() => setShowAvatarPicker(!showAvatarPicker)}><CheckCircle2 size={16} /></button>
+                            <button title="Choose Avatar" className="control-btn" onClick={() => setShowAvatarPicker(!showAvatarPicker)}><CheckCircle size={16} /></button>
                             {user.profile_pic && (
                                 <button title="Remove Photo" className="control-btn delete" onClick={handleRemovePhoto}><Trash2 size={16} /></button>
                             )}
