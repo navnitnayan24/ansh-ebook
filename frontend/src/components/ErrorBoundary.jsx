@@ -13,12 +13,11 @@ class ErrorBoundary extends React.Component {
     componentDidCatch(error, errorInfo) {
         console.error("[ErrorBoundary] Caught:", error, errorInfo);
         
-        // Attempt a silent auto-recovery if it hasn't happened in the last 15 seconds
+        // Attempt a silent auto-recovery if it hasn't happened in the last 2 seconds
         const lastRecover = sessionStorage.getItem('last-error-recover');
         const now = Date.now();
-        if (!lastRecover || (now - parseInt(lastRecover)) > 15000) {
+        if (!lastRecover || (now - parseInt(lastRecover)) > 2000) {
             sessionStorage.setItem('last-error-recover', now.toString());
-            this.setState({ autoRecovering: true });
             this.handleSilentReload();
         }
     }
@@ -42,9 +41,9 @@ class ErrorBoundary extends React.Component {
                 await Promise.all(cacheNames.map(name => caches.delete(name)));
             }
             
-            // Short delay to allow state to settle before browser refresh
+            // Force a hard reload to ignore cache
             setTimeout(() => {
-                window.location.replace(window.location.origin);
+                window.location.reload();
             }, 300);
             
         } catch (err) {
