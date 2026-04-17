@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink, Link } from 'react-router-dom';
-import { Menu, X, Home, Book, Music, Mic, BookOpen, User, Settings, MessageCircle } from 'lucide-react';
+import { Menu, X, Home, Book, Music, Newspaper, BookOpen, User, Settings, MessageCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import '../styles/MobileFooter.css';
 
@@ -9,7 +9,7 @@ const MobileFooter = () => {
         { path: '/', label: 'Home', icon: <Home size={18} /> },
         { path: '/chat', label: 'Chat', icon: <MessageCircle size={18} /> },
         { path: '/music', label: 'Music', icon: <Music size={18} /> },
-        { path: '/podcasts', label: 'Cast', icon: <Mic size={18} /> },
+        { path: '/news', label: 'News', icon: <Newspaper size={18} /> },
         { path: '/ebooks', label: 'Book', icon: <BookOpen size={18} /> },
         { path: '/settings', label: 'Set', icon: <Settings size={18} /> },
     ];

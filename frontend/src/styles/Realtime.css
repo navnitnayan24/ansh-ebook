@@ -976,6 +976,130 @@ html:has(.realtime-chat-page) .main-layout {
 }
 .message-media-audio { width: 100%; border-radius: 8px; }
 
+/* ─── Premium Voice Player ─── */
+.voice-message-layout {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 2px 4px;
+    min-width: 240px;
+}
+
+.voice-avatar-container {
+    flex-shrink: 0;
+    position: relative;
+}
+
+.voice-avatar-img {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 2px solid var(--c-pink);
+    object-fit: cover;
+}
+
+.voice-play-icon-overlay {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    background: var(--c-grad);
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+
+.voice-controls-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.voice-seek-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-voice-play {
+    background: transparent;
+    border: none;
+    color: var(--c-txt);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 0;
+}
+
+.voice-progress-container {
+    flex: 1;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.voice-wave-bg {
+    width: 100%;
+    height: 3px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+    position: relative;
+    overflow: hidden;
+}
+
+.voice-wave-progress {
+    height: 100%;
+    background: var(--c-pink);
+    width: 0%;
+    transition: width 0.1s linear;
+}
+
+.voice-time-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.7rem;
+    color: var(--c-muted);
+}
+
+.voice-actions-inline {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-voice-action {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--c-glassborder);
+    color: var(--c-txt);
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-voice-action:hover {
+    background: rgba(233,30,140,0.2);
+    border-color: var(--c-pink);
+}
+
+/* Custom adjustment for bubble if it contains voice */
+.message-bubble.has-voice {
+    padding: 8px 12px;
+    min-width: 280px;
+}
+
+
 /* ================================================================
    MESSAGE INPUT BAR
    ================================================================ */

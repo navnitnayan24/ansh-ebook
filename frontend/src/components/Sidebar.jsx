@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Home, Music, Book, BookOpen, Mic, Youtube, MessageCircle, Instagram, Facebook, Linkedin, Sun, Moon, Settings, User, LogOut } from 'lucide-react';
+import { Home, Music, Book, BookOpen, Library, Youtube, MessageCircle, Instagram, Facebook, Linkedin, Sun, Moon, Settings, User, LogOut, Newspaper } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import AdSpace from './AdSpace';
 import '../styles/Sidebar.css';
@@ -45,9 +45,9 @@ const Sidebar = () => {
                     </NavLink>
                 </li>
                 <li>
-                    <NavLink to="/podcasts" className={({isActive}) => isActive ? 'active' : ''}>
-                        <Mic size={20} className="sidebar-icon" />
-                        <span>PODCAST</span>
+                    <NavLink to="/news" className={({isActive}) => isActive ? 'active' : ''}>
+                        <Newspaper size={20} className="sidebar-icon" />
+                        <span>NEWS</span>
                     </NavLink>
                 </li>
                 {user && (

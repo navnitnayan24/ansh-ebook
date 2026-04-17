@@ -54,7 +54,7 @@ const ForgotPassword = lazyRetry(() => import('./pages/ForgotPassword'));
 const ResetPassword = lazyRetry(() => import('./pages/ResetPassword'));
 const Shayari = lazyRetry(() => import('./pages/Shayari'));
 const Music = lazyRetry(() => import('./pages/Music'));
-const Podcasts = lazyRetry(() => import('./pages/Podcasts'));
+const News = lazyRetry(() => import('./pages/News'));
 const Ebooks = lazyRetry(() => import('./pages/Ebooks'));
 const ChatPage = lazyRetry(() => import('./realtime-module/pages/ChatPage'));
 const Settings = lazyRetry(() => import('./pages/Settings'));
@@ -125,8 +125,8 @@ const Layout = ({ children }) => {
                 className="layout-body-flex" 
                 style={{ 
                     paddingTop: isChatPage ? '0' : (isMobile ? '80px' : '100px'),
-                    flex: isChatPage ? 1 : 'none',
-                    minHeight: isChatPage ? 0 : 'auto',
+                    flex: 1,
+                    minHeight: isChatPage ? 0 : '100vh',
                     overflow: isChatPage ? 'hidden' : 'visible',
                     display: 'flex',
                     flexDirection: isChatPage ? 'row' : 'column',
@@ -144,9 +144,13 @@ const Layout = ({ children }) => {
                         overflow: 'hidden',
                         paddingBottom: 0,
                         position: 'relative'
-                    } : {}}
+                    } : {
+                        flex: 1,
+                        display: 'flex',
+                        flexDirection: 'column'
+                    }}
                 >
-                    <main className={isChatPage ? "height-full-flex" : "content-fluid"} style={isChatPage ? { flex: 1, display: 'flex', flexDirection: 'column', height: '100%' } : {}}>
+                    <main className={isChatPage ? "height-full-flex" : "content-fluid scrollable-area"} style={isChatPage ? { flex: 1, display: 'flex', flexDirection: 'column', height: '100%' } : { flex: 1 }}>
                         {children}
                     </main>
                     {!isChatPage && <Footer />}
@@ -186,7 +190,7 @@ const AnimatedRoutes = () => {
                 {/* Dedicated Pages */}
                 <Route path="/shayari" element={<PageWrapper><Shayari /></PageWrapper>} />
                 <Route path="/music" element={<LoginRequiredRoute><PageWrapper><Music /></PageWrapper></LoginRequiredRoute>} />
-                <Route path="/podcasts" element={<LoginRequiredRoute><PageWrapper><Podcasts /></PageWrapper></LoginRequiredRoute>} />
+                <Route path="/news" element={<LoginRequiredRoute><PageWrapper><News /></PageWrapper></LoginRequiredRoute>} />
                 <Route path="/ebooks" element={<LoginRequiredRoute><PageWrapper><Ebooks /></PageWrapper></LoginRequiredRoute>} />
                 
                 {/* Legacy & SEO Redirects */}

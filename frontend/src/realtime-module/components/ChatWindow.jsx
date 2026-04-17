@@ -3,7 +3,7 @@ import MessageInput from './MessageInput';
 import GroupInfoView from './GroupInfoView';
 import AdSpace from '../../components/AdSpace';
 import { useSocket } from '../context/SocketContext';
-import { Phone, Video, MoreVertical, Pin, ArrowLeft, X, Image as ImageIcon, Reply, Smile, Heart, ThumbsUp } from 'lucide-react';
+import { Phone, Video, MoreVertical, Pin, ArrowLeft, X, Image as ImageIcon, Reply, Smile, Heart, ThumbsUp, Play, Pause, Download, Mic } from 'lucide-react';
 import { fetchMessages } from '../../api';
 import { getAvatarUrl, maskEmail, MEDIA_URL } from '../../config';
 import Avatar from '../../components/Avatar';
@@ -13,6 +13,91 @@ const getCleanName = (name) => {
     if (!name) return 'User';
     return name.split('@')[0];
 };
+
+const VoicePlayer = ({ url, sender, isMe }) => {
+    const [playing, setPlaying] = useState(false);
+    const [progress, setProgress] = useState(0);
+    const [duration, setDuration] = useState(0);
+    const audioRef = useRef(null);
+
+    const togglePlay = () => {
+        if (playing) {
+            audioRef.current.pause();
+        } else {
+            audioRef.current.play();
+        }
+        setPlaying(!playing);
+    };
+
+    const onTimeUpdate = () => {
+        const current = audioRef.current.currentTime;
+        const total = audioRef.current.duration;
+        setProgress((current / total) * 100);
+    };
+
+    const onLoadedMetadata = () => {
+        setDuration(audioRef.current.duration);
+    };
+
+    const formatTime = (time) => {
+        if (!time) return "0:00";
+        const mins = Math.floor(time / 60);
+        const secs = Math.floor(time % 60);
+        return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    };
+
+    return (
+        <div className="voice-message-layout">
+            <audio 
+                ref={audioRef} 
+                src={url} 
+                onTimeUpdate={onTimeUpdate} 
+                onLoadedMetadata={onLoadedMetadata} 
+                onEnded={() => setPlaying(false)}
+            />
+            
+            {!isMe && (
+                <div className="voice-avatar-container">
+                    <Avatar pic={sender?.profile_pic} username={sender?.username} className="voice-avatar-img" />
+                    <div className="voice-play-icon-overlay">
+                        <Mic size={10} />
+                    </div>
+                </div>
+            )}
+
+            <div className="voice-controls-main">
+                <div className="voice-seek-row">
+                    <button className="btn-voice-play" onClick={togglePlay}>
+                        {playing ? <Pause size={24} fill="currentColor" /> : <Play size={24} fill="currentColor" />}
+                    </button>
+                    <div className="voice-progress-container">
+                        <div className="voice-wave-bg">
+                            <div className="voice-wave-progress" style={{ width: `${progress}%` }}></div>
+                        </div>
+                    </div>
+                </div>
+                <div className="voice-time-row">
+                    <span>{formatTime(audioRef.current?.currentTime)} / {formatTime(duration)}</span>
+                    <div className="voice-actions-inline">
+                        <a href={url} download className="btn-voice-action">
+                            <Download size={14} />
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            {isMe && (
+                <div className="voice-avatar-container">
+                    <Avatar pic={sender?.profile_pic} username={sender?.username} className="voice-avatar-img" />
+                    <div className="voice-play-icon-overlay">
+                        <Mic size={10} />
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
 
 const ChatWindow = ({ chat, setSelectedChat }) => {
     const [messages, setMessages] = useState([]);
@@ -263,7 +348,7 @@ const ChatWindow = ({ chat, setSelectedChat }) => {
 
                     return (
                         <div key={idx} 
-                             className={`message-bubble ${isMe ? 'sent' : 'received'}`}
+                             className={`message-bubble ${isMe ? 'sent' : 'received'} ${msg.mediaType === 'audio' ? 'has-voice' : ''}`}
                              onContextMenu={(e) => handleLongPress(e, msg._id)}
                              onTouchStart={(e) => {
                                  const timer = setTimeout(() => handleLongPress(e, msg._id), 600);
@@ -286,7 +371,7 @@ const ChatWindow = ({ chat, setSelectedChat }) => {
                                 <div className="media-content">
                                     {msg.mediaType === 'image' && <img src={msg.mediaUrl} alt="shared" className="message-media" onClick={() => window.open(msg.mediaUrl)} />}
                                     {msg.mediaType === 'video' && <video src={msg.mediaUrl} controls className="message-media" />}
-                                    {msg.mediaType === 'audio' && <audio src={msg.mediaUrl} controls className="message-media-audio" />}
+                                    {msg.mediaType === 'audio' && <VoicePlayer url={msg.mediaUrl} sender={msg.sender} isMe={isMe} />}
                                 </div>
                             )}
                             

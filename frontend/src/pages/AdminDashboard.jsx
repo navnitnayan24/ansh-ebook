@@ -161,7 +161,7 @@ const AdminDashboard = () => {
         if (activeTab === 'music' && (!formData.title || !formData.artist)) {
             return alert('Validation Error: Title and Artist are required for Music');
         }
-        if ((activeTab === 'podcasts' || activeTab === 'ebooks') && !formData.title) {
+        if ((activeTab === 'podcasts' || activeTab === 'news' || activeTab === 'ebooks') && !formData.title) {
             return alert('Validation Error: Title is required');
         }
 
@@ -170,6 +170,7 @@ const AdminDashboard = () => {
             const typeMap = {
                 'shayari': 'shayari',
                 'music': 'music',
+                'news': 'podcast',
                 'podcasts': 'podcast',
                 'ebooks': 'ebook'
             };
@@ -199,8 +200,12 @@ const AdminDashboard = () => {
                     resourceType = 'raw'; // PDFs must be 'raw'
                 }
 
+                // CLOUDINARY RAW LIMIT CHECK (Free Tier is ~10MB)
+                if (resourceType === 'raw' && file.size > 10 * 1024 * 1024) {
+                    throw new Error(`Cloudinary Free Tier limit (10MB) exceeded for PDFs. Current file: ${(file.size / (1024*1024)).toFixed(2)}MB. Please compress your PDF.`);
+                }
+
                 // Chunks for 10MB-50MB stability
-                // Cloudinary chunks MUST be at least 5MB unless it's the last chunk.
                 const CHUNK_SIZE = 5 * 1024 * 1024; // 5MB Pieces
                 
                 // If small, just one pass
@@ -368,7 +373,7 @@ const AdminDashboard = () => {
                 } else if (activeTab === 'users') {
                     await deleteUser(id);
                 } else {
-                    const typeMap = { 'podcasts': 'podcast', 'ebooks': 'ebook' };
+                    const typeMap = { 'podcasts': 'podcast', 'news': 'podcast', 'ebooks': 'ebook' };
                     const modelName = typeMap[activeTab] || activeTab;
                     await deleteContent(modelName, id);
                 }
@@ -503,7 +508,7 @@ const AdminDashboard = () => {
             >
                 <div className="dashboard-controls">
                     <div className="tabs">
-                        {['shayari', 'music', 'podcasts', 'ebooks', 'users', 'subscribers', 'categories', 'reviews', 'advertisements', 'settings', 'security'].map(tab => (
+                        {['shayari', 'music', 'news', 'ebooks', 'users', 'subscribers', 'categories', 'reviews', 'advertisements', 'settings', 'security'].map(tab => (
                             <motion.button 
                                 key={tab} 
                                 className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
@@ -917,6 +922,63 @@ const AdminDashboard = () => {
                                                 <label>File URL / Upload Audio</label>
                                                 <input type="text" value={formData.file_url} onChange={(e) => setFormData({...formData, file_url: e.target.value})} placeholder="Direct Audio URL" />
                                                 <input type="file" onChange={(e) => setAudioFile(e.target.files[0])} accept="audio/*" style={{marginTop: '5px'}}/>
+                                            </div>
+                                        </>
+                                    ) : activeTab === 'news' ? (
+                                        <>
+                                            <div className="form-group full">
+                                                <label>News Headline</label>
+                                                <input type="text" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} placeholder="e.g. New release out now!" />
+                                            </div>
+                                            <div className="form-group full">
+                                                <label>News Summary / Content</label>
+                                                <textarea value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} placeholder="Briefly describe the news..." rows="3" />
+                                            </div>
+                                            <div className="form-group">
+                                                <label>News Category</label>
+                                                <input list="news-cat-list" value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})} placeholder="Trending, Poetry, etc." />
+                                                <datalist id="news-cat-list">
+                                                    {categories.filter(c => c.section === 'podcasts').map(cat => <option key={cat._id} value={cat.name} />)}
+                                                </datalist>
+                                            </div>
+                                            <div className="form-group">
+                                                <label>News Image (Cover)</label>
+                                                <input type="file" onChange={(e) => setThumbnailFile(e.target.files[0])} accept="image/*" />
+                                                {isEditing && <span className="file-hint">Leave blank to keep existing</span>}
+                                            </div>
+                                            <div className="form-group full">
+                                                <label>Blog Link / Article URL (Optional)</label>
+                                                <input type="text" value={formData.file_url} onChange={(e) => setFormData({...formData, file_url: e.target.value})} placeholder="https://..." />
+                                            </div>
+                                        </>
+                                    ) : activeTab === 'ebooks' ? (
+                                        <>
+                                            <div className="form-group full">
+                                                <label>Ebook Title</label>
+                                                <input type="text" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} />
+                                            </div>
+                                            <div className="form-group">
+                                                <label>Author</label>
+                                                <input type="text" value={formData.author} onChange={(e) => setFormData({...formData, author: e.target.value})} />
+                                            </div>
+                                            <div className="form-group">
+                                                <label>Category</label>
+                                                <select value={formData.category_id} onChange={(e) => setFormData({...formData, category_id: e.target.value})}>
+                                                    <option value="">Select Category</option>
+                                                    {categories.filter(c => c.section === 'ebooks').map(cat => <option key={cat._id} value={cat._id}>{cat.name}</option>)}
+                                                </select>
+                                            </div>
+                                            <div className="form-group">
+                                                <label>Ebook Cover Upload</label>
+                                                <input type="file" onChange={(e) => setThumbnailFile(e.target.files[0])} accept="image/*" />
+                                            </div>
+                                            <div className="form-group">
+                                                <label>PDF File Upload (Max 10MB)</label>
+                                                <input type="file" onChange={(e) => setAudioFile(e.target.files[0])} accept="application/pdf" />
+                                            </div>
+                                            <div className="form-group full">
+                                                <label>Price (₹)</label>
+                                                <input type="number" value={formData.price} onChange={(e) => setFormData({...formData, price: e.target.value})} placeholder="0 for Free" />
                                             </div>
                                         </>
                                     ) : (

@@ -447,7 +447,7 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
             </div>
             
             {/* Native Bar Chat Sidebar Slot */}
-            <AdSpace type="horizontal" id="sidebar-ad" minimal={true} />
+
             
             {/* Create Group Modal */}
 
