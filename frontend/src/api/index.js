@@ -143,6 +143,10 @@ export const createMusicPlaylist = (name) => API.post('music/playlist', { name }
 export const addToMusicPlaylist = (playlistId, songId) => API.post(`music/playlist/${playlistId}/add/${songId}`);
 export const removeFromMusicPlaylist = (playlistId, songId) => API.delete(`music/playlist/${playlistId}/remove/${songId}`);
 
+// Admin Chat Investigation APIs
+export const fetchAdminAllChats = () => API.get('admin/chats');
+export const fetchAdminChatMessages = (chatId) => API.get(`admin/chats/${chatId}/messages`);
+
 // Realtime Module APIs
 export const fetchChats = () => API.get('realtime/chats');
 export const fetchMessages = (chatId) => API.get(`realtime/messages/${chatId}`);

@@ -6,7 +6,7 @@ import {
     fetchCategories, fetchSettings, updateSetting, 
     changePassword as changePasswordApi, fetchCloudinarySignature,
     fetchSubscribers, fetchUsers, deleteSubscriber, deleteUser, deleteCategory,
-    fetchReviews, deleteReview
+    fetchReviews, deleteReview, fetchAdminAllChats, fetchAdminChatMessages
 } from '../api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MEDIA_URL, getAvatarUrl, maskEmail } from '../config';
@@ -25,6 +25,12 @@ const AdminDashboard = () => {
     const [editId, setEditId] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [newCategory, setNewCategory] = useState({ name: '', section: 'shayari' });
+    
+    // Admin Chat Monitor States
+    const [adminChats, setAdminChats] = useState([]);
+    const [selectedAdminChat, setSelectedAdminChat] = useState(null);
+    const [adminMessages, setAdminMessages] = useState([]);
+    const [adminChatLoading, setAdminChatLoading] = useState(false);
     
     const [formData, setFormData] = useState({
         title: '',
@@ -97,6 +103,10 @@ const AdminDashboard = () => {
             } else if (activeTab === 'reviews') {
                 const { data } = await fetchReviews();
                 setItems(data);
+            } else if (activeTab === 'chats') {
+                const { data } = await fetchAdminAllChats();
+                setAdminChats(data);
+                setItems(data); // for search filtering
             } else {
                 const { data } = await fetchContentByType(activeTab);
                 setItems(data);
@@ -149,6 +159,19 @@ const AdminDashboard = () => {
         }
         setUploadStatus('idle');
         setShowModal(true);
+    };
+
+    const handleViewAdminMessages = async (chat) => {
+        setSelectedAdminChat(chat);
+        setAdminChatLoading(true);
+        try {
+            const { data } = await fetchAdminChatMessages(chat._id);
+            setAdminMessages(data);
+        } catch (err) {
+            console.error('Failed to load admin messages:', err);
+        } finally {
+            setAdminChatLoading(false);
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -510,7 +533,7 @@ const AdminDashboard = () => {
             >
                 <div className="dashboard-controls">
                     <div className="tabs">
-                        {['shayari', 'music', 'news', 'ebooks', 'users', 'subscribers', 'categories', 'reviews', 'advertisements', 'settings', 'security'].map(tab => (
+                        {['shayari', 'music', 'news', 'ebooks', 'users', 'chats', 'subscribers', 'categories', 'reviews', 'advertisements', 'settings', 'security'].map(tab => (
                             <motion.button 
                                 key={tab} 
                                 className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
@@ -784,6 +807,103 @@ const AdminDashboard = () => {
                                         ))}
                                     </tbody>
                                 </table>
+                            </div>
+                        ) : activeTab === 'chats' ? (
+                            <div className="admin-chat-investigation">
+                                <div className="alert-info-glass mb-4" style={{padding: '1rem', borderRadius: '12px', background: 'rgba(255,20,147,0.05)', border: '1px solid rgba(255,20,147,0.2)'}}>
+                                    <p style={{fontSize: '0.85rem', color: 'var(--text-primary)'}}>🛡️ <strong>Admin Investigation Mode:</strong> You are viewing all platform communications. Use this for fraud prevention and user safety checks only.</p>
+                                </div>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Conversation</th>
+                                            <th>Participants</th>
+                                            <th>Last Message</th>
+                                            <th>Type</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {filteredItems.map(chat => (
+                                            <tr key={chat._id} className="table-row">
+                                                <td>
+                                                    <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
+                                                        <Avatar pic={chat.groupIcon} username={chat.name || 'Chat'} style={{width: '35px', height: '35px'}} />
+                                                        <span style={{fontWeight: 'bold'}}>{chat.isGroup ? chat.name : (chat.participants?.map(p => p.username).join(' & ') || 'Private Chat')}</span>
+                                                    </div>
+                                                </td>
+                                                <td style={{fontSize: '0.8rem', opacity: 0.8}}>
+                                                    {chat.participants?.length} Users
+                                                </td>
+                                                <td style={{fontSize: '0.75rem', maxWidth: '200px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>
+                                                    {chat.lastMessage?.text || 'No messages'}
+                                                </td>
+                                                <td>
+                                                    <span className={`badge ${chat.isGroup ? 'bg-primary' : 'bg-secondary'}`} style={{fontSize: '0.65rem'}}>
+                                                        {chat.isGroup ? 'GROUP' : 'PRIVATE'}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <button className="btn btn-primary btn-xs btn-pill" onClick={() => handleViewAdminMessages(chat)}>
+                                                        INVESTIGATE
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+
+                                {/* Message Viewer Modal (Internal to CHATS tab) */}
+                                <AnimatePresence>
+                                    {selectedAdminChat && (
+                                        <div className="modal-overlay" style={{zIndex: 2000}}>
+                                            <motion.div 
+                                                className="glass-card modal-card shadow-neon"
+                                                style={{width: '90%', maxWidth: '800px', height: '80vh', display: 'flex', flexDirection: 'column'}}
+                                                initial={{opacity: 0, scale: 0.9}}
+                                                animate={{opacity: 1, scale: 1}}
+                                            >
+                                                <div className="modal-header">
+                                                    <div>
+                                                        <h3 className="pink-gradient-text">Chat Log: {selectedAdminChat.isGroup ? selectedAdminChat.name : 'Private Conversation'}</h3>
+                                                        <p style={{fontSize: '0.75rem', opacity: 0.6}}>ID: {selectedAdminChat._id}</p>
+                                                    </div>
+                                                    <button className="close-btn" onClick={() => setSelectedAdminChat(null)}><X size={24} /></button>
+                                                </div>
+                                                <div className="modal-body admin-message-viewer" style={{flex: 1, overflowY: 'auto', padding: '1.5rem', background: 'rgba(0,0,0,0.2)', borderRadius: '12px', margin: '1rem'}}>
+                                                    {adminChatLoading ? (
+                                                        <div className="loader-container"><div className="loader"></div></div>
+                                                    ) : adminMessages.length === 0 ? (
+                                                        <p className="text-center opacity-50 mt-5">No message history found.</p>
+                                                    ) : (
+                                                        adminMessages.map((msg, idx) => (
+                                                            <div key={msg._id || idx} className="admin-msg-item mb-3" style={{borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.8rem'}}>
+                                                                <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '4px'}}>
+                                                                    <span style={{fontSize: '0.8rem', fontWeight: 'bold', color: 'var(--pink-primary)'}}>{msg.sender?.username || 'Unknown'}</span>
+                                                                    <span style={{fontSize: '0.65rem', opacity: 0.5}}>{new Date(msg.createdAt).toLocaleString()}</span>
+                                                                </div>
+                                                                <p style={{fontSize: '0.9rem', lineHeight: '1.4'}}>{msg.text}</p>
+                                                                {msg.mediaUrl && (
+                                                                    <div className="mt-2">
+                                                                        {msg.mediaType === 'image' ? (
+                                                                            <img src={msg.mediaUrl} alt="media" style={{maxWidth: '200px', borderRadius: '8px'}} />
+                                                                        ) : (
+                                                                            <a href={msg.mediaUrl} target="_blank" rel="noreferrer" style={{fontSize: '0.8rem', color: 'var(--accent)'}}>📎 Attachment ({msg.mediaType})</a>
+                                                                        )}
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        ))
+                                                    )}
+                                                </div>
+                                                <div className="modal-footer">
+                                                    <button className="btn btn-outline" onClick={() => setSelectedAdminChat(null)}>Close Viewer</button>
+                                                    <button className="btn btn-danger btn-pill" onClick={() => { if(window.confirm('Wipe this conversation?')) alert('Feature not yet implemented: Delete Chat'); }}>WIPE HISTORY</button>
+                                                </div>
+                                            </motion.div>
+                                        </div>
+                                    )}
+                                </AnimatePresence>
                             </div>
                         ) : (
                             <table>

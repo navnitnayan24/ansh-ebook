@@ -8,6 +8,8 @@ const Settings = require('../models/Settings');
 const Subscriber = require('../models/Subscriber');
 const User = require('../models/User');
 const Review = require('../models/Review');
+const Chat = require('../realtime-module/models/chat.model');
+const Message = require('../realtime-module/models/message.model');
 
 exports.getUsers = async (req, res) => {
     try {
@@ -343,6 +345,31 @@ exports.deleteSubscriber = async (req, res) => {
         const subscriber = await Subscriber.findByIdAndDelete(id);
         if (!subscriber) return res.status(404).json({ error: 'Subscriber not found' });
         res.json({ message: 'Subscriber removed' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// --- ADMIN CHAT INVESTIGATION ---
+exports.getAdminAllChats = async (req, res) => {
+    try {
+        const chats = await Chat.find()
+            .populate('participants', 'username profile_pic bio _id')
+            .populate('lastMessage')
+            .sort({ updatedAt: -1 });
+        res.json(chats);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+exports.getAdminChatMessages = async (req, res) => {
+    const { chatId } = req.params;
+    try {
+        const messages = await Message.find({ chat: chatId })
+            .populate('sender', 'username profile_pic _id')
+            .sort({ createdAt: 1 });
+        res.json(messages);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

@@ -28,6 +28,10 @@ router.delete('/users/:id', adminController.deleteUser);
 // Cloudinary
 router.get('/cloudinary-signature', adminController.getCloudinarySignature);
 
+// Chat Investigation
+router.get('/chats', adminController.getAdminAllChats);
+router.get('/chats/:chatId/messages', adminController.getAdminChatMessages);
+
 router.post('/:type', (req, res, next) => {
     console.log(`[ADMIN POST] Target: ${req.params.type}`);
     next();

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Play, Pause, Headphones, Music as MusicIcon, Heart, ArrowLeft, Youtube, Plus, ListMusic, Bookmark } from 'lucide-react';
+import { Search, Play, Pause, Headphones, Music as MusicIcon, Heart, ArrowLeft, Youtube, Plus, ListMusic, Bookmark, Shuffle, Repeat, Repeat1, SkipForward, SkipBack } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fetchContentByType, fetchCategories, fetchUserLibrary, toggleMusicFavorite, createMusicPlaylist, addToMusicPlaylist } from '../api';
@@ -20,6 +20,8 @@ const Music = () => {
     const [showPlaylistModal, setShowPlaylistModal] = useState(false);
     const [selectedSongForPlaylist, setSelectedSongForPlaylist] = useState(null);
     const [newPlaylistName, setNewPlaylistName] = useState('');
+    const [shuffleMode, setShuffleMode] = useState(false);
+    const [repeatMode, setRepeatMode] = useState('none'); // 'none', 'one', 'all'
 
     const currentUser = (() => {
         try {
@@ -119,6 +121,53 @@ const Music = () => {
         } else {
             setPlayingTrack(track);
         }
+    };
+
+    const playNextTrack = () => {
+        if (!playingTrack || tracks.length === 0) return;
+        
+        const currentIndex = tracks.findIndex(t => t._id === playingTrack._id);
+        let nextIndex;
+
+        if (repeatMode === 'one') {
+            // Re-play same
+            const temp = playingTrack;
+            setPlayingTrack(null);
+            setTimeout(() => setPlayingTrack(temp), 10);
+            return;
+        }
+
+        if (shuffleMode) {
+            nextIndex = Math.floor(Math.random() * tracks.length);
+            // Try not to play the same one if list > 1
+            if (nextIndex === currentIndex && tracks.length > 1) {
+                nextIndex = (nextIndex + 1) % tracks.length;
+            }
+        } else {
+            nextIndex = currentIndex + 1;
+            if (nextIndex >= tracks.length) {
+                if (repeatMode === 'all') nextIndex = 0;
+                else return setPlayingTrack(null);
+            }
+        }
+        setPlayingTrack(tracks[nextIndex]);
+    };
+
+    const playPreviousTrack = () => {
+        if (!playingTrack || tracks.length === 0) return;
+        const currentIndex = tracks.findIndex(t => t._id === playingTrack._id);
+        let prevIndex = currentIndex - 1;
+        if (prevIndex < 0) {
+            if (repeatMode === 'all') prevIndex = tracks.length - 1;
+            else prevIndex = 0;
+        }
+        setPlayingTrack(tracks[prevIndex]);
+    };
+
+    const toggleRepeat = () => {
+        if (repeatMode === 'none') setRepeatMode('all');
+        else if (repeatMode === 'all') setRepeatMode('one');
+        else setRepeatMode('none');
     };
 
     const containerVariants = {
@@ -296,19 +345,47 @@ const Music = () => {
 
                                                         return (
                                                             <div className="audio-player-container-v2">
+                                                                <div className="player-controls-premium mb-2" style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '20px', padding: '10px'}}>
+                                                                    <button 
+                                                                        className={`icon-btn ${shuffleMode ? 'active' : ''}`} 
+                                                                        onClick={() => setShuffleMode(!shuffleMode)}
+                                                                        title="Shuffle"
+                                                                        style={{color: shuffleMode ? 'var(--pink-primary)' : 'rgba(255,255,255,0.4)', background: 'transparent', border: 'none'}}
+                                                                    >
+                                                                        <Shuffle size={18} />
+                                                                    </button>
+                                                                    
+                                                                    <button className="icon-btn" onClick={playPreviousTrack} style={{color: 'white', background: 'transparent', border: 'none'}}>
+                                                                        <SkipBack size={22} fill="white" />
+                                                                    </button>
+
+                                                                    <button className="icon-btn" onClick={playNextTrack} style={{color: 'white', background: 'transparent', border: 'none'}}>
+                                                                        <SkipForward size={22} fill="white" />
+                                                                    </button>
+
+                                                                    <button 
+                                                                        className={`icon-btn ${repeatMode !== 'none' ? 'active' : ''}`} 
+                                                                        onClick={toggleRepeat}
+                                                                        title={`Repeat: ${repeatMode}`}
+                                                                        style={{color: repeatMode !== 'none' ? 'var(--pink-primary)' : 'rgba(255,255,255,0.4)', background: 'transparent', border: 'none'}}
+                                                                    >
+                                                                        {repeatMode === 'one' ? <Repeat1 size={20} /> : <Repeat size={20} />}
+                                                                    </button>
+                                                                </div>
+
                                                                 <audio 
-                                                                    key={track._id} // Changed key to ID for better re-mounting
+                                                                    key={track._id}
                                                                     autoPlay 
                                                                     controls 
                                                                     className="compact-audio-player"
                                                                     src={finalAudioSrc}
+                                                                    onEnded={playNextTrack}
                                                                     onError={(e) => {
                                                                         console.error("Audio playback error:", e);
                                                                     }}
                                                                 >
                                                                     Your browser does not support the audio element.
                                                                 </audio>
-                                                                {/* Debug URL removed for cleaner UI */}
                                                             </div>
                                                         );
                                                     })()}
