@@ -39,47 +39,19 @@ class ErrorBoundary extends React.Component {
                 await Promise.all(cacheNames.map(name => caches.delete(name)));
             }
             
-            // Force a hard reload
-            setTimeout(() => {
-                window.location.reload(true);
-            }, 500);
+            // Force a hard reload INSTANTLY
+            window.location.reload();
             
         } catch (err) {
             console.error("Auto-recovery cache clear failed:", err);
-            window.location.reload(true);
+            window.location.reload();
         }
     };
 
     render() {
         if (this.state.hasError) {
-            return (
-                <div style={{
-                    minHeight: '100vh',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    background: '#000',
-                    color: 'white',
-                    fontFamily: "'Poppins', sans-serif",
-                    textAlign: 'center',
-                    padding: '2rem'
-                }}>
-                    <div className="spinner-mini" style={{ marginBottom: '1.5rem', width: '40px', height: '40px', border: '3px solid rgba(255,255,255,0.1)', borderTopColor: 'var(--color-pink)', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
-                    <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-                    <h2 style={{ fontSize: '1.2rem', marginBottom: '0.5rem', fontWeight: '600', letterSpacing: '1px' }}>
-                        OPTIMIZING EXPERIENCE...
-                    </h2>
-                    <p style={{ 
-                        color: 'rgba(255,255,255,0.5)', 
-                        fontSize: '0.85rem', 
-                        maxWidth: '300px',
-                        lineHeight: '1.6'
-                    }}>
-                        Loading the latest stable version of Ansh Ebook. Please wait a moment.
-                    </p>
-                </div>
-            );
+            // Truly silent recovery: render nothing while the page reloads instantly
+            return null;
         }
 
         return this.props.children;
