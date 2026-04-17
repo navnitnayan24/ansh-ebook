@@ -53,6 +53,7 @@ export const fetchContentByType = async (type, category = '', query = '') => {
     try {
         // Map the existing frontend "types" to our new backend routes
         let route = `${type}`;
+        if (type === 'news' || type === 'NEWS') route = 'podcast';
         if (type === 'podcasts' || type === 'PODCAST') route = 'podcast';
         if (type === 'ebooks' || type === 'EBOOK') route = 'ebook';
         
@@ -76,21 +77,21 @@ export const fetchCategories = async (section) => {
 // Admin CRUD Operations
 export const addContent = (type, data) => {
     let route = `${type}`;
-    if (type === 'podcasts') route = 'podcast';
+    if (type === 'news' || type === 'podcasts') route = 'podcast';
     if (type === 'ebooks') route = 'ebook';
     return API.post(`admin/${route}`, data);
 };
 
 export const updateContent = (type, id, data) => {
     let route = `${type}`;
-    if (type === 'podcasts') route = 'podcast';
+    if (type === 'news' || type === 'podcasts') route = 'podcast';
     if (type === 'ebooks') route = 'ebook';
     return API.put(`admin/${route}/${id}`, data);
 };
 
 export const deleteContent = (type, id) => {
     let route = `${type}`;
-    if (type === 'podcasts') route = 'podcast';
+    if (type === 'news' || type === 'podcasts') route = 'podcast';
     if (type === 'ebooks') route = 'ebook';
     return API.delete(`admin/${route}/${id}`);
 };

@@ -37,8 +37,9 @@ if ('serviceWorker' in navigator) {
       })
       .catch(err => console.error('[SW] Registration Failed:', err));
 
-    // Also reload if a new SW takes control of this tab
+    // Also reload if a new SW takes control of this tab (Auto-Update)
     navigator.serviceWorker.addEventListener('controllerchange', () => {
+      console.log('[SW] New version detected, reloading...');
       window.location.reload();
     });
   });

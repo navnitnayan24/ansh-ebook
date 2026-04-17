@@ -12,7 +12,7 @@ import '../styles/Home.css';
 
 const Home = () => {
     const navigate = useNavigate();
-    const [content, setContent] = useState({ latest_shayari: [], latest_music: [], latest_podcasts: [], featured_ebooks: [] });
+    const [content, setContent] = useState({ latest_shayari: [], latest_music: [], latest_news: [], featured_ebooks: [] });
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState(null);
     const [email, setEmail] = useState('');
@@ -214,7 +214,7 @@ const Home = () => {
         return 'Just now';
     };
 
-    // Only lock Music, Podcast, Ebook — NOT Shayari
+    // Only lock Music, News, Ebook — NOT Shayari
     const checkPremiumAccess = (e, targetPath) => {
         if (!user) {
             e.preventDefault();
@@ -245,7 +245,7 @@ const Home = () => {
     };
 
     const faqData = [
-        { q: "What is Ansh Ebook?", a: "Ansh-Ebook is a premium creative platform specializing in original Shayari, music, podcasts, and E-books." },
+        { q: "What is Ansh Ebook?", a: "Ansh-Ebook is a premium creative platform specializing in original Shayari, music, real-time news in our Gazette, and E-books." },
         { q: "Is the content original?", a: "Yes, 100%. Every piece is an original creation by Ansh Sharma or our verified partners." },
         { q: "Can I download E-books?", a: "Yes, our E-books are available in PDF format. Some are free, while premium ones can be purchased securely." },
         { q: "How can I stay updated?", a: "Subscribe to our newsletter or join our official WhatsApp and YouTube channels." }
@@ -273,8 +273,8 @@ const Home = () => {
             variants={containerVariants}
         >
             <SEO 
-                title="Ansh Ebook - Free Shayari, Music, Podcasts" 
-                description="Welcome to Ansh-Ebook. Explore original premium Hindi Shayari, soulful Music, Podcasts, and E-Books."
+                title="Ansh Ebook - Free Shayari, Music, News" 
+                description="Welcome to Ansh-Ebook. Explore original premium Hindi Shayari, soulful Music, Real-time News, and E-Books."
             />
 
             {/* STORIES SECTION */}
@@ -317,11 +317,11 @@ const Home = () => {
                         <span className="access-label locked">🔒 LOGIN</span>
                     </motion.div>
 
-                    {/* Podcast — Login Required */}
-                    <motion.div onClick={(e) => checkPremiumAccess(e, '/podcasts')} className="explore-card glass-card" variants={itemVariants} whileHover={{ y: -10 }} style={{ cursor: 'pointer' }}>
-                        <Mic size={40} className="pink-text mb-3" />
-                        <h3>Podcast</h3>
-                        <p>Inspiring stories.</p>
+                    {/* News Gazette — Login Required */}
+                    <motion.div onClick={(e) => checkPremiumAccess(e, '/news')} className="explore-card glass-card" variants={itemVariants} whileHover={{ y: -10 }} style={{ cursor: 'pointer' }}>
+                        <Newspaper size={40} className="pink-text mb-3" />
+                        <h3>News Gazette</h3>
+                        <p>Real-time updates.</p>
                         <span className="access-label locked">🔒 LOGIN</span>
                     </motion.div>
 
@@ -432,7 +432,7 @@ const Home = () => {
             </div>
         </section>
 
-            {/* PREMIUM SECTION — Music, Podcast, E-Books (Login Required) */}
+            {/* PREMIUM SECTION — Music, News, E-Books (Login Required) */}
             <section id="premium" className="featured-section container">
                 <motion.div className="section-header" variants={itemVariants}>
                     <h2>Ansh Ebook <span className="text-gradient">Premium Collection</span> <span className="access-label locked ml-3">🔒 LOGIN</span></h2>
@@ -472,25 +472,25 @@ const Home = () => {
                         </div>
                     </div>
 
-                    <div id="podcasts-section" className="premium-sub-section mb-5">
-                        <h3 className="premium-sub-title mb-4"><Mic size={20} className="mr-2"/> Inspiring Podcasts</h3>
+                    <div id="news-section" className="premium-sub-section mb-5">
+                        <h3 className="premium-sub-title mb-4"><Newspaper size={20} className="mr-2"/> Ansh Gazette</h3>
                         <div className="grid-3">
                             {loading ? (
                                 <SkeletonLoader type="list" count={3} />
                             ) : (
-                                content?.latest_podcasts?.map((pod, idx) => (
-                                    <motion.div key={pod?._id || idx} className={`glass-card podcast-card-mini ${!user ? 'restricted-content' : ''}`} onClick={(e) => checkPremiumAccess(e, '/podcasts')} variants={itemVariants} style={{ cursor: 'pointer' }}>
+                                content?.latest_news?.map((item, idx) => (
+                                    <motion.div key={item?._id || idx} className={`glass-card podcast-card-mini ${!user ? 'restricted-content' : ''}`} onClick={(e) => checkPremiumAccess(e, '/news')} variants={itemVariants} style={{ cursor: 'pointer' }}>
                                         <div className="podcast-thumb">
                                             {(() => {
-                                                const albumArt = pod?.thumbnail || pod?.cover_url || pod?.thumbnail_url;
-                                                const imgSrc = albumArt?.startsWith('/uploads') ? `${MEDIA_URL}${albumArt}` : (albumArt || '/default-podcast.png');
-                                                return <img src={imgSrc} alt={`${pod?.title} - Ansh Ebook Podcast`} loading="lazy" />;
+                                                const albumArt = item?.thumbnail_url || item?.thumbnail || item?.cover_url;
+                                                const imgSrc = albumArt?.startsWith('/uploads') ? `${MEDIA_URL}${albumArt}` : (albumArt || '/default-news.png');
+                                                return <img src={imgSrc} alt={`${item?.title} - Ansh Ebook News`} loading="lazy" />;
                                             })()}
                                             {!user && <div className="lock-overlay"><div className="lock-circle">🔒</div></div>}
                                         </div>
                                         <div className="podcast-info">
-                                            <h3>{pod?.title}</h3>
-                                            <p>{pod?.description?.substring(0, 80)}...</p>
+                                            <h3>{item?.title}</h3>
+                                            <p>{item?.description?.substring(0, 80)}...</p>
                                         </div>
                                     </motion.div>
                                 ))
@@ -542,7 +542,7 @@ const Home = () => {
                     <div className="glass-card" style={{ padding: '3rem' }}>
                         <h2 className="pink-gradient-text mb-4">The Ansh Ebook Story</h2>
                         <p style={{ lineHeight: '1.8', opacity: 0.9 }}>
-                            Ansh-Ebook is a digital sanctuary dedicated to the beauty of words and the profound impact of melodies. Founded by <strong>Ansh Sharma</strong>, we bring together high-quality original Shayari, soulful Music, and inspiring Podcasts.
+                            Ansh-Ebook is a digital sanctuary dedicated to the beauty of words and the profound impact of melodies. Founded by <strong>Ansh Sharma</strong>, we bring together high-quality original Shayari, soulful Music, and the <strong>Ansh Gazette</strong>.
                         </p>
                         <p className="mt-3" style={{ lineHeight: '1.8', opacity: 0.9 }}>
                             Every piece of content is crafted with passion and authenticity, ensuring a premium experience for every visitor.

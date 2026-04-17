@@ -194,6 +194,7 @@ const AnimatedRoutes = () => {
                 <Route path="/ebooks" element={<LoginRequiredRoute><PageWrapper><Ebooks /></PageWrapper></LoginRequiredRoute>} />
                 
                 {/* Legacy & SEO Redirects */}
+                <Route path="/podcasts" element={<Navigate to="/news" replace />} />
                 <Route path="/poetry" element={<Navigate to="/#shayari" replace />} />
                 <Route path="/songs" element={<Navigate to="/#premium" replace />} />
                 <Route path="/anshnote" element={<Navigate to="/#shayari" replace />} />

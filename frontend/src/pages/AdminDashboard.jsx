@@ -161,7 +161,7 @@ const AdminDashboard = () => {
         if (activeTab === 'music' && (!formData.title || !formData.artist)) {
             return alert('Validation Error: Title and Artist are required for Music');
         }
-        if ((activeTab === 'podcasts' || activeTab === 'news' || activeTab === 'ebooks') && !formData.title) {
+        if ((activeTab === 'news' || activeTab === 'ebooks') && !formData.title) {
             return alert('Validation Error: Title is required');
         }
 
@@ -171,7 +171,6 @@ const AdminDashboard = () => {
                 'shayari': 'shayari',
                 'music': 'music',
                 'news': 'podcast',
-                'podcasts': 'podcast',
                 'ebooks': 'ebook'
             };
             const modelName = typeMap[activeTab] || activeTab;
@@ -309,7 +308,10 @@ const AdminDashboard = () => {
                 const url = await uploadDirectlyToCloudinary(thumbnailFile);
                 dataToSend.thumbnail = url;
                 if (modelName === 'music' || modelName === 'ebook') dataToSend.cover_url = url;
-                if (modelName === 'podcast') dataToSend.thumbnail_url = url;
+                if (modelName === 'podcast') {
+                    dataToSend.thumbnail_url = url;
+                    dataToSend.thumbnail = url;
+                }
             }
             if (bypassAudio) {
                 const url = await uploadDirectlyToCloudinary(audioFile);
@@ -373,7 +375,7 @@ const AdminDashboard = () => {
                 } else if (activeTab === 'users') {
                     await deleteUser(id);
                 } else {
-                    const typeMap = { 'podcasts': 'podcast', 'news': 'podcast', 'ebooks': 'ebook' };
+                    const typeMap = { 'news': 'podcast', 'ebooks': 'ebook' };
                     const modelName = typeMap[activeTab] || activeTab;
                     await deleteContent(modelName, id);
                 }
@@ -516,7 +518,7 @@ const AdminDashboard = () => {
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                             >
-                                {tab === 'security' ? 'PASSWORD' : tab.toUpperCase()}
+                                {tab === 'news' ? 'GAZETTE' : (tab === 'security' ? 'PASSWORD' : tab.toUpperCase())}
                             </motion.button>
                         ))}
                     </div>
@@ -756,7 +758,7 @@ const AdminDashboard = () => {
                                         <select value={newCategory.section} onChange={(e) => setNewCategory({...newCategory, section: e.target.value})}>
                                             <option value="shayari">Shayari</option>
                                             <option value="music">Music</option>
-                                            <option value="podcasts">Podcasts</option>
+                                            <option value="news">Gazette (News)</option>
                                             <option value="ebooks">Ebooks</option>
                                         </select>
                                     </div>
@@ -797,7 +799,12 @@ const AdminDashboard = () => {
                                         <tr key={item._id} className="table-row">
                                             <td className="main-cell">
                                                 <div className="cell-content">
-                                                    {item.thumbnail && <img src={item.thumbnail.startsWith('/uploads') ? `${MEDIA_URL}${item.thumbnail}` : item.thumbnail} alt="" className="cell-thumb" />}
+                                                {(() => {
+                                                    const img = item.thumbnail_url || item.thumbnail || item.cover_url;
+                                                    if (!img) return <div className="cell-thumb placeholder"></div>;
+                                                    const src = img.startsWith('/uploads') ? `${MEDIA_URL}${img}` : img;
+                                                    return <img src={src} alt="" className="cell-thumb" />;
+                                                })()}
                                                     {item.cover_url && !item.thumbnail && <img src={item.cover_url.startsWith('/uploads') ? `${MEDIA_URL}${item.cover_url}` : item.cover_url} alt="" className="cell-thumb" />}
                                                     <div>
                                                         <span className="item-title">

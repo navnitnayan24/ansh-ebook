@@ -44,7 +44,7 @@ const Contact = () => {
             <div className="glass-card page-content-box contact-card-main">
                 <h2 className="mb-4" style={{ color: 'var(--text-primary)' }}>Get In Touch</h2>
                 <p className="mb-5 text-muted" style={{ fontSize: '1.1rem', lineHeight: '1.6' }}>
-                    We would love to hear from you! Whether you have questions regarding our content, need support, or simply want to share your feedback about our Shayari, Music, or Podcasts, feel free to reach out.
+                    We would love to hear from you! Whether you have questions regarding our content, need support, or simply want to share your feedback about our Shayari, Music, or the Gazette, feel free to reach out.
                 </p>
 
                 <div className="contact-methods-grid">

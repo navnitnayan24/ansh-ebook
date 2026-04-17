@@ -6,7 +6,7 @@ const SEO = ({ title, description, url, image, keywords }) => {
     const defaultDesc = "A digital sanctuary by Ansh Sharma (Ansh-Ebook) where words find meaning, melodies touch the soul, and stories inspire greatness.";
     const defaultUrl = "https://anshebook.netlify.app";
     const defaultImage = "/favicon.svg";
-    const defaultKeywords = "Ansh-Ebook, Ansh-Ebook, Hindi Shayari, Original Music, Podcasts, Premium Ebooks, Kalam Se Dil Tak";
+    const defaultKeywords = "Ansh-Ebook, Ansh-Ebook, Hindi Shayari, Original Music, News Gazette, Premium Ebooks, Kalam Se Dil Tak";
 
     return (
         <Helmet>

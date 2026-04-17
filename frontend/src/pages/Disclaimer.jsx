@@ -25,7 +25,7 @@ const Disclaimer = () => {
                 <section>
                     <h3>Original Content</h3>
                     <p>
-                        The poetry, podcasts, and music available on this platform are original creations. While we strive to provide authentic and high-quality artistic content, interpretations of art and literature are subjective. We are not liable for any misunderstandings or personal interpretations derived from our creative works.
+                        The poetry, Gazette news, and music available on this platform are original creations. While we strive to provide authentic and high-quality artistic content, interpretations of art and literature are subjective. We are not liable for any misunderstandings or personal interpretations derived from our creative works.
                     </p>
                 </section>
 

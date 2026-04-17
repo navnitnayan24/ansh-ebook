@@ -17,7 +17,7 @@ const About = () => {
                 <p>Welcome to <strong>Ansh-Ebook</strong>.</p>
                 <p className="mt-4">
                     Our platform is a digital sanctuary dedicated to the beauty of words and the profound impact of melodies. 
-                    Established with a deep passion for literature and creative arts by <strong>Ansh Sharma</strong>, we bring together high-quality, original Shayari, inspiring Podcasts, and soulful Music into one premium experience.
+                    Established with a deep passion for literature and creative arts by <strong>Ansh Sharma</strong>, we bring together high-quality, original Shayari, the <strong>Ansh Gazette</strong>, and soulful Music into one premium experience.
                 </p>
                 <p className="mt-4">
                     Every piece of content on this platform is crafted carefully through rigorous research, dedication, and genuine emotion, ensuring that our readers and listeners receive true value. Whether you are looking for heartfelt poetry, engaging audio stories, or relaxing soundscapes, <strong>Ansh Ebook</strong> is here to connect deeply with you.
@@ -33,12 +33,12 @@ const About = () => {
                     <div className="faq-grid" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1.5rem' }}>
                         <div className="faq-item glass-card" style={{ padding: '1.5rem' }}>
                             <h4 className="pink-text" style={{ fontSize: '1.2rem', marginBottom: '0.8rem' }}>1. What is Ansh Ebook?</h4>
-                            <p className="text-muted">Ansh-Ebook is a premium creative platform. We specialize in original Hindi/Urdu Shayari, soulful music tracks, insightful podcasts, and literary E-books.</p>
+                            <p className="text-muted">Ansh-Ebook is a premium creative platform. We specialize in original Hindi/Urdu Shayari, soulful music tracks, insightful real-time news in our Gazette, and literary E-books.</p>
                         </div>
                         
                         <div className="faq-item glass-card" style={{ padding: '1.5rem' }}>
                             <h4 className="pink-text" style={{ fontSize: '1.2rem', marginBottom: '0.8rem' }}>2. Is the content original?</h4>
-                            <p className="text-muted">Yes, 100%. Every piece of poetry, every melody, and every podcast episode hosted here is an original creation by our team or our verified partners.</p>
+                            <p className="text-muted">Yes, 100%. Every piece of poetry, every melody, and every news entry hosted here is an original creation by our team or our verified partners.</p>
                         </div>
 
                         <div className="faq-item glass-card" style={{ padding: '1.5rem' }}>

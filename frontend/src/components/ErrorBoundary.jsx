@@ -59,61 +59,25 @@ class ErrorBoundary extends React.Component {
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    background: 'radial-gradient(circle at center, #1b0a2e 0%, #000 100%)',
+                    background: '#000',
                     color: 'white',
                     fontFamily: "'Poppins', sans-serif",
                     textAlign: 'center',
                     padding: '2rem'
                 }}>
-                    <div style={{
-                        width: '80px',
-                        height: '80px',
-                        borderRadius: '50%',
-                        background: 'linear-gradient(135deg, #ff1493, #7c3aed)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '2rem',
-                        marginBottom: '1.5rem',
-                        boxShadow: '0 0 30px rgba(255, 20, 147, 0.4)'
-                    }}>
-                        {this.state.autoRecovering ? '✨' : '⚡'}
-                    </div>
-                    <h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem', fontWeight: '700' }}>
-                        {this.state.autoRecovering ? 'Optimizing Update...' : 'New Update Available!'}
+                    <div className="spinner-mini" style={{ marginBottom: '1.5rem', width: '40px', height: '40px', border: '3px solid rgba(255,255,255,0.1)', borderTopColor: 'var(--color-pink)', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+                    <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+                    <h2 style={{ fontSize: '1.2rem', marginBottom: '0.5rem', fontWeight: '600', letterSpacing: '1px' }}>
+                        OPTIMIZING EXPERIENCE...
                     </h2>
                     <p style={{ 
-                        color: 'rgba(255,255,255,0.6)', 
-                        fontSize: '0.9rem', 
-                        maxWidth: '400px',
-                        marginBottom: '2rem',
+                        color: 'rgba(255,255,255,0.5)', 
+                        fontSize: '0.85rem', 
+                        maxWidth: '300px',
                         lineHeight: '1.6'
                     }}>
-                        {this.state.autoRecovering 
-                            ? 'Please hold on, we are automatically clearing caches and loading the latest stable version for you.'
-                            : 'Ansh Ebook has been updated. Please refresh to load the latest version.'}
+                        Loading the latest stable version of Ansh Ebook. Please wait a moment.
                     </p>
-                    
-                    {!this.state.autoRecovering && (
-                        <button 
-                            onClick={this.handleSilentReload}
-                            style={{
-                                background: 'linear-gradient(90deg, #ff1493, #ad1457)',
-                                color: 'white',
-                                border: 'none',
-                                padding: '0.8rem 2.5rem',
-                                borderRadius: '50px',
-                                fontSize: '0.9rem',
-                                fontWeight: '600',
-                                cursor: 'pointer',
-                                letterSpacing: '1px',
-                                textTransform: 'uppercase',
-                                boxShadow: '0 0 20px rgba(255, 20, 147, 0.3)'
-                            }}
-                        >
-                            CLEAR CACHE & REFRESH NOW
-                        </button>
-                    )}
                 </div>
             );
         }
