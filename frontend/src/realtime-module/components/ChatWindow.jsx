@@ -107,7 +107,11 @@ const ChatWindow = ({ chat, setSelectedChat }) => {
     const [chatWallpaper, setChatWallpaper] = useState(localStorage.getItem('chatWallpaper') || 'default');
     const [showWallpaperMenu, setShowWallpaperMenu] = useState(false);
     const [replyTo, setReplyTo] = useState(null);
-    const [reactionMenu, setReactionMenu] = useState(null); // { messageId, x, y }
+    const [reactionMenu, setReactionMenu] = useState(null); // { messageId, x, y, isMe }
+    const [securityOverlay, setSecurityOverlay] = useState(false);
+    const [showMoreEmojis, setShowMoreEmojis] = useState(false);
+    const [isBlocked, setIsBlocked] = useState(false);
+    const [hasMoreActions, setHasMoreActions] = useState(false);
 
     const { socket, callUser, onlineUsers } = useSocket();
     const scrollRef = useRef();
@@ -119,7 +123,12 @@ const ChatWindow = ({ chat, setSelectedChat }) => {
         const handleKeyDown = (e) => {
             if (!messagesAreaRef.current) return;
             
-            // Only handle if not typing in a search box (optional, but keep it simple for now)
+            // SECURITY: Block PrintScreen (deterrent)
+            if (e.key === 'PrintScreen') {
+                alert("Screenshots are restricted on this premium platform.");
+                navigator.clipboard.writeText(""); // Clear clipboard
+            }
+
             const scrollAmount = messagesAreaRef.current.clientHeight * 0.8;
             const smallAmount = 100;
 
@@ -138,8 +147,25 @@ const ChatWindow = ({ chat, setSelectedChat }) => {
             }
         };
 
+        const handleFocus = () => setSecurityOverlay(false);
+        const handleBlur = () => setSecurityOverlay(true);
+
         window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
+        window.addEventListener('focus', handleFocus);
+        window.addEventListener('blur', handleBlur);
+        
+        // Block right-click and copy
+        const blockEvent = (e) => e.preventDefault();
+        document.addEventListener('contextmenu', blockEvent);
+        document.addEventListener('copy', blockEvent);
+
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+            window.removeEventListener('focus', handleFocus);
+            window.removeEventListener('blur', handleBlur);
+            document.removeEventListener('contextmenu', blockEvent);
+            document.removeEventListener('copy', blockEvent);
+        };
     }, []);
     const currentId = currentUser?.id || currentUser?._id;
     
@@ -223,12 +249,17 @@ const ChatWindow = ({ chat, setSelectedChat }) => {
             }
         });
 
+        socket.on('message-deleted', ({ messageId }) => {
+            setMessages(prev => prev.map(m => m._id === messageId ? { ...m, isDeleted: true, text: 'This message was unsent', mediaUrl: null, mediaType: 'none', reactions: [] } : m));
+        });
+
         return () => {
             socket.off('receive-message');
             socket.off('message-reaction-updated');
             socket.off('messages-seen');
             socket.off('message-delivered');
             socket.off('user-typing');
+            socket.off('message-deleted');
         };
     }, [socket, chat._id]);
 
@@ -257,11 +288,55 @@ const ChatWindow = ({ chat, setSelectedChat }) => {
         setReactionMenu(null);
     };
 
-    const handleLongPress = (e, messageId) => {
+    const handleLongPress = (e, messageId, isMe) => {
         e.preventDefault();
         const touch = e.touches ? e.touches[0] : e;
-        setReactionMenu({ messageId, x: touch.clientX, y: touch.clientY });
+        setReactionMenu({ messageId, x: touch.clientX, y: touch.clientY, isMe });
     };
+
+    const handleBlockAction = async () => {
+        try {
+            const { blockUser, unblockUser } = await import('../../api');
+            if (isBlocked) {
+                await unblockUser(otherUser?._id);
+                setIsBlocked(false);
+                alert("User Unblocked");
+            } else {
+                if (window.confirm(`Block ${displayName}? They will not be able to message or call you.`)) {
+                    await blockUser(otherUser?._id);
+                    setIsBlocked(true);
+                }
+            }
+        } catch (err) {
+            console.error("Block action failed:", err);
+        }
+    };
+
+    const handleDeleteAction = async (type) => {
+        if (!reactionMenu) return;
+        try {
+            const { deleteMessage: deleteMsgApi } = await import('../../api');
+            if (type === 'unsend' && !window.confirm("Unsend message for everyone?")) return;
+            
+            await deleteMsgApi(reactionMenu.messageId, type);
+            
+            if (type === 'unsend') {
+                setMessages(prev => prev.map(m => m._id === reactionMenu.messageId ? { ...m, isDeleted: true, text: 'This message was unsent', mediaUrl: null, mediaType: 'none', reactions: [] } : m));
+            } else {
+                setMessages(prev => prev.filter(m => m._id !== reactionMenu.messageId));
+            }
+            setReactionMenu(null);
+        } catch (err) {
+            alert("Failed to delete message");
+        }
+    };
+
+    useEffect(() => {
+        // Initial block status sync
+        if (currentUser.blockedUsers?.includes(otherUser?._id)) {
+            setIsBlocked(true);
+        }
+    }, [otherUser?._id]);
 
     const getWallpaperStyle = () => {
         switch (chatWallpaper) {
@@ -319,8 +394,19 @@ const ChatWindow = ({ chat, setSelectedChat }) => {
                             <button className="header-action-btn" onClick={() => setShowWallpaperMenu(!showWallpaperMenu)}><ImageIcon size={20}/></button>
                         </>
                     )}
-                    <button className="header-action-btn" onClick={() => setShowInfo(true)}><MoreVertical size={20}/></button>
+                    <button className="header-action-btn" onClick={() => { setShowInfo(true); setHasMoreActions(!hasMoreActions); }}><MoreVertical size={20}/></button>
                 </div>
+
+                {hasMoreActions && (
+                    <div className="more-actions-dropdown">
+                        <button className="dropdown-action-item" onClick={handleBlockAction}>
+                            {isBlocked ? 'Unblock User' : 'Block User'}
+                        </button>
+                        <button className="dropdown-action-item" onClick={() => setShowWallpaperMenu(true)}>
+                            Change Wallpaper
+                        </button>
+                    </div>
+                )}
 
                 {showWallpaperMenu && (
                     <div className="wallpaper-menu">
@@ -348,10 +434,11 @@ const ChatWindow = ({ chat, setSelectedChat }) => {
 
                     return (
                         <div key={idx} 
-                             className={`message-bubble ${isMe ? 'sent' : 'received'} ${msg.mediaType === 'audio' ? 'has-voice' : ''}`}
-                             onContextMenu={(e) => handleLongPress(e, msg._id)}
+                             className={`message-bubble ${isMe ? 'sent' : 'received'} ${msg.mediaType === 'audio' ? 'has-voice' : ''} ${msg.isDeleted ? 'is-deleted' : ''}`}
+                             onContextMenu={(e) => !msg.isDeleted && handleLongPress(e, msg._id, isMe)}
                              onTouchStart={(e) => {
-                                 const timer = setTimeout(() => handleLongPress(e, msg._id), 600);
+                                 if (msg.isDeleted) return;
+                                 const timer = setTimeout(() => handleLongPress(e, msg._id, isMe), 600);
                                  e.target.ontouchend = () => clearTimeout(timer);
                              }}
                         >
@@ -393,12 +480,39 @@ const ChatWindow = ({ chat, setSelectedChat }) => {
                 <div ref={scrollRef}></div>
             </div>
 
-            {/* REACTION MENU */}
+            {/* REACTION & MESSAGE ACTIONS MENU */}
             {reactionMenu && (
-                <div className="reaction-floating-menu" style={{ top: reactionMenu.y - 60, left: Math.min(reactionMenu.x, window.innerWidth - 200) }} onClick={() => setReactionMenu(null)}>
-                    {['❤️', '😂', '😮', '😢', '🙏', '👍'].map(emoji => (
-                        <span key={emoji} onClick={() => handleEmojiReaction(reactionMenu.messageId, emoji)}>{emoji}</span>
-                    ))}
+                <div className="reaction-floating-menu" style={{ top: reactionMenu.y - 120, left: Math.min(reactionMenu.x, window.innerWidth - 220) }}>
+                    <div className="reaction-emojis">
+                        {['❤️', '😂', '😮', '😢', '🙏', '👍'].map(emoji => (
+                            <span key={emoji} onClick={() => handleEmojiReaction(reactionMenu.messageId, emoji)}>{emoji}</span>
+                        ))}
+                        <span className="add-emoji-btn" onClick={() => setShowMoreEmojis(!showMoreEmojis)}>+</span>
+                    </div>
+                    
+                    {showMoreEmojis && (
+                        <div className="additional-emojis">
+                            {['🔥', '✨', '💎', '💯', '👑', '🙌', '👀', '👻', '💀', '👽'].map(emoji => (
+                                <span key={emoji} onClick={() => { handleEmojiReaction(reactionMenu.messageId, emoji); setShowMoreEmojis(false); }}>{emoji}</span>
+                            ))}
+                        </div>
+                    )}
+
+                    <div className="message-action-options">
+                        {reactionMenu.isMe && (
+                            <button className="btn-msg-action unsend" onClick={() => handleDeleteAction('unsend')}>Unsend</button>
+                        )}
+                        <button className="btn-msg-action delete" onClick={() => handleDeleteAction('deleteForMe')}>Delete for me</button>
+                        <button className="btn-msg-action cancel" onClick={() => setReactionMenu(null)}>Cancel</button>
+                    </div>
+                </div>
+            )}
+
+            {securityOverlay && (
+                <div className="security-screen-overlay">
+                    <div className="security-lock-icon">🔒</div>
+                    <h3>Privacy Protected</h3>
+                    <p>Screen content is hidden when inactive.</p>
                 </div>
             )}
 

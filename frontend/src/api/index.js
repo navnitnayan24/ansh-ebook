@@ -162,6 +162,9 @@ export const rejectInvite = (chatId, userId) => API.post(`realtime/reject-invite
 export const leaveGroup = (chatId) => API.post('realtime/leave-group', { chatId });
 export const joinGroupByCode = (joinCode) => API.post('realtime/join-group-code', { joinCode });
 export const pinMessage = (data) => API.post('realtime/pin', data);
+export const blockUser = (userId) => API.post('realtime/block', { userId });
+export const unblockUser = (userId) => API.post('realtime/unblock', { userId });
+export const deleteMessage = (messageId, type) => API.post(`realtime/delete-message/${messageId}`, { type });
 
 // Status/Story Module APIs
 export const fetchActiveStories = () => API.get('status/active');

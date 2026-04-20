@@ -71,8 +71,8 @@ export const SocketProvider = ({ children }) => {
             );
         });
 
-        newSocket.on('hey-calling', ({ from, name: callerName, type, signal }) => {
-            setCall({ isReceivingCall: true, from, name: callerName, type, signal });
+        newSocket.on('hey-calling', ({ from, name: callerName, type, signal, profile_pic }) => {
+            setCall({ isReceivingCall: true, from, name: callerName, type, signal, fromProfile: profile_pic });
             showNotification(
                 `Incoming ${type === 'video' ? 'Video' : 'Voice'} Call`,
                 `${callerName} is calling you...`,
@@ -80,10 +80,27 @@ export const SocketProvider = ({ children }) => {
             );
         });
 
+        newSocket.on('call-rejected', () => {
+            alert("Call Rejected");
+            setCall({});
+            setCallAccepted(false);
+            if (connectionRefCurrent.current) connectionRefCurrent.current.destroy();
+            window.location.reload(); 
+        });
+
+        newSocket.on('call-ended', () => {
+            setCall({});
+            setCallAccepted(false);
+            if (connectionRefCurrent.current) connectionRefCurrent.current.destroy();
+            window.location.reload();
+        });
+
         return () => {
             newSocket.off('receive-message');
             newSocket.off('user-status');
             newSocket.off('hey-calling');
+            newSocket.off('call-rejected');
+            newSocket.off('call-ended');
             newSocket.close();
         };
     }, []);
@@ -277,11 +294,25 @@ export const SocketProvider = ({ children }) => {
 
     const leaveCall = () => {
         setCallEnded(true);
+        if (socket && call.from) {
+            socket.emit('end-call', { to: call.from });
+        }
         if (connectionRefCurrent.current) connectionRefCurrent.current.destroy();
         if (stream) {
             stream.getTracks().forEach(track => track.stop());
         }
         window.location.reload();
+    };
+
+    const rejectCall = () => {
+        if (socket && call.from) {
+            socket.emit('reject-call', { to: call.from });
+        }
+        setCall({});
+        setCallAccepted(false);
+        if ("Notification" in window) {
+            // Logic to clear notification could go here
+        }
     };
 
     return (
@@ -298,6 +329,7 @@ export const SocketProvider = ({ children }) => {
             me: socket?.id,
             callUser,
             leaveCall,
+            rejectCall,
             answerCall,
             onlineUsers,
             setStream

@@ -23,5 +23,8 @@ router.post('/join-group-code', chatController.joinGroupByCode);
 router.post('/accept-invite/:chatId', chatController.acceptInvite);
 router.post('/reject-invite/:chatId', chatController.rejectInvite);
 router.post('/pin', chatController.pinMessage);
+router.post('/block', chatController.blockUser);
+router.post('/unblock', chatController.unblockUser);
+router.post('/delete-message/:messageId', chatController.deleteMessage);
 
 module.exports = router;

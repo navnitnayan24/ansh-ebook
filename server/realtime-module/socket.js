@@ -95,6 +95,21 @@ const setupSocket = (server) => {
                 
                 io.to(roomName).emit('receive-message', tempMsgPayload);
 
+                // --- Block Check ---
+                const myUser = await User.findById(userId);
+                const isBlockedByMe = myUser.blockedUsers?.map(u => u.toString()).includes(receiverId?.toString());
+                
+                let isBlockedByThem = false;
+                if (!chat.isGroup && receiverId) {
+                    const theirUser = await User.findById(receiverId);
+                    isBlockedByThem = theirUser.blockedUsers?.map(u => u.toString()).includes(userId.toString());
+                }
+
+                if (isBlockedByMe || isBlockedByThem) {
+                    // Fail silently or notify sender? Usually better to fail silently to mimic reality
+                    return;
+                }
+
                 // --- Async DB saving happens after broadcasting to kill latency ---
                 const message = await Message.create({
                     chat: chatId,
@@ -105,12 +120,12 @@ const setupSocket = (server) => {
                     replyTo
                 });
 
-                const chat = await Chat.findByIdAndUpdate(chatId, { 
+                const chatUpdate = await Chat.findByIdAndUpdate(chatId, { 
                     lastMessage: message._id,
                     $inc: { [`unreadCount.${receiverId || 'system'}`]: 1 }
                 }, { new: true });
 
-                if (!chat) {
+                if (!chatUpdate) {
                     console.error(`❌ Chat not found for ID: ${chatId}`);
                     return;
                 }
@@ -177,6 +192,13 @@ const setupSocket = (server) => {
         // WebRTC Signaling
         socket.on('call-user', async (data) => {
             const { userToCall, signalData, from, name, profile_pic, type } = data;
+            
+            // Block Check for calls
+            const receiverUser = await User.findById(userToCall);
+            const isBlocked = receiverUser.blockedUsers?.map(u => u.toString()).includes(userId.toString());
+            
+            if (isBlocked) return;
+
             io.to(userToCall).emit('hey-calling', { signal: signalData, from, name, profile_pic, type });
             
             // --- Create Notification ---
@@ -195,6 +217,10 @@ const setupSocket = (server) => {
 
         socket.on('end-call', (data) => {
             io.to(data.to).emit('call-ended');
+        });
+
+        socket.on('reject-call', (data) => {
+            io.to(data.to).emit('call-rejected');
         });
  
          // Message Reactions

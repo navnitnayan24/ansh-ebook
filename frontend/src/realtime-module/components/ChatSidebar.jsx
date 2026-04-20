@@ -26,6 +26,7 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
     const [selectedUsers, setSelectedUsers] = useState([]);
     const [joinCode, setJoinCode] = useState('');
     const [loading, setLoading] = useState(false);
+    const [modalSearch, setModalSearch] = useState('');
     const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
     const [notificationsEnabled, setNotificationsEnabled] = useState(Notification.permission === 'granted');
     const [following, setFollowing] = useState([]);
@@ -464,8 +465,19 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
                         />
                         <div className="participant-selector-modern">
                             <p>Select Participants</p>
+                            <div className="modal-search-small">
+                                <Search size={14} />
+                                <input 
+                                    type="text" 
+                                    placeholder="Search people to add..." 
+                                    onChange={(e) => {
+                                        const term = e.target.value.toLowerCase();
+                                        setModalSearch(term);
+                                    }}
+                                />
+                            </div>
                             <div className="discovery-scroll">
-                                {users.map(u => (
+                                {(modalSearch.length > 0 ? users.filter(u => u.username.toLowerCase().includes(modalSearch)) : []).map(u => (
                                     <div 
                                         key={u._id} 
                                         className={`participant-chip ${selectedUsers.find(s => s._id === u._id) ? 'active' : ''}`}
@@ -480,6 +492,7 @@ const ChatSidebar = ({ chats, users, setSelectedChat, selectedChat, searchRef })
                                         {selectedUsers.find(s => s._id === u._id) && <Check size={12} />}
                                     </div>
                                 ))}
+                                {modalSearch.length === 0 && <p className="modal-hint-text">Search users by name to add them</p>}
                             </div>
                         </div>
                         <div className="modal-actions">

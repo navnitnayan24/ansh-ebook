@@ -152,7 +152,7 @@ const GroupInfoView = ({ chat, onClose, onUpdate }) => {
     return (
         <div className="group-info-sidebar">
             <div className="group-info-header">
-                <button className="close-info-btn" onClick={onClose}><X size={20}/></button>
+                <button className="elite-back-btn" onClick={onClose} aria-label="Go Back"><X size={26}/></button>
                 <h3>{!chat.isGroup ? (otherUser?.username || 'User Profile') : isAdding ? 'Add Member' : isEditing ? 'Edit Group' : 'Group Info'}</h3>
             </div>
 

@@ -1,58 +1,101 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useSocket } from '../context/SocketContext';
-import { PhoneOff, Mic, MicOff, Video, VideoOff } from 'lucide-react';
+import { PhoneOff, Mic, MicOff, Video, VideoOff, Phone, X } from 'lucide-react';
 import Avatar from '../../components/Avatar';
 
 const CallModal = () => {
-    const { call, answerCall, leaveCall, callAccepted, myVideoRef, userVideoRef } = useSocket();
+    const { call, answerCall, leaveCall, rejectCall, callAccepted, myVideoRef, userVideoRef } = useSocket();
+    const ringtoneRef = useRef(new Audio('https://res.cloudinary.com/dhpwp898n/video/upload/v1711516002/whatsapp_ringtone_vqc6vz.mp3'));
+
+    useEffect(() => {
+        const ringtone = ringtoneRef.current;
+        ringtone.loop = true;
+        
+        if (!callAccepted && !call.isCalling && call.isReceivingCall) {
+            ringtone.play().catch(e => console.log('Autoplay blocked'));
+        }
+
+        return () => {
+            ringtone.pause();
+            ringtone.currentTime = 0;
+        };
+    }, [callAccepted, call.isCalling, call.isReceivingCall]);
+
+    const handleReject = () => {
+        rejectCall();
+    };
 
     return (
-        <div className="call-overlay flex-center">
-            <div className="call-modal glass-card text-center">
-                <div className="call-info mb-4">
-                    <div className="flex-center mb-3">
-                        <Avatar 
-                            pic={call.fromProfile} 
-                            username={call.name} 
-                            style={{ width: '100px', height: '100px', borderRadius: '50%', border: '4px solid var(--accent)' }}
-                        />
-                    </div>
-                    <h2 style={{ color: '#fff', fontSize: '1.5rem', fontWeight: '700' }}>{call.name || "Unknown User"}</h2>
-                    <p className="ringing-animation">
-                        {callAccepted ? 'CONVERSING...' : (call.isCalling ? 'CALLING...' : 'INCOMING CALL...')}
-                    </p>
+        <div className="premium-call-overlay">
+            <div className="premium-call-container">
+                <div className="call-bg-blur">
+                    <Avatar pic={call.fromProfile} username={call.name} className="blur-avatar" />
                 </div>
-
-                {callAccepted && (
-                    <div className="video-streams">
-                        <video playsInline muted ref={myVideoRef} autoPlay className="my-video" />
-                        <video playsInline ref={userVideoRef} autoPlay className="user-video" />
+                
+                <div className="call-content">
+                    <div className="call-header-status">
+                        <div className="secure-badge">
+                            <span className="lock-icon">🔒</span> End-to-end encrypted
+                        </div>
                     </div>
-                )}
 
-                <div className="call-actions mt-4">
-                    {!callAccepted ? (
-                        call.isCalling ? (
-                            <button className="btn btn-secondary btn-pill hangup-btn" onClick={leaveCall}>
-                                <PhoneOff size={18}/> CANCEL
-                            </button>
-                        ) : (
-                            <div className="flex-center gap-4">
-                                <button className="btn btn-primary btn-pill accept-btn" onClick={answerCall}>
-                                    <Video size={18}/> {call.type === 'video' ? 'ANSWER' : 'ACCEPT'}
-                                </button>
-                                <button className="btn btn-secondary btn-pill reject-btn" onClick={leaveCall}>
-                                    <PhoneOff size={18}/> REJECT
-                                </button>
-                            </div>
-                        )
-                    ) : (
-                        <div className="flex-center gap-4">
-                            <button className="icon-btn"><Mic size={20}/></button>
-                            <button className="icon-btn hangup-btn" onClick={leaveCall}><PhoneOff size={20}/></button>
-                            {call.type === 'video' && <button className="icon-btn"><Video size={20}/></button>}
+                    <div className="caller-main-info">
+                        <div className="caller-avatar-glow">
+                            <Avatar 
+                                pic={call.fromProfile} 
+                                username={call.name} 
+                                className="main-caller-avatar"
+                            />
+                        </div>
+                        <h2 className="caller-name-display">{call.name || "Unknown User"}</h2>
+                        <div className="call-status-pill">
+                            {callAccepted ? (
+                                <span className="status-ongoing">00:00</span>
+                            ) : (
+                                <span className="status-pulsing">
+                                    {call.isCalling ? 'Calling...' : (call.type === 'video' ? 'Incoming Video Call' : 'Incoming Voice Call')}
+                                </span>
+                            )}
+                        </div>
+                    </div>
+
+                    {callAccepted && (
+                        <div className="premium-video-grid">
+                            <video playsInline ref={userVideoRef} autoPlay className="peer-video-large" />
+                            <video playsInline muted ref={myVideoRef} autoPlay className="my-video-pip" />
                         </div>
                     )}
+
+                    <div className="premium-call-footer">
+                        {!callAccepted ? (
+                            <div className="pre-call-actions">
+                                {call.isCalling ? (
+                                    <button className="call-action-btn hangup" onClick={handleReject}>
+                                        <PhoneOff size={28}/>
+                                        <span>Cancel</span>
+                                    </button>
+                                ) : (
+                                    <div className="incoming-actions-row">
+                                        <button className="call-action-btn reject" onClick={handleReject}>
+                                            <X size={28}/>
+                                            <span>Decline</span>
+                                        </button>
+                                        <button className={`call-action-btn accept ${call.type === 'video' ? 'video' : 'voice'}`} onClick={answerCall}>
+                                            {call.type === 'video' ? <Video size={28}/> : <Phone size={28}/>}
+                                            <span>Accept</span>
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <div className="in-call-toolbar">
+                                <button className="tool-btn"><MicOff size={22}/></button>
+                                <button className="tool-btn hangup-main" onClick={leaveCall}><PhoneOff size={28}/></button>
+                                <button className="tool-btn"><VideoOff size={22}/></button>
+                                <button className="tool-btn"><Phone size={22}/></button>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>

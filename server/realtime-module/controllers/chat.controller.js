@@ -24,10 +24,28 @@ exports.getChats = async (req, res) => {
 // Get messages for a specific chat
 exports.getMessages = async (req, res) => {
     try {
-        const messages = await Message.find({ chat: req.params.chatId })
+        const messages = await Message.find({ 
+            chat: req.params.chatId,
+            deletedFor: { $ne: req.user.id } 
+        })
             .populate('sender', 'username profile_pic bio _id')
             .sort({ createdAt: 1 });
-        res.json(messages);
+        
+        // Hide text and media for unsent messages
+        const processedMessages = messages.map(m => {
+            if (m.isDeleted) {
+                return { 
+                    ...m._doc, 
+                    text: 'This message was unsent', 
+                    mediaUrl: null, 
+                    mediaType: 'none',
+                    reactions: [] 
+                };
+            }
+            return m;
+        });
+
+        res.json(processedMessages);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -330,6 +348,60 @@ exports.getUsers = async (req, res) => {
         const users = await User.find(query, 'username profile_pic bio _id')
             .limit(100);
         res.json(users);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// Block a user
+exports.blockUser = async (req, res) => {
+    const { userId } = req.body;
+    try {
+        await User.findByIdAndUpdate(req.user.id, { $addToSet: { blockedUsers: userId } });
+        res.json({ success: true, message: 'User blocked' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// Unblock a user
+exports.unblockUser = async (req, res) => {
+    const { userId } = req.body;
+    try {
+        await User.findByIdAndUpdate(req.user.id, { $pull: { blockedUsers: userId } });
+        res.json({ success: true, message: 'User unblocked' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// Delete or Unsend a message
+exports.deleteMessage = async (req, res) => {
+    const { messageId } = req.params;
+    const { type } = req.body; // 'unsend' or 'deleteForMe'
+    try {
+        const message = await Message.findById(messageId);
+        if (!message) return res.status(404).json({ error: 'Message not found' });
+
+        if (type === 'unsend') {
+            if (message.sender.toString() !== req.user.id) {
+                return res.status(403).json({ error: 'Only sender can unsend message' });
+            }
+            message.isDeleted = true;
+            await message.save();
+            
+            // Notify via socket
+            const { getIo } = require('../socket');
+            const io = getIo();
+            if (io) {
+                io.to(message.chat.toString()).emit('message-deleted', { messageId, chatId: message.chat });
+            }
+        } else {
+            // Delete for me
+            await Message.findByIdAndUpdate(messageId, { $addToSet: { deletedFor: req.user.id } });
+        }
+
+        res.json({ success: true });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
