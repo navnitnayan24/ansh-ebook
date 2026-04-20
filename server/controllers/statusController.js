@@ -64,7 +64,6 @@ exports.createStatus = async (req, res) => {
         }
         
         // Notify all users about new status (for the ring update)
-        const io = getIo();
         if (io) {
             io.emit('new-status', { userId: req.user.id });
         }
