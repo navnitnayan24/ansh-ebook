@@ -4,8 +4,9 @@
   "comment": "Triggering fresh build due to previous timeout",
   "private": true,
   "scripts": {
-    "postinstall": "npm install --prefix server && npm install --prefix frontend",
+    "postinstall": "npm install --prefix server --no-audit --no-fund && npm install --prefix frontend --no-audit --no-fund",
     "build": "npm run build --prefix frontend",
-    "start": "npm start --prefix server"
+    "render-build": "npm install --prefix server --no-audit --no-fund && npm install --prefix frontend --no-audit --no-fund && npm run build --prefix frontend",
+    "start": "node server/index.js"
   }
 }
