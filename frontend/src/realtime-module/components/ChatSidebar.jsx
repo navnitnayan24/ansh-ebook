@@ -10,7 +10,6 @@ const getCleanName = (name) => {
     if (!name || typeof name !== 'string') return 'User';
     return name.split('@')[0];
 };
-import AdSpace from '../../components/AdSpace';
 import StoriesBar from '../../components/StoriesBar';
 import NotificationsDropdown from './NotificationsDropdown';
 

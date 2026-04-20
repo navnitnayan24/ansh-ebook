@@ -63,17 +63,7 @@ const MessageInput = ({ chatId, receiverId, setMessages, replyTo, setReplyTo }) 
     const handleSend = async (e, directMedia = null) => {
         if (e) e.preventDefault();
         
-        let mediaData = directMedia;
-        
-        if (selectedFile) {
-            mediaData = await uploadFile(selectedFile);
-            if (!mediaData && !text.trim()) {
-                clearFile();
-                return;
-            }
-        }
-
-        if (!text.trim() && !mediaData) return;
+        if (!text.trim() && !selectedFile && !directMedia) return;
 
         if (!chatId) return;
         const normalizedChatId = chatId.toString();
@@ -84,20 +74,28 @@ const MessageInput = ({ chatId, receiverId, setMessages, replyTo, setReplyTo }) 
             currentChatId = res.data._id;
         }
 
-        const messageData = {
-            chatId: currentChatId,
-            receiverId,
-            text: text,
-            mediaUrl: mediaData?.url || null,
-            mediaType: mediaData?.type || 'none',
-            replyTo: replyTo?._id || null,
-            createdAt: new Date().toISOString()
-        };
+        // 1. Capture payload instantly
+        const textToSend = text;
+        const fileToSend = selectedFile;
+        const currentReplyTo = replyTo?._id;
 
+        // 2. Clear UI Inputs immediately
+        setText('');
+        clearFile();
+        setShowPicker(false);
+        closeReply();
+
+        // 3. Create Optimistic Message for instantaneous UX
         const currUserObj = JSON.parse(localStorage.getItem('user') || '{}');
         const optimisticMessage = {
-            ...messageData,
             _id: `temp-${Date.now()}`,
+            chatId: currentChatId,
+            receiverId,
+            text: textToSend,
+            mediaUrl: fileToSend ? URL.createObjectURL(fileToSend) : (directMedia?.url || null),
+            mediaType: fileToSend ? (fileToSend.type.startsWith('video/') ? 'video' : 'image') : (directMedia?.type || 'none'),
+            replyTo: currentReplyTo,
+            createdAt: new Date().toISOString(),
             sender: { 
                 _id: currUserObj.id || currUserObj._id, 
                 username: currUserObj.username, 
@@ -107,17 +105,33 @@ const MessageInput = ({ chatId, receiverId, setMessages, replyTo, setReplyTo }) 
         };
 
         if (setMessages && currentChatId && !currentChatId.startsWith('new-')) {
-            setMessages(prev => {
-                const updated = [...prev, optimisticMessage];
-                return updated;
-            });
+            setMessages(prev => [...prev, optimisticMessage]);
         }
 
-        socket.emit('send-message', messageData);
-        setText('');
-        clearFile();
-        setShowPicker(false);
-        closeReply();
+        // 4. Run Upload & Emit in the Background (Non-Blocking)
+        (async () => {
+            let mediaData = directMedia;
+            if (fileToSend) {
+                mediaData = await uploadFile(fileToSend);
+                if (!mediaData && !textToSend.trim()) {
+                    // Update state to failed? For now we just return
+                    return;
+                }
+            }
+
+            const messageData = {
+                tempId: optimisticMessage._id,
+                chatId: currentChatId,
+                receiverId,
+                text: textToSend,
+                mediaUrl: mediaData?.url || null,
+                mediaType: mediaData?.type || 'none',
+                replyTo: currentReplyTo,
+                createdAt: new Date().toISOString()
+            };
+
+            socket.emit('send-message', messageData);
+        })();
     };
 
     const clearFile = () => {

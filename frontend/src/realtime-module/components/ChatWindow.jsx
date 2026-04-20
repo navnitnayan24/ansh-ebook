@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import MessageInput from './MessageInput';
 import GroupInfoView from './GroupInfoView';
-import AdSpace from '../../components/AdSpace';
 import { useSocket } from '../context/SocketContext';
 import { Phone, Video, MoreVertical, Pin, ArrowLeft, X, Image as ImageIcon, Reply, Smile, Heart, ThumbsUp, Play, Pause, Download, Mic } from 'lucide-react';
 import { fetchMessages } from '../../api';

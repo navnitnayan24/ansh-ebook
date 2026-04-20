@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { X, UserPlus, Shield, UserMinus, LogOut, MoreVertical, Search, Check, Plus, Edit2, Save, Copy, Camera, Link } from 'lucide-react';
+import { X, UserPlus, Shield, UserMinus, LogOut, MoreVertical, Search, Check, Plus, Edit2, Save, Copy, Camera, Link, Image } from 'lucide-react';
 import { getAvatarUrl, maskEmail } from '../../config';
 import Avatar from '../../components/Avatar';
+import SharedMediaGallery from './SharedMediaGallery';
 import { fetchCloudinarySignature, searchUsers, addMember, removeMember, updateGroup, leaveGroup, makeAdmin, removeAdmin } from '../../api';
 
 const GroupInfoView = ({ chat, onClose, onUpdate }) => {
@@ -29,6 +30,7 @@ const GroupInfoView = ({ chat, onClose, onUpdate }) => {
     ) : null;
 
     const [isViewingAvatar, setIsViewingAvatar] = useState(false);
+    const [showMediaGallery, setShowMediaGallery] = useState(false);
 
     const formatUsername = (name) => maskEmail(name);
 
@@ -334,6 +336,19 @@ const GroupInfoView = ({ chat, onClose, onUpdate }) => {
                             <Shield size={14} />
                             <span>Privacy protected: Email fully hidden</span>
                         </div>
+
+                        {/* Shared Media Button */}
+                        <button
+                            className="group-action-item"
+                            style={{ width: '100%', marginTop: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}
+                            onClick={() => setShowMediaGallery(!showMediaGallery)}
+                        >
+                            <Image size={18} /> Media, Links & Docs
+                        </button>
+
+                        {showMediaGallery && (
+                            <SharedMediaGallery chatId={chat._id} onClose={() => setShowMediaGallery(false)} />
+                        )}
                     </div>
                 </div>
             ) : (
@@ -379,10 +394,17 @@ const GroupInfoView = ({ chat, onClose, onUpdate }) => {
                                 </button>
                             </>
                         )}
+                        <button className="group-action-item" onClick={() => setShowMediaGallery(!showMediaGallery)}>
+                            <Image size={18} /> Media, Links & Docs
+                        </button>
                         <button className="group-action-item danger" onClick={handleLeaveGroup}>
                             <LogOut size={18} /> Exit Group
                         </button>
                     </div>
+
+                    {showMediaGallery && (
+                        <SharedMediaGallery chatId={chat._id} onClose={() => setShowMediaGallery(false)} />
+                    )}
 
                     <div className="participants-section">
                         <h4>Participants</h4>

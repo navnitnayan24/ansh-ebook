@@ -436,3 +436,25 @@ exports.seedKohinoorGroup = async () => {
         console.error('❌ Error seeding Kohinoor group:', err);
     }
 };
+
+// Get shared media, links, and docs for a chat
+exports.getChatMedia = async (req, res) => {
+    const { chatId } = req.params;
+    try {
+        const mediaMessages = await Message.find({
+            chat: chatId,
+            $or: [
+                { mediaType: { $ne: 'none' } },
+                { text: { $regex: /https?:\/\/[^\s]+/i } } // Simple link detection
+            ],
+            isDeleted: false,
+            deletedFor: { $ne: req.user.id }
+        })
+        .populate('sender', 'username profile_pic')
+        .sort({ createdAt: -1 });
+        
+        res.json(mediaMessages);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};

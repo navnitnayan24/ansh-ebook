@@ -165,6 +165,7 @@ export const pinMessage = (data) => API.post('realtime/pin', data);
 export const blockUser = (userId) => API.post('realtime/block', { userId });
 export const unblockUser = (userId) => API.post('realtime/unblock', { userId });
 export const deleteMessage = (messageId, type) => API.post(`realtime/delete-message/${messageId}`, { type });
+export const fetchChatMedia = (chatId) => API.get(`realtime/media/${chatId}`);
 
 // Status/Story Module APIs
 export const fetchActiveStories = () => API.get('status/active');

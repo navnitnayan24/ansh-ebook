@@ -20,6 +20,10 @@ const statusSchema = new mongoose.Schema({
         trim: true,
         maxlength: 150
     },
+    mentions: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }],
     views: [{
         user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
         seenAt: { type: Date, default: Date.now }

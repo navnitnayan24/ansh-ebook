@@ -7,7 +7,17 @@ const { getIo } = require('../realtime-module/socket');
 
 exports.createStatus = async (req, res) => {
     try {
-        const { caption, audioUrl, isMuted } = req.body;
+        let { caption, audioUrl, isMuted, mentions } = req.body;
+        
+        // Parse mentions array if it came as a JSON string from FormData
+        if (typeof mentions === 'string') {
+            try { mentions = JSON.parse(mentions); } 
+            catch(e) { mentions = [mentions]; }
+        }
+        if (mentions && !Array.isArray(mentions)) {
+            mentions = [mentions];
+        }
+
         let mediaUrl = '';
         let mediaType = 'image';
 
@@ -31,10 +41,27 @@ exports.createStatus = async (req, res) => {
             mediaType,
             caption,
             audioUrl: audioUrl || '',
-            isMuted: isMuted === 'true' || isMuted === true
+            isMuted: isMuted === 'true' || isMuted === true,
+            mentions: mentions || []
         });
 
         await newStatus.save();
+        
+        // Notify mentioned users
+        const io = getIo();
+        if (mentions && Array.isArray(mentions)) {
+            for (const mentionedId of mentions) {
+                if (mentionedId.toString() !== req.user.id) {
+                    await Notification.create({
+                        recipient: mentionedId,
+                        sender: req.user.id,
+                        type: 'mention',
+                        content: 'mentioned you in a story'
+                    }).catch(e => console.error("Mention notification error:", e));
+                    if (io) io.to(mentionedId.toString()).emit('receive-notification');
+                }
+            }
+        }
         
         // Notify all users about new status (for the ring update)
         const io = getIo();
@@ -53,14 +80,18 @@ exports.getAllStories = async (req, res) => {
         const currentUser = await User.findById(req.user.id);
         const followingIds = currentUser.following || [];
         
-        // Find active statuses from self or followed users
+        // Find active statuses from self, followed users, OR where user is mentioned
         const statuses = await Status.find({
-            user: { $in: [...followingIds, req.user.id] }
+            $or: [
+                { user: { $in: [...followingIds, req.user.id] } },
+                { mentions: req.user.id }
+            ]
         })
             .populate('user', 'username profile_pic')
             .populate('views.user', 'username profile_pic')
             .populate('likes', 'username profile_pic')
             .populate('comments.user', 'username profile_pic')
+            .populate('mentions', 'username profile_pic')
             .sort({ createdAt: -1 });
 
         // Grouping logic: Collect all statuses for each user

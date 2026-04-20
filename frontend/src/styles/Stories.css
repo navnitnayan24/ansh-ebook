@@ -50,11 +50,11 @@
 }
 
 .story-ring.unseen {
-    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    background: #25d366; /* WhatsApp style green ring */
 }
 
 .story-ring.seen {
-    background: #444; /* Muted seen ring */
+    background: rgba(255, 255, 255, 0.2); /* Muted gray seen ring */
 }
 
 .story-ring.no-story {

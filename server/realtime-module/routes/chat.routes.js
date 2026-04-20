@@ -11,6 +11,7 @@ router.get('/cloudinary-signature', adminController.getCloudinarySignature);
 router.get('/chats', chatController.getChats);
 router.get('/messages/:chatId', chatController.getMessages);
 router.get('/users', chatController.getUsers);
+router.get('/media/:chatId', chatController.getChatMedia);
 router.post('/chats', chatController.findOrCreateChat);
 router.post('/groups', chatController.createGroupChat);
 router.post('/add-member', chatController.addMemberToGroup);
