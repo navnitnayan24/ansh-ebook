@@ -107,7 +107,6 @@ const ChatWindow = ({ chat, setSelectedChat }) => {
     const [showWallpaperMenu, setShowWallpaperMenu] = useState(false);
     const [replyTo, setReplyTo] = useState(null);
     const [reactionMenu, setReactionMenu] = useState(null); // { messageId, x, y, isMe }
-    const [securityOverlay, setSecurityOverlay] = useState(false);
     const [showMoreEmojis, setShowMoreEmojis] = useState(false);
     const [isBlocked, setIsBlocked] = useState(false);
     const [hasMoreActions, setHasMoreActions] = useState(false);
@@ -146,12 +145,7 @@ const ChatWindow = ({ chat, setSelectedChat }) => {
             }
         };
 
-        const handleFocus = () => setSecurityOverlay(false);
-        const handleBlur = () => setSecurityOverlay(true);
-
         window.addEventListener('keydown', handleKeyDown);
-        window.addEventListener('focus', handleFocus);
-        window.addEventListener('blur', handleBlur);
         
         // Block right-click and copy
         const blockEvent = (e) => e.preventDefault();
@@ -160,8 +154,6 @@ const ChatWindow = ({ chat, setSelectedChat }) => {
 
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
-            window.removeEventListener('focus', handleFocus);
-            window.removeEventListener('blur', handleBlur);
             document.removeEventListener('contextmenu', blockEvent);
             document.removeEventListener('copy', blockEvent);
         };
@@ -507,13 +499,6 @@ const ChatWindow = ({ chat, setSelectedChat }) => {
                 </div>
             )}
 
-            {securityOverlay && (
-                <div className="security-screen-overlay">
-                    <div className="security-lock-icon">🔒</div>
-                    <h3>Privacy Protected</h3>
-                    <p>Screen content is hidden when inactive.</p>
-                </div>
-            )}
 
             <MessageInput 
                 chatId={chat._id} 
