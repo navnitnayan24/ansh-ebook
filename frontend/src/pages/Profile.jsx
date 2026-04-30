@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { User, Mail, Shield, Calendar, LogOut, ArrowRight, Heart, BookOpen, Trash2, CheckCircle, Camera } from 'lucide-react';
+import { User, Mail, Shield, Calendar, LogOut, ArrowRight, Heart, BookOpen, Trash2, CheckCircle, Camera, Image, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { API } from '../api';
 import { MEDIA_URL, getAvatarUrl, maskEmail } from '../config';
 import Avatar from '../components/Avatar';
+import SharedMediaGallery from '../realtime-module/components/SharedMediaGallery';
 import '../styles/Profile.css';
 
 const PREDEFINED_AVATARS = [
@@ -22,6 +23,7 @@ const Profile = () => {
     const [user, setUser] = useState(null);
     const [uploading, setUploading] = useState(false);
     const [showAvatarPicker, setShowAvatarPicker] = useState(false);
+    const [showMediaGallery, setShowMediaGallery] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -204,6 +206,14 @@ const Profile = () => {
                             </div>
                             <ArrowRight size={18} className="arrow" />
                         </Link>
+                        <div onClick={() => setShowMediaGallery(true)} className="nav-action-card" style={{ cursor: 'pointer' }}>
+                            <div className="card-icon"><Image size={22} /></div>
+                            <div className="card-content">
+                                <h5>My Shared Media</h5>
+                                <p>Across all chats</p>
+                            </div>
+                            <ArrowRight size={18} className="arrow" />
+                        </div>
                         {user.role === 'admin' && (
                             <Link to="/admin" className="nav-action-card admin-special">
                                 <div className="card-icon"><Shield size={22} /></div>
@@ -217,6 +227,22 @@ const Profile = () => {
                     </div>
                 </motion.div>
             </div>
+
+            {/* Media Gallery Overlay */}
+            <AnimatePresence>
+                {showMediaGallery && (
+                    <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.85)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '10px' }}
+                    >
+                        <div style={{ width: '100%', maxWidth: '800px', height: '90vh', background: 'var(--surface)', borderRadius: '15px', overflow: 'hidden', position: 'relative' }}>
+                            <SharedMediaGallery chatId="all" onClose={() => setShowMediaGallery(false)} />
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </motion.div>
     );
 };

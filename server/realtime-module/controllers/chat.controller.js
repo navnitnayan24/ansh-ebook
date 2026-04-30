@@ -437,12 +437,20 @@ exports.seedKohinoorGroup = async () => {
     }
 };
 
-// Get shared media, links, and docs for a chat
+// Get shared media, links, and docs for a chat (or all chats if chatId is 'all')
 exports.getChatMedia = async (req, res) => {
     const { chatId } = req.params;
     try {
+        let chatIds = [];
+        if (chatId === 'all') {
+            const chats = await Chat.find({ participants: req.user.id }).select('_id');
+            chatIds = chats.map(c => c._id);
+        } else {
+            chatIds = [chatId];
+        }
+
         const mediaMessages = await Message.find({
-            chat: chatId,
+            chat: { $in: chatIds },
             $or: [
                 { mediaType: { $ne: 'none' } },
                 { text: { $regex: /https?:\/\/[^\s]+/i } } // Simple link detection

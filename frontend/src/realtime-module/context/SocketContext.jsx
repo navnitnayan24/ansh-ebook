@@ -66,8 +66,8 @@ export const SocketProvider = ({ children }) => {
 
         newSocket.on('receive-message', (data) => {
             showNotification(
-                `New Message from ${data.message.sender?.username || 'Ansh Ebook'}`,
-                data.message.text
+                `New Message from ${data.sender?.username || 'Ansh Ebook'}`,
+                data.text
             );
         });
 

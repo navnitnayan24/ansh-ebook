@@ -208,7 +208,7 @@ const ChatWindow = ({ chat, setSelectedChat }) => {
             const isSenderMe = message.sender?._id === currentId || message.sender === currentId;
             const otherPid = isSenderMe ? message.receiverId : (message.sender?._id || message.sender);
 
-            if (message.chat === chat._id || (isTempChat && `new-${otherPid}` === chat._id)) {
+            if (message.chat?.toString() === chat._id?.toString() || (isTempChat && `new-${otherPid}` === chat._id)) {
                 setMessages((prev) => {
                     const filtered = prev.filter(m => !(m._id?.toString().startsWith('temp-') && m.text === message.text));
                     return [...filtered, message];

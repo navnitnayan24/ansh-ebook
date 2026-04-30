@@ -2,6 +2,7 @@ const { Server } = require('socket.io');
 const jwt = require('jsonwebtoken');
 const Message = require('./models/message.model');
 const Chat = require('./models/chat.model');
+const User = require('../models/User'); // Fixed missing import
 const Notification = require('../models/Notification');
 
 let io;
@@ -96,6 +97,12 @@ const setupSocket = (server) => {
                 io.to(roomName).emit('receive-message', tempMsgPayload);
 
                 // --- Block Check ---
+                const chat = await Chat.findById(chatId);
+                if (!chat) {
+                    console.error(`❌ Chat not found for ID: ${chatId}`);
+                    return;
+                }
+
                 const myUser = await User.findById(userId);
                 const isBlockedByMe = myUser.blockedUsers?.map(u => u.toString()).includes(receiverId?.toString());
                 
