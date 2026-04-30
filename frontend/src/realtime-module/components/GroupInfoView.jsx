@@ -208,10 +208,6 @@ const GroupInfoView = ({ chat, onClose, onUpdate }) => {
                             </span>
                         </div>
                         
-                        <div className="detail-info-group privacy-note">
-                            <Shield size={14} />
-                            <span>Privacy protected: Email hidden</span>
-                        </div>
                     </div>
                     <div className="detail-actions">
                         {isAdmin && selectedMember._id !== currentId && (
@@ -332,10 +328,6 @@ const GroupInfoView = ({ chat, onClose, onUpdate }) => {
                             </div>
                         )}
                         
-                        <div className="detail-info-group privacy-note" style={{ marginTop: '15px' }}>
-                            <Shield size={14} />
-                            <span>Privacy protected: Email fully hidden</span>
-                        </div>
 
                         {/* Shared Media Button */}
                         <button
