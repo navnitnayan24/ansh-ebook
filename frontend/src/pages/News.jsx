@@ -142,7 +142,7 @@ const News = () => {
                                             <div className="podcast-thumb news-thumb">
                                                 {(() => {
                                                     const albumArt = item.thumbnail_url || item.thumbnail || item.cover_url;
-                                                    const imgSrc = albumArt?.startsWith('/uploads') ? `${MEDIA_URL}${albumArt}` : (albumArt || '/default-news.png');
+                                                    const imgSrc = albumArt?.startsWith('/uploads') ? `${MEDIA_URL}${albumArt}` : (albumArt || '/logo-ansh.png');
                                                     return <img src={imgSrc} alt={`${item.title} - Ansh Gazette news`} />;
                                                 })()}
                                             </div>

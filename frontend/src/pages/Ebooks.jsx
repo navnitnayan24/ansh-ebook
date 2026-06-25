@@ -148,7 +148,7 @@ const Ebooks = () => {
                                                 <div className="ebook-cover-wrapper">
                                                     {(() => {
                                                         const albumArt = book.cover_url || book.thumbnail || book.thumbnail_url;
-                                                        const imgSrc = albumArt?.startsWith('/uploads') ? `${MEDIA_URL}${albumArt}` : (albumArt || '/default-ebook.png');
+                                                        const imgSrc = albumArt?.startsWith('/uploads') ? `${MEDIA_URL}${albumArt}` : (albumArt || '/logo-ansh.png');
                                                         return <img src={imgSrc} alt={`${book.title} - Ansh Ebook E-book`} />;
                                                     })()}
                                                 </div>

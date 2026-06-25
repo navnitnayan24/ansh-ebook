@@ -148,7 +148,7 @@ const Podcasts = () => {
                                         <div className="podcast-thumb" onClick={() => togglePlay(pod)} style={{ cursor: 'pointer' }}>
                                             {(() => {
                                                 const albumArt = pod.thumbnail || pod.cover_url || pod.thumbnail_url;
-                                                const imgSrc = albumArt?.startsWith('/uploads') ? `${MEDIA_URL}${albumArt}` : (albumArt || '/default-podcast.png');
+                                                const imgSrc = albumArt?.startsWith('/uploads') ? `${MEDIA_URL}${albumArt}` : (albumArt || '/logo-ansh.png');
                                                 return <img src={imgSrc} alt={`${pod.title} - Ansh Ebook Podcast Episode`} />;
                                             })()}
                                             <div className="play-overlay-large">

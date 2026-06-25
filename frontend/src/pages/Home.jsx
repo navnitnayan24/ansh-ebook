@@ -450,7 +450,7 @@ const Home = () => {
                                         <div className="music-thumb" onClick={(e) => checkPremiumAccess(e, '/music')}>
                                             {(() => {
                                                 const albumArt = track?.thumbnail || track?.cover_url || track?.thumbnail_url;
-                                                const imgSrc = albumArt?.startsWith('/uploads') ? `${MEDIA_URL}${albumArt}` : (albumArt || '/default-music.png');
+                                                const imgSrc = albumArt?.startsWith('/uploads') ? `${MEDIA_URL}${albumArt}` : (albumArt || '/logo-ansh.png');
                                                 return <img src={imgSrc} alt={`${track?.title} - Ansh Ebook Music`} loading="lazy" />;
                                             })()}
                                             {!user && <div className="lock-overlay"><div className="lock-circle">🔒</div></div>}
@@ -483,7 +483,7 @@ const Home = () => {
                                         <div className="podcast-thumb">
                                             {(() => {
                                                 const albumArt = item?.thumbnail_url || item?.thumbnail || item?.cover_url;
-                                                const imgSrc = albumArt?.startsWith('/uploads') ? `${MEDIA_URL}${albumArt}` : (albumArt || '/default-news.png');
+                                                const imgSrc = albumArt?.startsWith('/uploads') ? `${MEDIA_URL}${albumArt}` : (albumArt || '/logo-ansh.png');
                                                 return <img src={imgSrc} alt={`${item?.title} - Ansh Ebook News`} loading="lazy" />;
                                             })()}
                                             {!user && <div className="lock-overlay"><div className="lock-circle">🔒</div></div>}
@@ -510,7 +510,7 @@ const Home = () => {
                                             <div className="ebook-cover">
                                                 {(() => {
                                                     const albumArt = book?.cover_url || book?.thumbnail || book?.thumbnail_url;
-                                                    const imgSrc = albumArt?.startsWith('/uploads') ? `${MEDIA_URL}${albumArt}` : (albumArt || '/default-ebook.png');
+                                                    const imgSrc = albumArt?.startsWith('/uploads') ? `${MEDIA_URL}${albumArt}` : (albumArt || '/logo-ansh.png');
                                                     return <img src={imgSrc} alt={`${book?.title} - Ansh Ebook`} loading="lazy" />;
                                                 })()}
                                                 {!user && <div className="lock-overlay"><div className="lock-circle">🔒</div></div>}

@@ -290,7 +290,7 @@ const Music = () => {
                                                 if (rawUrl && rawUrl.includes('\\uploads\\')) rawUrl = '/uploads/' + rawUrl.split('\\uploads\\').pop();
                                                 else if (rawUrl && rawUrl.includes('/uploads/')) rawUrl = '/uploads/' + rawUrl.split('/uploads/').pop();
                                                 
-                                                const imageUrl = rawUrl?.startsWith('/uploads') ? `${MEDIA_URL}${rawUrl}` : (rawUrl || '/default-music.png');
+                                                const imageUrl = rawUrl?.startsWith('/uploads') ? `${MEDIA_URL}${rawUrl}` : (rawUrl || '/logo-ansh.png');
                                                 return <img src={imageUrl} alt={`${track.title} - Music by Ansh Ebook`} />;
                                             })()}
                                             <div className="cover-overlay">
@@ -475,7 +475,7 @@ const Music = () => {
                             <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem' }}><Heart size={18} fill="var(--pink-primary)" /> FAVORITES</h4>
                             {userLibrary.favorites.length > 0 ? userLibrary.favorites.map(track => (
                                 <div key={track._id} className="lib-track-item" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '0.8rem', background: 'var(--bg-glass-light)', padding: '0.5rem', borderRadius: '8px' }}>
-                                    <img src={(track.imageUrl || track.cover_url)?.startsWith('/uploads') ? `${MEDIA_URL}${track.imageUrl || track.cover_url}` : (track.imageUrl || track.cover_url || '/default-music.png')} style={{ width: '40px', height: '40px', borderRadius: '4px' }} alt="" />
+                                    <img src={(track.imageUrl || track.cover_url)?.startsWith('/uploads') ? `${MEDIA_URL}${track.imageUrl || track.cover_url}` : (track.imageUrl || track.cover_url || '/logo-ansh.png')} style={{ width: '40px', height: '40px', borderRadius: '4px' }} alt="" />
                                     <div style={{ flex: 1, overflow: 'hidden' }}>
                                         <p style={{ fontSize: '0.85rem', fontWeight: '600', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>{track.title}</p>
                                         <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{track.artist}</p>
