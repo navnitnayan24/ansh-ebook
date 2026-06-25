@@ -7,7 +7,7 @@ require('dotenv').config();
 
 let storage;
 
-if (process.env.CLOUDINARY_CLOUD_NAME || true) { // Forced true for permanent fix
+if (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_CLOUD_NAME !== 'datao7ela') { // Fallback if no valid Cloudinary account
     const cloudConfig = {
       cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'datao7ela',
       api_key: process.env.CLOUDINARY_API_KEY || '367996669885499',
