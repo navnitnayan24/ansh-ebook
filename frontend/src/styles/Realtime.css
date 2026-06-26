@@ -1106,10 +1106,9 @@ html:has(.realtime-chat-page) .main-layout {
 .message-input-form {
     flex-shrink: 0;
     padding: 12px 16px;
-    background: transparent;
-    position: relative; 
+    background: var(--c-bg);
+    position: relative;
     z-index: 10;
-    margin-bottom: auto; /* Ensures it can sit at the bottom but not overflow */
 }
 
 @media (max-width: 768px) {
@@ -1797,6 +1796,17 @@ html:has(.realtime-chat-page) .main-layout {
     }
     .chat-window-container {
         min-width: 0;
+        max-height: 100%;
+    }
+    /* CRITICAL: Enforce desktop height chain for chat window */
+    .chat-window {
+        max-height: 100% !important;
+    }
+    .message-input-form {
+        flex-shrink: 0 !important;
+        position: relative !important;
+        background: var(--c-bg) !important;
+        border-top: 1px solid var(--c-border);
     }
     .mobile-back-btn {
         display: flex !important;
@@ -2000,8 +2010,10 @@ html:has(.realtime-chat-page) .main-layout {
    ================================================================ */
 @media (min-width: 769px) {
     .message-input-form {
-        padding: 20px 24px;
-        background: transparent;
+        padding: 16px 24px;
+        background: var(--c-bg) !important;
+        border-top: 1px solid var(--c-border);
+        position: relative !important;
     }
 
     .input-field-container {
